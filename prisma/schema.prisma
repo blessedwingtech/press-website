@@ -1,0 +1,70 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      String    @default("reader")    // "admin", "journalist", "reader"
+  status    String    @default("active")    // "active", "banned"
+  articles  Article[]
+  createdAt DateTime  @default(now())
+}
+
+model Menu {
+  id       String    @id @default(uuid())
+  nom      String
+  slug     String    @unique
+  order    Int       @default(0)
+  submenus SubMenu[]
+  articles Article[]
+}
+
+model SubMenu {
+  id       String    @id @default(uuid())
+  nom      String
+  slug     String    @unique
+  order    Int       @default(0)
+  menuId   String
+  menu     Menu      @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  articles Article[]
+}
+
+model Article {
+  id              String   @id @default(uuid())
+  titre           String
+  slug            String   @unique
+  contenu         String   // Stores HTML rich text
+  imagePrincipale String   // Main image URL or local upload path
+  datePublication DateTime @default(now())
+  
+  auteurId        String
+  auteur          User     @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  
+  menuId          String
+  menu            Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  
+  submenuId       String?
+  submenu         SubMenu? @relation(fields: [submenuId], references: [id], onDelete: SetNull)
+
+  @@index([menuId])
+  @@index([submenuId])
+  @@index([datePublication])
+  @@index([slug])
+}
+
+model Ad {
+  id       String  @id @default(uuid())
+  titre    String
+  imageUrl String  // Image URL or local path
+  lien     String  // Click URL
+  position String  // "header", "sidebar", "footer"
+  active   Boolean @default(true)
+}
