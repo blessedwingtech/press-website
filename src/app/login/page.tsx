@@ -134,7 +134,7 @@ function LoginForm() {
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-slate-800 text-center space-y-2">
+        <div hidden className="mt-6 pt-6 border-t border-slate-800 text-center space-y-2">
           <p className="text-[11px] text-slate-500 leading-relaxed">
             Comptes de test (mot de passe identique : <code className="text-slate-350 bg-slate-950 px-1 py-0.5 rounded font-mono">nom123</code>) :
           </p>
