@@ -36,3 +36,13 @@ yarn-error.log*
 next-env.d.ts
 /prisma/dev.db
 /prisma/dev.db-journal
+
+# Production-specific config
+Dockerfile
+docker-compose.yml
+next.config.mjs
+.env
+.env.*
+!.env.example
+prisma/migrations-sqlite-backup/
+*.log
