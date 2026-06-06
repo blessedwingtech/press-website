@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import AdSlot from '@/components/AdSlot';
 import Link from 'next/link';
 import { Calendar, User, ArrowLeft } from 'lucide-react';
+// import Image from 'next/image';
+import SafeImage from '@/components/SafeImage';
 
 export const revalidate = 0; // Pas de cache pour faciliter l'édition temps réel
 
@@ -64,12 +66,14 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
         <div className="lg:col-span-3 bg-slate-900/30 border border-slate-800/80 rounded-xl p-5 sm:p-8 shadow-2xl">
           
           {/* Bannière d'illustration principale */}
-          <div className="w-full h-64 sm:h-[400px] relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950 mb-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="w-full h-64 sm:h-[400px] relative rounded-lg overflow-hidden border border-slate-800 bg-slate-955 mb-6">
+            <SafeImage
               src={article.imagePrincipale}
               alt={article.titre}
-              className="w-full h-full object-cover select-none"
+              fill
+              sizes="(max-w-768px) 100vw, 75vw"
+              className="object-cover select-none"
+              priority
             />
           </div>
 

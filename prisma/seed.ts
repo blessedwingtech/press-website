@@ -12,6 +12,8 @@ async function main() {
   await prisma.menu.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.ad.deleteMany({});
+  await prisma.systemSetting.deleteMany({});
+  await prisma.adSetting.deleteMany({});
 
   // Hash passwords
   const salt = bcrypt.genSaltSync(10);
@@ -51,6 +53,26 @@ async function main() {
   });
 
   console.log('Users created:', { admin: admin.email, journalist: journalist.email, reader: reader.email });
+
+  // Initialize System Settings
+  await prisma.systemSetting.create({
+    data: {
+      key: 'showDemoData',
+      value: 'true',
+    },
+  });
+
+  // Initialize Ad Settings
+  await prisma.adSetting.createMany({
+    data: [
+      { position: 'header', limit: 3, interval: 10 },
+      { position: 'sidebar', limit: 5, interval: 10 },
+      { position: 'footer', limit: 3, interval: 10 },
+      { position: 'left-sidebar', limit: 5, interval: 10 },
+    ],
+  });
+
+  console.log('System settings initialized.');
 
   // Create Menus and Submenus
   const menuSport = await prisma.menu.create({
@@ -130,6 +152,7 @@ async function main() {
       lien: 'https://www.google.com',
       position: 'header',
       active: true,
+      isDemo: true,
     },
   });
 
@@ -140,6 +163,7 @@ async function main() {
       lien: 'https://nike.com',
       position: 'sidebar',
       active: true,
+      isDemo: true,
     },
   });
 
@@ -150,6 +174,7 @@ async function main() {
       lien: 'https://adidas.com',
       position: 'footer',
       active: true,
+      isDemo: true,
     },
   });
 
@@ -172,6 +197,7 @@ async function main() {
       menuId: menuSport.id,
       submenuId: subLigue1.id,
       datePublication: new Date(),
+      isDemo: true,
     },
   });
 
@@ -190,6 +216,7 @@ async function main() {
       menuId: menuSport.id,
       submenuId: subNBA.id,
       datePublication: new Date(),
+      isDemo: true,
     },
   });
 
@@ -205,6 +232,7 @@ async function main() {
       auteurId: journalist.id,
       menuId: menuPolitique.id,
       datePublication: new Date(),
+      isDemo: true,
     },
   });
 

@@ -17,7 +17,7 @@ const adSchema = z.object({
   titre: z.string().min(2, 'Le titre doit faire au moins 2 caractères.'),
   imageUrl: z.string().min(1, 'L’URL de l’image est obligatoire.'),
   lien: z.string().url('Veuillez fournir un lien URL de redirection valide.'),
-  position: z.enum(['header', 'sidebar', 'footer']),
+  position: z.string().min(1, 'La position est requise.'),
   active: z.boolean().default(true),
 });
 
@@ -27,7 +27,7 @@ export async function saveAd(
     titre: string;
     imageUrl: string;
     lien: string;
-    position: 'header' | 'sidebar' | 'footer';
+    position: string;
     active: boolean;
   }
 ) {
@@ -55,3 +55,21 @@ export async function deleteAd(id: string) {
   revalidatePath('/admin/ads');
   revalidatePath('/');
 }
+
+export async function saveAdSetting(position: string, limit: number, interval: number) {
+  await checkAdmin();
+  
+  if (limit < 1 || interval < 1) {
+    throw new Error('La limite et l’intervalle doivent être supérieurs à 0.');
+  }
+
+  await db.adSetting.upsert({
+    where: { position },
+    update: { limit, interval },
+    create: { position, limit, interval },
+  });
+
+  revalidatePath('/admin/ads');
+  revalidatePath('/');
+}
+

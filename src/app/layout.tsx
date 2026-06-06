@@ -7,7 +7,7 @@ import NavbarWrapper from "@/components/NavbarWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CHRONOS | Actualités & Presse Rédactionnelle",
+  title: "PressTonik | Actualités & Presse Rédactionnelle",
   description: "Plateforme indépendante de journalisme et de rédaction sportive et généraliste en temps réel.",
 };
 
@@ -28,7 +28,7 @@ export default function RootLayout({
           </main>
           <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
             <div className="max-w-7xl mx-auto px-4">
-              <p className="font-semibold text-slate-400 mb-2">CHRONOS Presse Rédactionnelle © {new Date().getFullYear()}</p>
+              <p className="font-semibold text-slate-400 mb-2">PressTonik Presse Rédactionnelle © {new Date().getFullYear()}</p>
               <p>Conçu avec Next.js 14, Tailwind CSS, Prisma ORM et SQLite.</p>
             </div>
           </footer>

@@ -13,6 +13,8 @@ const articleSchema = z.object({
   imagePrincipale: z.string().min(1, 'L’image principale est obligatoire.'),
   menuId: z.string().min(1, 'Sélectionnez un menu.'),
   submenuId: z.string().nullable().optional(),
+  alsoInActualites: z.boolean().default(false),
+  actualitesSubmenuId: z.string().nullable().optional(),
 });
 
 export async function saveArticle(
@@ -23,6 +25,8 @@ export async function saveArticle(
     imagePrincipale: string;
     menuId: string;
     submenuId: string | null;
+    alsoInActualites?: boolean;
+    actualitesSubmenuId?: string | null;
   }
 ) {
   const session = await getServerSession(authOptions);
@@ -62,6 +66,8 @@ export async function saveArticle(
         imagePrincipale: validatedData.imagePrincipale,
         menuId: validatedData.menuId,
         submenuId: validatedData.submenuId || null,
+        alsoInActualites: validatedData.alsoInActualites,
+        actualitesSubmenuId: validatedData.actualitesSubmenuId || null,
       },
     });
   } else {
@@ -74,6 +80,8 @@ export async function saveArticle(
         imagePrincipale: validatedData.imagePrincipale,
         menuId: validatedData.menuId,
         submenuId: validatedData.submenuId || null,
+        alsoInActualites: validatedData.alsoInActualites,
+        actualitesSubmenuId: validatedData.actualitesSubmenuId || null,
         auteurId: (session.user as any).id,
       },
     });
@@ -84,6 +92,26 @@ export async function saveArticle(
   revalidatePath('/');
   revalidatePath(`/articles/${finalSlug}`);
   revalidatePath(`/category/${validatedData.menuId}`);
+  if (validatedData.alsoInActualites) {
+    revalidatePath('/category/actualites');
+  }
 
   return { success: true, slug: finalSlug };
+}
+
+
+ 
+
+export async function deleteArticleAction(articleId: string) {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+
+  if (!userId) throw new Error('Non authentifié');
+
+  const article = await db.article.findUnique({ where: { id: articleId } });
+  if (article && article.auteurId === userId) {
+    await db.article.delete({ where: { id: articleId } });
+    revalidatePath('/journalist');
+    revalidatePath('/');
+  }
 }

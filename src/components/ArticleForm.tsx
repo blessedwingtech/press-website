@@ -8,14 +8,23 @@ import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw } from 'lucide-re
 import Link from 'next/link';
 
 // Chargement dynamique de ReactQuill pour éviter les erreurs SSR de compilation
-const ReactQuill = dynamic(
-  async () => {
-    const { default: RQ } = await import('react-quill');
-    await import('react-quill/dist/quill.snow.css');
-    return RQ;
-  },
-  { ssr: false, loading: () => <div className="h-64 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center text-slate-500 text-xs">Chargement de l'éditeur de texte...</div> }
-);
+// const ReactQuill = dynamic(() => import('react-quill'), {
+//   ssr: false,
+//   loading: () => (
+//     <div className="h-64 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center text-slate-500 text-xs">
+//       Chargement de l'éditeur de texte...
+//     </div>
+//   ),
+// }); 
+
+const ReactQuill = dynamic(() => import('@/components/ReactQuillWrapper'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-64 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center text-slate-500 text-xs">
+      Chargement de l'éditeur de texte...
+    </div>
+  ),
+});
 
 interface SubMenuData {
   id: string;
@@ -40,6 +49,8 @@ interface ArticleFormProps {
     imagePrincipale: string;
     menuId: string;
     submenuId: string | null;
+    alsoInActualites?: boolean;
+    actualitesSubmenuId?: string | null;
   };
 }
 
@@ -53,6 +64,10 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
   const [menuId, setMenuId] = useState(initialData?.menuId || '');
   const [submenuId, setSubmenuId] = useState(initialData?.submenuId || '');
   
+  // Cross-publishing sous le menu Actualités
+  const [alsoInActualites, setAlsoInActualites] = useState(initialData?.alsoInActualites || false);
+  const [actualitesSubmenuId, setActualitesSubmenuId] = useState(initialData?.actualitesSubmenuId || '');
+
   const [uploadingMain, setUploadingMain] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +80,20 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
     return selectedMenu ? selectedMenu.submenus : [];
   }, [menuId, menus]);
 
+  // Déterminer si la catégorie principale est "Actualités"
+  const isActualitesPrimary = useMemo(() => {
+    const selectedMenu = menus.find((m) => m.id === menuId);
+    return selectedMenu?.slug === 'actualites';
+  }, [menuId, menus]);
+
+  const actualitesMenu = useMemo(() => {
+    return menus.find((m) => m.slug === 'actualites');
+  }, [menus]);
+
+  const actualitesSubmenus = useMemo(() => {
+    return actualitesMenu ? actualitesMenu.submenus : [];
+  }, [actualitesMenu]);
+
   // Si le menu change et que le sous-menu actuel n'y appartient pas, on le réinitialise
   useEffect(() => {
     if (menuId && availableSubmenus.length > 0) {
@@ -75,11 +104,19 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
     }
   }, [menuId, availableSubmenus, submenuId]);
 
+  // Réinitialiser la publication sous Actualités si c'est déjà la catégorie principale
+  useEffect(() => {
+    if (isActualitesPrimary) {
+      setAlsoInActualites(false);
+      setActualitesSubmenuId('');
+    }
+  }, [isActualitesPrimary]);
+
   // Détecter et proposer de restaurer un brouillon sauvegardé localement
   useEffect(() => {
     if (initialData) return; // Pas d'autosave en mode édition
     
-    const savedDraft = localStorage.getItem('chronos_draft_autosave');
+    const savedDraft = localStorage.getItem('PressTonik_draft_autosave');
     if (savedDraft) {
       try {
         const draft = JSON.parse(savedDraft);
@@ -91,8 +128,10 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
             setImagePrincipale(draft.imagePrincipale || '');
             setMenuId(draft.menuId || '');
             setSubmenuId(draft.submenuId || '');
+            setAlsoInActualites(draft.alsoInActualites || false);
+            setActualitesSubmenuId(draft.actualitesSubmenuId || '');
           } else {
-            localStorage.removeItem('chronos_draft_autosave');
+            localStorage.removeItem('PressTonik_draft_autosave');
           }
         }
       } catch (e) {
@@ -107,15 +146,23 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
 
     const interval = setInterval(() => {
       if (titre.trim() || contenu.trim() || imagePrincipale) {
-        const draftData = { titre, contenu, imagePrincipale, menuId, submenuId };
-        localStorage.setItem('chronos_draft_autosave', JSON.stringify(draftData));
+        const draftData = {
+          titre,
+          contenu,
+          imagePrincipale,
+          menuId,
+          submenuId,
+          alsoInActualites,
+          actualitesSubmenuId,
+        };
+        localStorage.setItem('PressTonik_draft_autosave', JSON.stringify(draftData));
         setAutosaved(true);
         setTimeout(() => setAutosaved(false), 3000);
       }
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [titre, contenu, imagePrincipale, menuId, submenuId, initialData]);
+  }, [titre, contenu, imagePrincipale, menuId, submenuId, alsoInActualites, actualitesSubmenuId, initialData]);
 
   // Gestionnaire d'upload d'images dans l'éditeur (Rich Text)
   const imageHandler = () => {
@@ -207,7 +254,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
     setError(null);
     setSuccess(false);
 
-    // Validation client simple
+    // Validation client
     if (!titre.trim() || titre.trim().length < 5) {
       setError('Le titre doit contenir au moins 5 caractères.');
       setLoading(false);
@@ -229,6 +276,11 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
       return;
     }
 
+    if (!confirm(initialData ? 'Enregistrer les modifications de cet article et publier ?' : 'Publier ce nouvel article ?')) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await saveArticle(initialData?.id, {
         titre,
@@ -236,13 +288,15 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
         imagePrincipale,
         menuId,
         submenuId: submenuId || null,
+        alsoInActualites,
+        actualitesSubmenuId: alsoInActualites ? actualitesSubmenuId || null : null,
       });
 
       if (res.success) {
         setSuccess(true);
-        // Supprimer le brouillon local à la soumission réussie
+        // Supprimer le brouillon local
         if (!initialData) {
-          localStorage.removeItem('chronos_draft_autosave');
+          localStorage.removeItem('PressTonik_draft_autosave');
         }
         setTimeout(() => {
           router.push(`/articles/${res.slug}`);
@@ -281,7 +335,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
         <div className="flex items-center gap-3">
           {autosaved && (
             <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex items-center gap-1 animate-pulse">
-              <RefreshCw className="w-3 h-3 animate-spin" /> Brouillon sauvegardé
+              <RefreshCw className="w-3 h-3 animate-spin text-emerald-400" /> Brouillon sauvegardé (30s)
             </span>
           )}
         </div>
@@ -329,7 +383,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                 <select
                   value={menuId}
                   onChange={(e) => setMenuId(e.target.value)}
-                  className="block w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-350 text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                  className="block w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-355 text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
                   required
                 >
                   <option value="">-- Choisir une rubrique --</option>
@@ -349,7 +403,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                   value={submenuId}
                   onChange={(e) => setSubmenuId(e.target.value)}
                   disabled={availableSubmenus.length === 0}
-                  className="block w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-350 text-sm focus:outline-none focus:border-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="block w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-355 text-sm focus:outline-none focus:border-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <option value="">-- Aucune (Optionnelle) --</option>
                   {availableSubmenus.map((sub) => (
@@ -359,6 +413,47 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                   ))}
                 </select>
               </div>
+
+              {/* Multi-catégorisation dans Actualités */}
+              {!isActualitesPrimary && actualitesMenu && (
+                <div className="pt-3 border-t border-slate-800/80 space-y-3">
+                  <div className="flex items-center gap-2 select-none">
+                    <input
+                      id="alsoInActualites"
+                      type="checkbox"
+                      checked={alsoInActualites}
+                      onChange={(e) => setAlsoInActualites(e.target.checked)}
+                      className="w-4 h-4 rounded text-emerald-500 border-slate-800 bg-slate-955 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                    />
+                    <label
+                      htmlFor="alsoInActualites"
+                      className="text-xs font-bold text-slate-400 uppercase tracking-wider cursor-pointer"
+                    >
+                      Publier également sous "Actualités"
+                    </label>
+                  </div>
+
+                  {alsoInActualites && actualitesSubmenus.length > 0 && (
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-450 uppercase tracking-widest mb-1.5">
+                        Sous-rubrique Actualités
+                      </label>
+                      <select
+                        value={actualitesSubmenuId}
+                        onChange={(e) => setActualitesSubmenuId(e.target.value)}
+                        className="block w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-355 text-xs focus:outline-none focus:border-emerald-500 cursor-pointer"
+                      >
+                        <option value="">-- Aucune (Sous-menu global) --</option>
+                        {actualitesSubmenus.map((sub) => (
+                          <option key={sub.id} value={sub.id}>
+                            {sub.nom}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Illustration image selector */}

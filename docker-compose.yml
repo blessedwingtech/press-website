@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  nextjs-app:
+    build: .
+    container_name: news-platform
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PORT=3001                     # <-- le conteneur écoutera sur le port 3001
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://news_user:mon_mot_de_passe@localhost:5432/newsplatform?schema=public
+      - NEXTAUTH_URL=https://press.bittonik.com
+      - NEXTAUTH_SECRET=votre_secret
+
+
+
+# sudo -u postgres psql <<EOF
+# CREATE USER news_user WITH PASSWORD 'Bentz789LORD';
+# CREATE DATABASE newsplatform OWNER news_user;
+# GRANT ALL PRIVILEGES ON DATABASE newsplatform TO news_user;
+# EOF

@@ -66,7 +66,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
 
         <div className="text-[10px] font-bold text-slate-550 border-t border-slate-800/50 pt-4 mt-6 hidden md:block">
-          CHRONOS Admin v1.0
+          PressTonik Admin v1.0
         </div>
       </aside>
 

@@ -35,6 +35,9 @@ model SubMenu {
   menuId   String
   menu     Menu      @relation(fields: [menuId], references: [id], onDelete: Cascade)
   articles Article[]
+
+  // Relation inverse pour le cross-publishing dans Actualités
+  actualitesArticles Article[] @relation("ActualitesSubMenu")
 }
 
 model Article {
@@ -54,10 +57,19 @@ model Article {
   submenuId       String?
   submenu         SubMenu? @relation(fields: [submenuId], references: [id], onDelete: SetNull)
 
+  // Cross-publishing sous le menu "Actualités"
+  alsoInActualites    Boolean  @default(false)
+  actualitesSubmenuId String?
+  actualitesSubmenu   SubMenu? @relation("ActualitesSubMenu", fields: [actualitesSubmenuId], references: [id], onDelete: SetNull)
+
+  // Flag pour identifier les données démo du seed
+  isDemo          Boolean  @default(false)
+
   @@index([menuId])
   @@index([submenuId])
   @@index([datePublication])
   @@index([slug])
+  @@index([actualitesSubmenuId])
 }
 
 model Ad {
@@ -65,6 +77,19 @@ model Ad {
   titre    String
   imageUrl String  // Image URL or local path
   lien     String  // Click URL
-  position String  // "header", "sidebar", "footer"
+  position String  // "header", "sidebar", "footer", "left-sidebar", etc.
   active   Boolean @default(true)
+  isDemo   Boolean @default(false)
 }
+
+model SystemSetting {
+  key   String @id
+  value String
+}
+
+model AdSetting {
+  position String @id // ex: "header", "sidebar", "footer", "left-sidebar"
+  limit    Int    @default(5)
+  interval Int    @default(10) // rotation en secondes
+}
+

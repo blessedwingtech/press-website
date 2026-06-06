@@ -3,7 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import Link from 'next/link';
 import { Calendar, Plus, MessageSquarePlus, Trash2, PenTool } from 'lucide-react';
-import { revalidatePath } from 'next/cache';
+// import Image from 'next/image';
+import SafeImage from '@/components/SafeImage'; 
+import DeleteArticleButton from '@/components/DeleteArticleButton';
 
 export const revalidate = 0; // Charger les données dynamiquement
 
@@ -21,20 +23,7 @@ export default async function JournalistDashboard() {
     },
   });
 
-  // Action serveur pour supprimer un article
-  async function deleteArticle(formData: FormData) {
-    'use server';
-    const id = formData.get('id') as string;
-    if (!id) return;
-    
-    // Vérification de la propriété de l'article avant suppression
-    const article = await db.article.findUnique({ where: { id } });
-    if (article && article.auteurId === userId) {
-      await db.article.delete({ where: { id } });
-      revalidatePath('/journalist');
-      revalidatePath('/');
-    }
-  }
+   
 
   return (
     <div className="space-y-6 w-full">
@@ -82,12 +71,13 @@ export default async function JournalistDashboard() {
                 {articles.map((article) => (
                   <tr key={article.id} className="hover:bg-slate-900/10 transition-colors">
                     <td className="py-4 px-6">
-                      <div className="w-14 h-10 rounded-md overflow-hidden border border-slate-800 bg-slate-950">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                      <div className="w-14 h-10 rounded-md overflow-hidden border border-slate-800 bg-slate-950 relative">
+                        <SafeImage
                           src={article.imagePrincipale}
                           alt=""
-                          className="w-full h-full object-cover select-none"
+                          fill
+                          sizes="56px"
+                          className="object-cover select-none"
                         />
                       </div>
                     </td>
@@ -128,21 +118,7 @@ export default async function JournalistDashboard() {
                           <PenTool className="w-3.5 h-3.5 text-cyan-400" />
                           Modifier
                         </Link>
-                        <form action={deleteArticle} className="inline">
-                          <input type="hidden" name="id" value={article.id} />
-                          <button
-                            type="submit"
-                            className="flex items-center gap-1 px-3 py-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 rounded font-bold transition-colors text-[11px] cursor-pointer"
-                            onClick={(e) => {
-                              if (!confirm('Supprimer définitivement cet article ?')) {
-                                e.preventDefault();
-                              }
-                            }}
-                          >
-                            <Trash2 className="w-3.5 h-3.5 text-rose-500" />
-                            Supprimer
-                          </button>
-                        </form>
+                        <DeleteArticleButton articleId={article.id} />
                       </div>
                     </td>
                   </tr>

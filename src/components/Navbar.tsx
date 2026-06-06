@@ -45,13 +45,25 @@ export default function Navbar({ menus }: NavbarProps) {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+              {/* Icône plume (journal / rédaction) */}
+              <svg xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  fill="currentColor" 
+                  className="w-6 h-6 text-emerald-400">
+                <path d="M12 3c-4.97 0-9 4.03-9 9 0 3.87 2.46 7.16 5.9 8.46.39.15.82-.14.82-.56v-2.4c0-.24-.17-.45-.41-.5A6.99 6.99 0 015 12c0-3.87 3.13-7 7-7s7 3.13 7 7c0 2.93-1.79 5.43-4.34 6.46-.24.09-.41.3-.41.55v2.4c0 .42.43.71.82.56A9.003 9.003 0 0021 12c0-4.97-4.03-9-9-9z"/>
+              </svg>
+
+              {/* Branding principal */}
               <span className="text-2xl font-black tracking-wider bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                CHRONOS
+                PressTonik
               </span>
+
+              {/* Tagline secondaire */}
               <span className="text-xs uppercase bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-300 font-semibold tracking-widest hidden sm:inline-block">
-                Presse
+                Actus
               </span>
             </Link>
+
           </div>
 
           {/* Desktop Nav Menus */}

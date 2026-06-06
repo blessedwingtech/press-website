@@ -57,7 +57,7 @@ export default function LoginPage() {
 
         <div className="text-center">
           <Link href="/" className="text-3xl font-black tracking-widest bg-gradient-to-r from-emerald-450 to-cyan-455 bg-clip-text text-transparent">
-            CHRONOS
+            PressTonik
           </Link>
           <h2 className="mt-4 text-xl font-extrabold text-white">
             Connexion à l'espace membre
