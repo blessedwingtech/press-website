@@ -29,7 +29,7 @@ export default function RootLayout({
           <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
             <div className="max-w-7xl mx-auto px-4">
               <p className="font-semibold text-slate-400 mb-2"><strong>PressTonik</strong> Presse Rédactionnelle © {new Date().getFullYear()}</p>
-              <p>Powered by <a href="bwt.bittonik.com" >Blessed Wing Technology</a> </p>
+              <p>Powered by <a href="https://bwt.bittonik.com" >Blessed Wing Technology</a> </p>
             </div>
           </footer>
         </SessionProvider>
