@@ -493,7 +493,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                     ) : (
                       <>
                         <Upload className="w-8 h-8 text-slate-500 mb-2" />
-                        <span className="text-xs text-slate-400 mb-3">Téléversez une image d'illustration</span>
+                        <span className="text-xs text-slate-400 mb-3">Téléversez une image d'illustration <small>(5MB max)</small></span>
                         <label className="cursor-pointer bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-850 hover:text-white transition">
                           Choisir un fichier
                           <input

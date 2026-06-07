@@ -77,7 +77,17 @@ export async function POST(req: NextRequest) {
       .toBuffer();
 
     // S'assurer que le dossier d'uploads local existe
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    // const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    // if (!fs.existsSync(uploadsDir)) {
+    //   fs.mkdirSync(uploadsDir, { recursive: true });
+    // }
+    // Déterminer le dossier d'upload selon l'environnement
+    const isProduction = process.env.NODE_ENV === 'production';
+    const uploadsDir = isProduction
+      ? (process.env.UPLOAD_DIR || '/var/data/news-platform/uploads')
+      : path.join(process.cwd(), 'public', 'uploads');
+
+    // Créer le dossier s'il n'existe pas (utile en développement)
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
