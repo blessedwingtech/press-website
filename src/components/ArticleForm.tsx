@@ -181,6 +181,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
           const res = await fetch('/api/upload', {
             method: 'POST',
             body: formData,
+            credentials: 'include', 
           });
 
           const data = await res.json();
@@ -232,6 +233,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
+        credentials: 'include', 
       });
 
       const data = await res.json();

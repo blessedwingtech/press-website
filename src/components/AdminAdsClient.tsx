@@ -68,6 +68,7 @@ export default function AdminAdsClient({ ads, adSettings }: AdminAdsProps) {
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
+        credentials: 'include', 
       });
       const data = await res.json();
       if (data.url) {
