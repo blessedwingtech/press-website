@@ -1,41 +1,40 @@
-// next.config.js - À créer à la racine du projet
+// next.config.js
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     remotePatterns: [
-      // DÉVELOPPEMENT (localhost)
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
-        pathname: '/media/**',
+        pathname: '/uploads/**',
       },
       {
         protocol: 'http',
         hostname: '127.0.0.1',
         port: '3000',
-        pathname: '/media/**',
+        pathname: '/uploads/**',
       },
-      
-      // PRODUCTION (votre domaine)
       {
         protocol: 'https',
         hostname: 'bittonik.com',
-        pathname: '/media/**',
+        pathname: '/uploads/**',
       },
       {
         protocol: 'https',
         hostname: 'www.bittonik.com',
-        pathname: '/media/**',
+        pathname: '/uploads/**',
       },
       {
         protocol: 'https',
         hostname: '154.12.254.99',
-        pathname: '/media/**',
+        pathname: '/uploads/**',
       },
-      
-      // CLOUDFLARE R2 (FUTUR - si vous utilisez)
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
       {
         protocol: 'https',
         hostname: '*.r2.cloudflarestorage.com',
