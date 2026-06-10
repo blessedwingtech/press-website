@@ -18,6 +18,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'press.bittonik.com',  // ← AJOUTÉ!
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'bittonik.com',
         pathname: '/uploads/**',
       },
