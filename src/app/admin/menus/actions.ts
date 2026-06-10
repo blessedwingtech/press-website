@@ -36,14 +36,30 @@ export async function saveMenu(
   const validated = menuSchema.parse({ ...data, slug });
 
   if (id) {
+  const existing = await db.menu.findFirst({
+    where: {
+      slug: validated.slug,
+      NOT: { id: id }
+    }
+  });
+  if (existing) throw new Error(`Un menu avec le slug "${validated.slug}" existe déjà.`);
+
     await db.menu.update({
       where: { id },
       data: { nom: validated.nom, slug: validated.slug, order: validated.order },
     });
   } else {
-    await db.menu.create({
-      data: { nom: validated.nom, slug: validated.slug, order: validated.order },
-    });
+    try{
+      await db.menu.create({
+        data: { nom: validated.nom, slug: validated.slug, order: validated.order },
+      });
+    } catch (error) {
+    // Vérifier si c'est une erreur Prisma avec le code P2002
+      if (error instanceof Error && 'code' in error && error.code === 'P2002') {
+        throw new Error(`Un menu avec le slug "${validated.slug}" existe déjà.`);
+      }
+      throw error;
+    }
   }
 
   revalidatePath('/admin/menus');
@@ -66,16 +82,21 @@ export async function saveSubMenu(
   const validated = subMenuSchema.parse({ ...data, slug });
 
   if (id) {
-    await db.subMenu.update({
-      where: { id },
-      data: {
-        nom: validated.nom,
-        slug: validated.slug,
-        order: validated.order,
-        menuId: validated.menuId,
-      },
-    });
-  } else {
+  // Vérifier l'unicité du slug (sauf pour l'élément lui-même)
+  const existing = await db.subMenu.findFirst({
+    where: {
+      slug: validated.slug,
+      NOT: { id: id }
+    }
+  });
+  if (existing) {
+    throw new Error(`Un sous-menu avec le slug "${validated.slug}" existe déjà.`);
+  }
+  await db.subMenu.update({
+    where: { id },
+    data: { nom: validated.nom, slug: validated.slug, order: validated.order, menuId: validated.menuId }
+  });
+} else {
     await db.subMenu.create({
       data: {
         nom: validated.nom,
