@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// import Image from 'next/image';
+import Image from 'next/image';
 import SafeImage from '@/components/SafeImage';
 
 interface Ad {
@@ -55,7 +55,7 @@ export default function AdRotator({ ads, interval, position }: AdRotatorProps) {
       
       {/* Utilisation de next/image avec transition CSS douce */}
       <div className="relative w-full h-full">
-        <SafeImage
+        <Image
           src={ad.imageUrl}
           alt={ad.titre}
           fill
