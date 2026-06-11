@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import Link from 'next/link';
 import { Calendar, Plus, MessageSquarePlus, Trash2, PenTool } from 'lucide-react';
-import Image from 'next/image';
+// import Image from 'next/image';
 import SafeImage from '@/components/SafeImage'; 
 import DeleteArticleButton from '@/components/DeleteArticleButton';
 
@@ -72,7 +72,7 @@ export default async function JournalistDashboard() {
                   <tr key={article.id} className="hover:bg-slate-900/10 transition-colors">
                     <td className="py-4 px-6">
                       <div className="w-14 h-10 rounded-md overflow-hidden border border-slate-800 bg-slate-950 relative">
-                        <Image
+                        <SafeImage
                           src={article.imagePrincipale}
                           alt=""
                           fill
