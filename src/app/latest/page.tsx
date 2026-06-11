@@ -2,7 +2,7 @@ import { db } from '@/lib/db';
 import AdSlot from '@/components/AdSlot';
 import Link from 'next/link';
 import { Calendar, User, ArrowRight, BookOpen, Clock } from 'lucide-react';
-import Image from 'next/image';
+// import Image from 'next/image';
 import SafeImage from '@/components/SafeImage';
 
 export const revalidate = 0; // Desactiver le cache pour charger en temps réel
@@ -64,7 +64,7 @@ export default async function LatestArticlesPage() {
                   className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-2xl transition-all duration-300 group"
                 >
                   <Link href={`/articles/${article.slug}`} className="block relative h-48 sm:h-52 overflow-hidden bg-slate-950">
-                    <Image
+                    <SafeImage
                       src={article.imagePrincipale}
                       alt={article.titre}
                       fill

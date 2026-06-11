@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import AdSlot from '@/components/AdSlot';
 import Link from 'next/link';
 import { Calendar, User, ArrowLeft } from 'lucide-react';
-import Image from 'next/image';
+// import Image from 'next/image';
 import SafeImage from '@/components/SafeImage';
 
 export const revalidate = 0; // Pas de cache pour faciliter l'édition temps réel
@@ -67,7 +67,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
           
           {/* Bannière d'illustration principale */}
           <div className="w-full h-64 sm:h-[400px] relative rounded-lg overflow-hidden border border-slate-800 bg-slate-955 mb-6">
-            <Image
+            <SafeImage
               src={article.imagePrincipale}
               alt={article.titre}
               fill
