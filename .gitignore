@@ -46,3 +46,4 @@ next.config.mjs
 !.env.example
 prisma/migrations-sqlite-backup/
 *.log
+public/uploads/
