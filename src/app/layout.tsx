@@ -9,6 +9,11 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "PressTonik | Actualités & Presse Rédactionnelle",
   description: "Plateforme indépendante de journalisme et de rédaction sportive et généraliste en temps réel.",
+  icons: {
+    icon: "/logo-press-tonik.svg", // ← AJOUTEZ CETTE LIGNE
+    // Vous pouvez aussi spécifier un .ico si vous en avez un :
+    // ic
+  }
 };
 
 export default function RootLayout({
