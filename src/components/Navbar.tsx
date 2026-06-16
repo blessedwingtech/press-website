@@ -45,37 +45,32 @@ export default function Navbar({ menus }: NavbarProps) {
           {/* Logo */} 
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-              {/* Icône plume (journal / rédaction) */}
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" width="360" height="80">
                 <defs>
                   <linearGradient id="pressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#34D399" />
-                    <stop offset="100%" stop-color="#22D3EE" />
+                    <stop offset="0%" stopColor="#34D399" />
+                    <stop offset="100%" stopColor="#22D3EE" />
                   </linearGradient>
                 </defs>
 
-                {/* Cercle de fond (très léger) */}
                 <circle cx="40" cy="40" r="30" fill="#34D399" opacity="0.08" />
-                <circle cx="40" cy="40" r="30" fill="none" stroke="#34D399" stroke-width="1.5" opacity="0.3" />
+                <circle cx="40" cy="40" r="30" fill="none" stroke="#34D399" strokeWidth="1.5" opacity="0.3" />
 
-                {/* Plume (grande et détaillée) */}
                 <g transform="translate(40, 40)">
-                  {/* Tige principale */}
-                  <line x1="0" y1="24" x2="0" y2="-24" stroke="#34D399" stroke-width="2.8" stroke-linecap="round" />
-                  {/* Barbes supérieures (en éventail) */}
+                  <line x1="0" y1="24" x2="0" y2="-24" stroke="#34D399" strokeWidth="2.8" strokeLinecap="round" />
                   <path d="M0 -24 Q-16 -12 -20 0 Q-14 -6 -6 -2 Q0 0 6 -2 Q14 -6 20 0 Q16 -12 0 -24Z" fill="#34D399" opacity="0.95" />
-                  {/* Barbes inférieures (duvet) */}
                   <path d="M0 24 Q-8 28 -5 32 Q-2 28 0 26 Q2 28 5 32 Q8 28 0 24Z" fill="#34D399" opacity="0.6" />
-                  {/* Petite encoche pour le réalisme */}
                   <path d="M-2 -24 Q-4 -20 -2 -16 Q0 -20 2 -16 Q4 -20 2 -24Z" fill="#0f172a" />
                 </g>
 
-                {/* Texte "PressTonik" avec dégradé */}
-                <text x="80" y="48" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="800" font-size="34" fill="url(#pressGrad)" letter-spacing="-0.5">PressTonik</text>
+                <text x="80" y="48" fontFamily="'Inter', 'Segoe UI', sans-serif" fontWeight="800" fontSize="34" fill="url(#pressGrad)" letterSpacing="-0.5">
+                  PressTonik
+                </text>
 
-                {/* Badge "MÉDIA" */}
-                <rect x="258" y="20" width="64" height="22" rx="5" fill="#1e293b" stroke="#334155" stroke-width="1" />
-                <text x="270" y="35" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="700" font-size="11" fill="#94a3b8" letter-spacing="1.5">MÉDIA</text>
+                <rect x="258" y="20" width="64" height="22" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1" />
+                <text x="270" y="35" fontFamily="'Inter', 'Segoe UI', sans-serif" fontWeight="700" fontSize="11" fill="#94a3b8" letterSpacing="1.5">
+                  MÉDIA
+                </text>
               </svg>
             </Link>
           </div>
