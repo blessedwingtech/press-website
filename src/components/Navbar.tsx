@@ -42,28 +42,42 @@ export default function Navbar({ menus }: NavbarProps) {
     <nav className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-50 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          {/* Logo */}
+          {/* Logo */} 
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center gap-2">
               {/* Icône plume (journal / rédaction) */}
-              <svg xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24" 
-                  fill="currentColor" 
-                  className="w-6 h-6 text-emerald-400">
-                <path d="M12 3c-4.97 0-9 4.03-9 9 0 3.87 2.46 7.16 5.9 8.46.39.15.82-.14.82-.56v-2.4c0-.24-.17-.45-.41-.5A6.99 6.99 0 015 12c0-3.87 3.13-7 7-7s7 3.13 7 7c0 2.93-1.79 5.43-4.34 6.46-.24.09-.41.3-.41.55v2.4c0 .42.43.71.82.56A9.003 9.003 0 0021 12c0-4.97-4.03-9-9-9z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" width="360" height="80">
+                <defs>
+                  <linearGradient id="pressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#34D399" />
+                    <stop offset="100%" stop-color="#22D3EE" />
+                  </linearGradient>
+                </defs>
+
+                {/* Cercle de fond (très léger) */}
+                <circle cx="40" cy="40" r="30" fill="#34D399" opacity="0.08" />
+                <circle cx="40" cy="40" r="30" fill="none" stroke="#34D399" stroke-width="1.5" opacity="0.3" />
+
+                {/* Plume (grande et détaillée) */}
+                <g transform="translate(40, 40)">
+                  {/* Tige principale */}
+                  <line x1="0" y1="24" x2="0" y2="-24" stroke="#34D399" stroke-width="2.8" stroke-linecap="round" />
+                  {/* Barbes supérieures (en éventail) */}
+                  <path d="M0 -24 Q-16 -12 -20 0 Q-14 -6 -6 -2 Q0 0 6 -2 Q14 -6 20 0 Q16 -12 0 -24Z" fill="#34D399" opacity="0.95" />
+                  {/* Barbes inférieures (duvet) */}
+                  <path d="M0 24 Q-8 28 -5 32 Q-2 28 0 26 Q2 28 5 32 Q8 28 0 24Z" fill="#34D399" opacity="0.6" />
+                  {/* Petite encoche pour le réalisme */}
+                  <path d="M-2 -24 Q-4 -20 -2 -16 Q0 -20 2 -16 Q4 -20 2 -24Z" fill="#0f172a" />
+                </g>
+
+                {/* Texte "PressTonik" avec dégradé */}
+                <text x="80" y="48" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="800" font-size="34" fill="url(#pressGrad)" letter-spacing="-0.5">PressTonik</text>
+
+                {/* Badge "MÉDIA" */}
+                <rect x="258" y="20" width="64" height="22" rx="5" fill="#1e293b" stroke="#334155" stroke-width="1" />
+                <text x="270" y="35" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="700" font-size="11" fill="#94a3b8" letter-spacing="1.5">MÉDIA</text>
               </svg>
-
-              {/* Branding principal */}
-              <span className="text-2xl font-black tracking-wider bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                PressTonik
-              </span>
-
-              {/* Tagline secondaire */}
-              <span className="text-xs uppercase bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-300 font-semibold tracking-widest hidden sm:inline-block">
-                Actus
-              </span>
             </Link>
-
           </div>
 
           {/* Desktop Nav Menus */}

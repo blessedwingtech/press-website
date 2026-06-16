@@ -328,7 +328,7 @@ export default function AdminAdsClient({ ads, adSettings }: AdminAdsProps) {
                   value={lien}
                   onChange={(e) => setLien(e.target.value)}
                   className="block w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-amber-400"
-                  placeholder="https://nike.com"
+                  placeholder="https://bittonik.com"
                 />
               </div>
 

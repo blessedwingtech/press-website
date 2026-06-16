@@ -18,6 +18,7 @@ const SafeImage: React.FC<SafeImageProps> = ({
   sizes,
   ...rest
 }) => {
+  console.log('🔵 SafeImage reçoit src =', src, 'fill =', fill);
   const [imgSrc, setImgSrc] = useState(src);
 
   // Si c'est une image uploadée (servie par Nginx), on utilise <img>
@@ -49,6 +50,9 @@ const SafeImage: React.FC<SafeImageProps> = ({
       {...rest}
       src={imgSrc}
       alt={alt}
+      fill={fill}           
+      sizes={sizes} 
+      unoptimized={true} 
       onError={() => {
         if (imgSrc !== fallbackSrc) {
           setImgSrc(fallbackSrc);
