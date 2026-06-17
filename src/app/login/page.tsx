@@ -133,6 +133,11 @@ function LoginForm() {
             )}
           </button>
         </form>
+        <div className="text-center mt-4">
+          <Link href="/forgot-password" className="text-sm text-emerald-400 hover:text-emerald-300 transition">
+            Mot de passe oublié ?
+          </Link>
+        </div>
 
         <div hidden className="mt-6 pt-6 border-t border-slate-800 text-center space-y-2">
           <p className="text-[11px] text-slate-500 leading-relaxed">

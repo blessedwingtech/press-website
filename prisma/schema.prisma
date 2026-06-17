@@ -1,0 +1,88 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String   @id @default(uuid())
+  name             String
+  email            String   @unique
+  password         String
+  role             String   @default("reader")
+  status           String   @default("active")
+  resetToken       String?  @unique
+  resetTokenExpiry DateTime?
+  createdAt        DateTime @default(now())
+  articles         Article[]
+}
+
+model Menu {
+  id       String    @id @default(uuid())
+  nom      String
+  slug     String    @unique
+  order    Int       @default(0)
+  submenus SubMenu[]
+  articles Article[]
+}
+
+model SubMenu {
+  id       String    @id @default(uuid())
+  nom      String
+  slug     String    @unique
+  order    Int       @default(0)
+  menuId   String
+  menu     Menu      @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  articles Article[]
+
+  actualitesArticles Article[] @relation("ActualitesSubMenu")
+}
+
+model Article {
+  id                   String   @id @default(uuid())
+  titre                String
+  slug                 String   @unique
+  contenu              String
+  imagePrincipale      String
+  datePublication      DateTime @default(now())
+  auteurId             String
+  auteur               User     @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  menuId               String
+  menu                 Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  submenuId            String?
+  submenu              SubMenu? @relation(fields: [submenuId], references: [id], onDelete: SetNull)
+  alsoInActualites     Boolean  @default(false)
+  actualitesSubmenuId  String?
+  actualitesSubmenu    SubMenu? @relation("ActualitesSubMenu", fields: [actualitesSubmenuId], references: [id], onDelete: SetNull)
+  isDemo               Boolean  @default(false)
+
+  @@index([menuId])
+  @@index([submenuId])
+  @@index([datePublication])
+  @@index([slug])
+  @@index([actualitesSubmenuId])
+}
+
+model Ad {
+  id       String  @id @default(uuid())
+  titre    String
+  imageUrl String
+  lien     String
+  position String
+  active   Boolean @default(true)
+  isDemo   Boolean @default(false)
+}
+
+model SystemSetting {
+  key   String @id
+  value String
+}
+
+model AdSetting {
+  position String @id
+  limit    Int    @default(5)
+  interval Int    @default(10)
+}
