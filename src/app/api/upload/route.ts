@@ -100,8 +100,8 @@ export async function POST(req: NextRequest) {
     fs.writeFileSync(filePath, processedBuffer);
 
     // URL relative de l'image générée
-    // const url = `/uploads/${filename}`;
-    const url = `/api/uploads/${filename}`;
+    const url = `/uploads/${filename}`;
+    // const url = `/api/uploads/${filename}`;
     return NextResponse.json({ url });
   } catch (error: any) {
     console.error('Upload Error:', error);
