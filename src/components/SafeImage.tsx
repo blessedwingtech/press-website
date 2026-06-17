@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image, { ImageProps } from 'next/image';
 
 interface SafeImageProps extends Omit<ImageProps, 'src'> {
@@ -18,12 +18,15 @@ const SafeImage: React.FC<SafeImageProps> = ({
   sizes,
   ...rest
 }) => {
-  console.log('🔵 SafeImage reçoit src =', src, 'fill =', fill);
   const [imgSrc, setImgSrc] = useState(src);
 
-  // Si c'est une image uploadée (servie par Nginx), on utilise <img>
+  // Synchroniser imgSrc avec la prop src
+  useEffect(() => {
+    setImgSrc(src);
+  }, [src]);
+
+  // Images uploadées localement
   if (src && src.startsWith('/uploads/')) {
-    // On construit un style pour imiter le comportement de `fill`
     const imgStyle = fill
       ? { objectFit: 'cover', width: '100%', height: '100%', ...(style as object) }
       : style;
@@ -35,7 +38,7 @@ const SafeImage: React.FC<SafeImageProps> = ({
         className={className}
         style={imgStyle}
         onError={() => {
-          if (imgSrc !== fallbackSrc) {
+          if (fallbackSrc && imgSrc !== fallbackSrc) {
             setImgSrc(fallbackSrc);
           }
         }}
@@ -44,17 +47,17 @@ const SafeImage: React.FC<SafeImageProps> = ({
     );
   }
 
-  // Pour les autres images (externes ou dans /public), on garde next/image
+  // Images externes (ou dans /public)
   return (
     <Image
       {...rest}
       src={imgSrc}
       alt={alt}
-      fill={fill}           
-      sizes={sizes} 
-      unoptimized={true} 
+      fill={fill}
+      sizes={sizes}
+      unoptimized={true}
       onError={() => {
-        if (imgSrc !== fallbackSrc) {
+        if (fallbackSrc && imgSrc !== fallbackSrc) {
           setImgSrc(fallbackSrc);
         }
       }}
