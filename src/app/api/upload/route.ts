@@ -4,6 +4,10 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import sharp from 'sharp';
 
+console.log('🔍 [Upload] R2_PUBLIC_URL =', process.env.R2_PUBLIC_URL);
+console.log('🔍 [Upload] R2_BUCKET_NAME =', process.env.R2_BUCKET_NAME);
+console.log('🔍 [Upload] R2_ACCOUNT_ID =', process.env.R2_ACCOUNT_ID);
+
 const R2 = new S3Client({
   region: 'auto',
   endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
