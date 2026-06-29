@@ -137,7 +137,7 @@ export default async function AdminDashboardOverview() {
             <p className="text-xs text-slate-500 text-center py-6">Aucun article enregistré.</p>
           ) : (
             <div className="space-y-4">
-              {latestArticles.map((art) => (
+              {latestArticles.map((art: any) => (
                 <div key={art.id} className="flex justify-between items-center gap-4 text-xs border-b border-slate-900 pb-3 last:border-0 last:pb-0">
                   <div className="truncate">
                     <p className="font-bold text-slate-200 truncate hover:text-emerald-450">
