@@ -79,3 +79,19 @@ export const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET || 'a-very-long-secret-key-for-local-development-security-purposes'
 };
+
+// 👇 Extension des types NextAuth (à placer à la fin du fichier)
+declare module "next-auth" {
+  interface User {
+    id: string;
+    role: string;
+    status: string;
+  }
+  interface Session {
+    user: User & {
+      id: string;
+      role: string;
+      status: string;
+    };
+  }
+}
