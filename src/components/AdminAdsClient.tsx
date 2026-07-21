@@ -22,6 +22,9 @@ interface AdData {
   lien: string;
   position: string;
   active: boolean;
+  impressions?: number;
+  clicks?: number;
+  ownerId?: string | null;
 }
 
 interface AdSettingData {
@@ -30,18 +33,26 @@ interface AdSettingData {
   interval: number;
 }
 
+interface UserOption {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface AdminAdsProps {
   ads: AdData[];
   adSettings: AdSettingData[];
+  users: UserOption[];
 }
 
-export default function AdminAdsClient({ ads, adSettings }: AdminAdsProps) {
+export default function AdminAdsClient({ ads, adSettings, users }: AdminAdsProps) {
   const [adId, setAdId] = useState<string | undefined>(undefined);
   const [titre, setTitre] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [lien, setLien] = useState('');
   const [position, setPosition] = useState('sidebar');
   const [active, setActive] = useState(true);
+  const [ownerId, setOwnerId] = useState<string>('');
 
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -102,7 +113,7 @@ export default function AdminAdsClient({ ads, adSettings }: AdminAdsProps) {
     }
 
     try {
-      await saveAd(adId, { titre, imageUrl, lien, position, active });
+      await saveAd(adId, { titre, imageUrl, lien, position, active, ownerId: ownerId || null });
       setSuccess(adId ? 'Publicité mise à jour.' : 'Publicité ajoutée avec succès.');
       setAdId(undefined);
       setTitre('');
@@ -110,6 +121,7 @@ export default function AdminAdsClient({ ads, adSettings }: AdminAdsProps) {
       setLien('');
       setPosition('sidebar');
       setActive(true);
+      setOwnerId('');
     } catch (err: any) {
       setError(err.message || 'Erreur serveur lors de la sauvegarde.');
     } finally {
@@ -124,6 +136,7 @@ export default function AdminAdsClient({ ads, adSettings }: AdminAdsProps) {
     setLien(ad.lien);
     setPosition(ad.position);
     setActive(ad.active);
+    setOwnerId(ad.ownerId || '');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -232,6 +245,16 @@ export default function AdminAdsClient({ ads, adSettings }: AdminAdsProps) {
                           {ad.lien}
                         </a>
                       </p>
+
+                      <div className="flex gap-3 mt-2.5 text-[9px] sm:text-[10px] bg-slate-950/40 p-2 rounded-lg border border-slate-900 select-none">
+                        <span className="text-slate-400 font-bold">👀 {ad.impressions ?? 0} <span className="text-slate-600 uppercase tracking-wider text-[8px]">Vues</span></span>
+                        <span className="text-slate-450 font-bold">🖱️ {ad.clicks ?? 0} <span className="text-slate-600 uppercase tracking-wider text-[8px]">Clics</span></span>
+                        {ad.clicks !== undefined && ad.impressions !== undefined && ad.impressions > 0 ? (
+                          <span className="text-amber-500 font-extrabold font-mono ml-auto">📈 {((ad.clicks / ad.impressions) * 100).toFixed(1)}% <span className="text-slate-600 text-[7px] uppercase font-sans">CTR</span></span>
+                        ) : (
+                          <span className="text-slate-600 font-mono text-[8px] ml-auto">0.0% CTR</span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex justify-between items-center border-t border-slate-800/50 pt-3 mt-3 text-xs">
@@ -370,6 +393,24 @@ export default function AdminAdsClient({ ads, adSettings }: AdminAdsProps) {
                     </label>
                   </div>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                  Propriétaire / Annonceur (Compte utilisateur)
+                </label>
+                <select
+                  value={ownerId}
+                  onChange={(e) => setOwnerId(e.target.value)}
+                  className="block w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-350 text-xs focus:outline-none focus:border-amber-400 cursor-pointer"
+                >
+                  <option value="">-- Aucun annonceur spécifique --</option>
+                  {users.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.name} ({u.email})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex items-center gap-2 py-1 select-none">

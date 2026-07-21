@@ -3,17 +3,13 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
 import NavbarWrapper from "@/components/NavbarWrapper";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "PressTonik | Actualités & Presse Rédactionnelle",
   description: "Plateforme indépendante de journalisme et de rédaction sportive et généraliste en temps réel.",
-  icons: {
-    icon: "/logo-press-tonik.svg", // ← AJOUTEZ CETTE LIGNE
-    // Vous pouvez aussi spécifier un .ico si vous en avez un :
-    // ic
-  }
 };
 
 export default function RootLayout({
@@ -32,9 +28,16 @@ export default function RootLayout({
             {children}
           </main>
           <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
-            <div className="max-w-7xl mx-auto px-4">
-              <p className="font-semibold text-slate-400 mb-2"><strong>PressTonik</strong> Presse Rédactionnelle © {new Date().getFullYear()}</p>
-              <p>Powered by <a href="https://bwt.bittonik.com" >Blessed Wing Technology</a> </p>
+            <div className="max-w-7xl mx-auto px-4 space-y-2">
+              <p className="font-semibold text-slate-400"><strong>PressTonik</strong> Presse Rédactionnelle © {new Date().getFullYear()}</p>
+              <p>Powered by <a href="https://bwt.bittonik.com" className="hover:text-blue-400">Blessed Wing Technology</a></p>
+              <div className="pt-2 flex justify-center gap-4 text-[10px] uppercase font-bold tracking-wider">
+                <Link href="/request-account" className="hover:text-emerald-400 transition-colors">Demander un compte</Link>
+                <span className="text-slate-700">•</span>
+                <Link href="/terms" className="hover:text-emerald-400 transition-colors">Conditions d'utilisation</Link>
+                <span className="text-slate-700">•</span>
+                <Link href="/privacy" className="hover:text-emerald-400 transition-colors">Politique de confidentialité</Link>
+              </div>
             </div>
           </footer>
         </SessionProvider>

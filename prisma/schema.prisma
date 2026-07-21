@@ -16,9 +16,11 @@ model User {
   status           String   @default("active")
   resetToken       String?  @unique
   resetTokenExpiry DateTime?
+  profilePhoto     String?
   createdAt        DateTime @default(now())
   articles         Article[]
   galleryImages GalleryImage[]
+  ads           Ad[]           @relation("UserAds")
 }
 
 model Menu {
@@ -59,6 +61,8 @@ model Article {
   actualitesSubmenuId  String?
   actualitesSubmenu    SubMenu? @relation("ActualitesSubMenu", fields: [actualitesSubmenuId], references: [id], onDelete: SetNull)
   isDemo               Boolean  @default(false)
+  views                Int      @default(0)
+  ratings              Rating[]
 
   @@index([menuId])
   @@index([submenuId])
@@ -68,13 +72,17 @@ model Article {
 }
 
 model Ad {
-  id       String  @id @default(uuid())
-  titre    String
-  imageUrl String
-  lien     String
-  position String
-  active   Boolean @default(true)
-  isDemo   Boolean @default(false)
+  id          String  @id @default(uuid())
+  titre       String
+  imageUrl    String
+  lien        String
+  position    String
+  active      Boolean @default(true)
+  isDemo      Boolean @default(false)
+  impressions Int     @default(0)
+  clicks      Int     @default(0)
+  ownerId     String?
+  owner       User?   @relation("UserAds", fields: [ownerId], references: [id], onDelete: SetNull)
 }
 
 model SystemSetting {
@@ -98,3 +106,38 @@ model GalleryImage {
   userId      String   // qui a uploadé (relation avec User)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Rating {
+  id                String   @id @default(uuid())
+  articleId         String
+  article           Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  stars             Int      // 0 à 5
+  sessionIdentifier String   // Cookie UUID ou IP hashé pour la prévention des doublons
+  createdAt         DateTime @default(now())
+
+  @@unique([articleId, sessionIdentifier])
+  @@index([articleId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String   // Ex: "RATING_ADD", "ARTICLE_VIEW", "USER_CREATE", "ARTICLE_SHARE"
+  details   String
+  userId    String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model AccountRequest {
+  id                String   @id @default(uuid())
+  name              String
+  username          String   @unique
+  email             String   @unique
+  role              String   @default("reader")
+  profilePhoto      String?
+  status            String   @default("PENDING") // PENDING, CONFIRMED_EMAIL, APPROVED, REJECTED
+  confirmationToken String   @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+

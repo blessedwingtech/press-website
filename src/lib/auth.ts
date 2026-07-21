@@ -16,8 +16,11 @@ export const authOptions: AuthOptions = {
           throw new Error('Veuillez entrer un email et un mot de passe.');
         }
 
+        const email = credentials.email.trim().toLowerCase();
+        const password = credentials.password.trim();
+
         const user = await db.user.findUnique({
-          where: { email: credentials.email }
+          where: { email }
         });
 
         if (!user) {
@@ -28,7 +31,7 @@ export const authOptions: AuthOptions = {
           throw new Error('Ce compte a été banni par un administrateur.');
         }
 
-        const isValid = bcrypt.compareSync(credentials.password, user.password);
+        const isValid = bcrypt.compareSync(password, user.password);
 
         if (!isValid) {
           throw new Error('Mot de passe incorrect.');

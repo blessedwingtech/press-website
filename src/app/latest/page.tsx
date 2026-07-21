@@ -2,8 +2,8 @@ import { db } from '@/lib/db';
 import AdSlot from '@/components/AdSlot';
 import Link from 'next/link';
 import { Calendar, User, ArrowRight, BookOpen, Clock } from 'lucide-react';
-// import Image from 'next/image';
 import SafeImage from '@/components/SafeImage';
+import ArticleMedia from '@/components/ArticleMedia';
 
 export const revalidate = 0; // Desactiver le cache pour charger en temps réel
 
@@ -63,17 +63,10 @@ export default async function LatestArticlesPage() {
                   key={article.id}
                   className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-2xl transition-all duration-300 group"
                 >
-                  <Link href={`/articles/${article.slug}`} className="block relative h-48 sm:h-52 overflow-hidden bg-slate-950">
-                    <SafeImage
-                      src={article.imagePrincipale}
-                      alt={article.titre}
-                      fill
-                      sizes="(max-w-768px) 100vw, 33vw"
-                      priority={false}
-                      className="object-cover transform group-hover:scale-105 transition-transform duration-500 select-none"
-                    />
+                  <Link href={`/articles/${article.slug}`} className="block relative h-48 sm:h-52 overflow-hidden bg-slate-955">
+                    <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
                     <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-20">
-                      <span className="bg-emerald-500 text-slate-950 font-black text-[9px] uppercase px-2 py-0.5 rounded shadow-lg tracking-wider">
+                      <span className="bg-emerald-500 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded shadow-lg tracking-wider">
                         {article.menu.nom}
                       </span>
                       {article.submenu && (

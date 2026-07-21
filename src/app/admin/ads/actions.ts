@@ -19,6 +19,7 @@ const adSchema = z.object({
   lien: z.string().url('Veuillez fournir un lien URL de redirection valide.'),
   position: z.string().min(1, 'La position est requise.'),
   active: z.boolean().default(true),
+  ownerId: z.string().nullable().optional(),
 });
 
 export async function saveAd(
@@ -29,6 +30,7 @@ export async function saveAd(
     lien: string;
     position: string;
     active: boolean;
+    ownerId?: string | null;
   }
 ) {
   await checkAdmin();

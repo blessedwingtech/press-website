@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import AdSlot from '@/components/AdSlot';
 import Link from 'next/link';
 import { Calendar, ChevronRight, BookOpen } from 'lucide-react';
-// import Image from 'next/image';
 import SafeImage from '@/components/SafeImage';
+import ArticleMedia from '@/components/ArticleMedia';
 
 export const revalidate = 0; // Pas de cache
 
@@ -117,14 +117,7 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
                     className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 transition-all duration-300 group"
                   >
                     <Link href={`/articles/${article.slug}`} className="block relative h-48 overflow-hidden bg-slate-955">
-                      <SafeImage
-                        src={article.imagePrincipale}
-                        alt={article.titre}
-                        fill
-                        sizes="(max-w-768px) 100vw, 50vw"
-                        className="object-cover transform group-hover:scale-103 transition-transform duration-350 select-none"
-                        priority={false}
-                      />
+                      <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
                     </Link>
                     <div className="p-5 flex-grow flex flex-col justify-between">
                       <div>

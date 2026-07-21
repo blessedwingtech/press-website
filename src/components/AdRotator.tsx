@@ -21,6 +21,25 @@ interface AdRotatorProps {
 export default function AdRotator({ ads, interval, position }: AdRotatorProps) {
   const [index, setIndex] = useState(0);
 
+  const ad = ads[index];
+
+  // Enregistrer l'impression de la publicité affichée
+  useEffect(() => {
+    if (!ad?.id) return;
+    const trackImpression = async () => {
+      try {
+        await fetch('/api/ads/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adId: ad.id, type: 'impression' })
+        });
+      } catch (err) {
+        console.error('Failed to track ad impression:', err);
+      }
+    };
+    trackImpression();
+  }, [ad?.id]);
+
   useEffect(() => {
     if (ads.length <= 1) return;
     
@@ -31,8 +50,19 @@ export default function AdRotator({ ads, interval, position }: AdRotatorProps) {
     return () => clearInterval(timer);
   }, [ads.length, interval]);
 
-  const ad = ads[index];
   if (!ad) return null;
+
+  const handleAdClick = async () => {
+    try {
+      await fetch('/api/ads/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adId: ad.id, type: 'click' })
+      });
+    } catch (err) {
+      console.error('Failed to track ad click:', err);
+    }
+  };
 
   // Classes de styles selon l'emplacement
   const layoutClasses: Record<string, string> = {
@@ -49,6 +79,7 @@ export default function AdRotator({ ads, interval, position }: AdRotatorProps) {
       href={ad.lien}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleAdClick}
       className={`${currentClass} block transition-all duration-500 transform hover:scale-[1.01] hover:border-emerald-500/40`}
     >
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity z-10" />

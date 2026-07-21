@@ -6,6 +6,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { KeyRound, Mail, AlertTriangle, Loader2 } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 function LoginForm() {
   const router = useRouter();
@@ -56,10 +57,10 @@ function LoginForm() {
         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="text-center">
-          <Link href="/" className="text-3xl font-black tracking-widest bg-gradient-to-r from-emerald-450 to-cyan-455 bg-clip-text text-transparent">
-            PressTonik
-          </Link>
-          <h2 className="mt-4 text-xl font-extrabold text-white">
+          <div className="flex justify-center mb-6">
+            <Logo size="lg" hideHaitiImage />
+          </div>
+          <h2 className="text-xl font-extrabold text-white">
             Connexion à l'espace membre
           </h2>
           <p className="mt-1.5 text-xs text-slate-400">
@@ -122,19 +123,22 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg text-sm font-bold bg-emerald-500 text-slate-950 hover:bg-emerald-600 transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg text-sm font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {loading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-slate-950" /> Connexion en cours...
+                <Loader2 className="w-4 h-4 animate-spin text-white" /> Connexion en cours...
               </>
             ) : (
               'Se connecter'
             )}
           </button>
         </form>
-        <div className="text-center mt-4">
-          <Link href="/forgot-password" className="text-sm text-emerald-400 hover:text-emerald-300 transition">
+        <div className="text-center mt-4 flex flex-col gap-2">
+          <Link href="/request-account" className="text-sm text-emerald-400 hover:text-emerald-300 transition font-bold">
+            Demander un compte PressTonik
+          </Link>
+          <Link href="/forgot-password" className="text-xs text-slate-400 hover:text-slate-300 transition">
             Mot de passe oublié ?
           </Link>
         </div>

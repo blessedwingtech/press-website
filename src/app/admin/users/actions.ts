@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import * as bcrypt from 'bcryptjs';
+import { logAction } from '@/lib/audit';
 
 async function checkAdmin() {
   const session = await getServerSession(authOptions);
@@ -26,10 +27,12 @@ export async function updateUserRole(id: string, role: string) {
     throw new Error('Rôle invalide.');
   }
 
-  await db.user.update({
+  const updatedUser = await db.user.update({
     where: { id },
     data: { role },
   });
+
+  await logAction('USER_UPDATE_ROLE', `Rôle de l'utilisateur ${updatedUser.email} modifié en : ${role}`);
 
   revalidatePath('/admin/users');
   revalidatePath('/admin');
@@ -53,6 +56,8 @@ export async function toggleUserBan(id: string) {
     data: { status: newStatus },
   });
 
+  await logAction('USER_TOGGLE_BAN', `Statut de l'utilisateur ${user.email} changé en : ${newStatus}`);
+
   revalidatePath('/admin/users');
   revalidatePath('/admin');
 }
@@ -73,7 +78,7 @@ export async function createUser(data: { name: string; email: string; role: stri
   const salt = bcrypt.genSaltSync(10);
   const hashedPassword = bcrypt.hashSync(password, salt);
 
-  await db.user.create({
+  const newUser = await db.user.create({
     data: {
       name,
       email,
@@ -82,6 +87,8 @@ export async function createUser(data: { name: string; email: string; role: stri
       status: status || 'active',
     },
   });
+
+  await logAction('USER_CREATE', `Création d'un nouvel utilisateur : ${newUser.email} (Rôle: ${role})`);
 
   revalidatePath('/admin/users');
   revalidatePath('/admin');
@@ -118,10 +125,12 @@ export async function updateUser(id: string, data: { name: string; email: string
     throw new Error('Cette adresse email est déjà enregistrée par un autre membre.');
   }
 
-  await db.user.update({
+  const updatedUser = await db.user.update({
     where: { id },
     data: updateData,
   });
+
+  await logAction('USER_UPDATE', `Mise à jour des informations de l'utilisateur : ${updatedUser.email}`);
 
   revalidatePath('/admin/users');
   revalidatePath('/admin');
@@ -134,11 +143,15 @@ export async function deleteUser(id: string) {
     throw new Error('Vous ne pouvez pas supprimer votre propre compte.');
   }
 
+  const user = await db.user.findUnique({ where: { id } });
+  if (!user) throw new Error('Utilisateur introuvable.');
+
   await db.user.delete({
     where: { id },
   });
 
+  await logAction('USER_DELETE', `Suppression définitive du compte : ${user.email}`);
+
   revalidatePath('/admin/users');
   revalidatePath('/admin');
 }
-

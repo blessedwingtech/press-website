@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Shield, Home, Menu as MenuIcon, Landmark, Users, LayoutDashboard, ImageIcon } from 'lucide-react';
+import { Shield, Home, Menu as MenuIcon, Landmark, Users, LayoutDashboard, ImageIcon, History, UserPlus } from 'lucide-react';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -61,6 +61,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             >
               <ImageIcon className="w-4 h-4 text-purple-400" />
               Galerie
+            </Link>
+            <Link
+              href="/admin/requests"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+            >
+              <UserPlus className="w-4 h-4 text-teal-400" />
+              Demandes d'inscription
+            </Link>
+            <Link
+              href="/admin/audit"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+            >
+              <History className="w-4 h-4 text-rose-400" />
+              Journal d'Audit
             </Link>
             <Link
               href="/"

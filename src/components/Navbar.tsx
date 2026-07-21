@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Menu as MenuIcon, X, ChevronDown, User, Shield, PenTool, LogOut, LogIn } from 'lucide-react';
+import Logo from './Logo';
 
 interface SubMenuData {
   id: string;
@@ -44,35 +45,7 @@ export default function Navbar({ menus }: NavbarProps) {
         <div className="flex justify-between h-16">
           {/* Logo */} 
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" width="360" height="80">
-                <defs>
-                  <linearGradient id="pressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#34D399" />
-                    <stop offset="100%" stopColor="#22D3EE" />
-                  </linearGradient>
-                </defs>
-
-                <circle cx="40" cy="40" r="30" fill="#34D399" opacity="0.08" />
-                <circle cx="40" cy="40" r="30" fill="none" stroke="#34D399" strokeWidth="1.5" opacity="0.3" />
-
-                <g transform="translate(40, 40)">
-                  <line x1="0" y1="24" x2="0" y2="-24" stroke="#34D399" strokeWidth="2.8" strokeLinecap="round" />
-                  <path d="M0 -24 Q-16 -12 -20 0 Q-14 -6 -6 -2 Q0 0 6 -2 Q14 -6 20 0 Q16 -12 0 -24Z" fill="#34D399" opacity="0.95" />
-                  <path d="M0 24 Q-8 28 -5 32 Q-2 28 0 26 Q2 28 5 32 Q8 28 0 24Z" fill="#34D399" opacity="0.6" />
-                  <path d="M-2 -24 Q-4 -20 -2 -16 Q0 -20 2 -16 Q4 -20 2 -24Z" fill="#0f172a" />
-                </g>
-
-                <text x="80" y="48" fontFamily="'Inter', 'Segoe UI', sans-serif" fontWeight="800" fontSize="34" fill="url(#pressGrad)" letterSpacing="-0.5">
-                  PressTonik
-                </text>
-
-                <rect x="258" y="20" width="64" height="22" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1" />
-                <text x="270" y="35" fontFamily="'Inter', 'Segoe UI', sans-serif" fontWeight="700" fontSize="11" fill="#94a3b8" letterSpacing="1.5">
-                  MÉDIA
-                </text>
-              </svg>
-            </Link>
+            <Logo size="md" />
           </div>
 
           {/* Desktop Nav Menus */}
@@ -172,6 +145,14 @@ export default function Navbar({ menus }: NavbarProps) {
                           Espace Rédacteur
                         </Link>
                       )}
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+                      >
+                        <User className="w-4 h-4 text-teal-400" />
+                        Mon Profil
+                      </Link>
                       <button
                         onClick={() => {
                           setUserDropdownOpen(false);
@@ -189,7 +170,7 @@ export default function Navbar({ menus }: NavbarProps) {
             ) : (
               <Link
                 href="/login"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-bold bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-bold bg-emerald-500 hover:bg-emerald-600 text-white transition-colors"
               >
                 <LogIn className="w-4 h-4" />
                 Connexion
@@ -302,6 +283,13 @@ export default function Navbar({ menus }: NavbarProps) {
                       Espace Rédacteur
                     </Link>
                   )}
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-slate-800"
+                  >
+                    Mon Profil
+                  </Link>
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false);
@@ -317,7 +305,7 @@ export default function Navbar({ menus }: NavbarProps) {
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-base font-bold bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition"
+                className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-base font-bold bg-emerald-500 hover:bg-emerald-600 text-white transition"
               >
                 <LogIn className="w-5 h-5" />
                 Connexion

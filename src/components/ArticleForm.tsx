@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { saveArticle } from '@/app/journalist/actions';
 import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import ArticleMedia from './ArticleMedia';
 
 // Chargement dynamique de ReactQuill pour éviter les erreurs SSR de compilation
 // const ReactQuill = dynamic(() => import('react-quill'), {
@@ -20,7 +21,7 @@ import Link from 'next/link';
 const ReactQuill = dynamic(() => import('@/components/ReactQuillWrapper'), {
   ssr: false,
   loading: () => (
-    <div className="h-64 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center text-slate-500 text-xs">
+    <div className="h-64 bg-slate-905 border border-slate-800 rounded-lg flex items-center justify-center text-slate-500 text-xs">
       Chargement de l'éditeur de texte...
     </div>
   ),
@@ -164,57 +165,78 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
     return () => clearInterval(interval);
   }, [titre, contenu, imagePrincipale, menuId, submenuId, alsoInActualites, actualitesSubmenuId, initialData]);
 
-  // Gestionnaire d'upload d'images dans l'éditeur (Rich Text)
-  const imageHandler = () => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
-
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-          const res = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
-            credentials: 'include', 
-          });
-
-          const data = await res.json();
-          if (data.url) {
-            const quill = quillRef.current?.getEditor();
-            if (quill) {
-              const range = quill.getSelection();
-              if (range) {
-                quill.insertEmbed(range.index, 'image', data.url);
-              }
-            }
-          } else {
-            alert(data.error || 'Erreur lors de l’importation de l’image');
-          }
-        } catch (e) {
-          alert('Une erreur réseau s’est produite lors de l’upload.');
-        }
-      }
-    };
-  };
-
   // Options Quill Editor
   const quillModules = useMemo(() => ({
     toolbar: {
       container: [
-        [{ header: [1, 2, 3, false] }],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        ['link', 'image'],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+        [{ align: [] }],
+        [{ color: [] }, { background: [] }],
+        [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+        ['link', 'image', 'video'],
         ['clean'],
       ],
       handlers: {
-        image: imageHandler,
+        image: function () {
+          const quill = (this as any).quill;
+          const input = document.createElement('input');
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', 'image/*');
+          input.click();
+
+          input.onchange = async () => {
+            const file = input.files?.[0];
+            if (file) {
+              const formData = new FormData();
+              formData.append('file', file);
+
+              try {
+                const res = await fetch('/api/upload', {
+                  method: 'POST',
+                  body: formData,
+                  credentials: 'include', 
+                });
+
+                const data = await res.json();
+                if (data.url) {
+                  const range = quill.getSelection();
+                  const index = range ? range.index : quill.getLength();
+                  quill.insertEmbed(index, 'image', data.url);
+                  quill.insertText(index + 1, '\n');
+                  quill.setSelection(index + 2);
+                } else {
+                  alert(data.error || 'Erreur lors de l’importation de l’image');
+                }
+              } catch (e) {
+                alert('Une erreur réseau s’est produite lors de l’upload.');
+              }
+            }
+          };
+        },
+        video: function () {
+          const quill = (this as any).quill;
+          const url = prompt('Entrez l\'URL de la vidéo (ex: lien YouTube ou Vimeo) :');
+          if (url) {
+            let embedUrl = url;
+            
+            if (url.includes('youtube.com/watch?v=')) {
+              try {
+                const videoId = new URL(url).searchParams.get('v');
+                if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+              } catch (e) {}
+            } else if (url.includes('youtu.be/')) {
+              const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+              if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            const range = quill.getSelection();
+            const index = range ? range.index : quill.getLength();
+            quill.insertEmbed(index, 'video', embedUrl);
+            quill.insertText(index + 1, '\n');
+            quill.setSelection(index + 2);
+          }
+        },
       },
     },
   }), []);
@@ -458,27 +480,22 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
               )}
             </div>
 
-            {/* Illustration image selector */}
+            {/* Illustration image/video selector */}
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
-                Illustration Principale
+                Média d'Illustration Principal
               </label>
               
               <div className="bg-slate-950 border border-slate-800 border-dashed rounded-xl p-5 text-center flex flex-col items-center justify-center min-h-[176px] relative overflow-hidden">
                 {imagePrincipale ? (
-                  <div className="absolute inset-0 group">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={imagePrincipale}
-                      alt="Aperçu"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <label className="cursor-pointer bg-slate-900 border border-slate-700 px-3.5 py-2 rounded text-xs font-bold text-white hover:bg-slate-800 transition">
-                        Changer la photo
+                  <div className="absolute inset-0 group flex items-center justify-center">
+                    <ArticleMedia src={imagePrincipale} alt="Aperçu" mode="preview" />
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                      <label className="cursor-pointer bg-slate-900 border border-slate-700 px-3.5 py-2 rounded text-xs font-bold text-white hover:bg-slate-800 transition shadow-lg">
+                        Changer de média
                         <input
                           type="file"
-                          accept="image/*"
+                          accept="image/*,video/*"
                           onChange={handleMainImageUpload}
                           className="hidden"
                         />
@@ -490,17 +507,17 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                     {uploadingMain ? (
                       <div className="flex flex-col items-center">
                         <Loader2 className="w-8 h-8 text-emerald-400 animate-spin mb-2" />
-                        <span className="text-xs text-slate-400">Upload de la photo...</span>
+                        <span className="text-xs text-slate-400">Téléversement du média...</span>
                       </div>
                     ) : (
                       <>
                         <Upload className="w-8 h-8 text-slate-500 mb-2" />
-                        <span className="text-xs text-slate-400 mb-3">Téléversez une image d'illustration <small>(5MB max)</small></span>
+                        <span className="text-xs text-slate-400 mb-3">Téléversez une image ou vidéo <small>(5Mo max)</small></span>
                         <label className="cursor-pointer bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-850 hover:text-white transition">
                           Choisir un fichier
                           <input
                             type="file"
-                            accept="image/*"
+                            accept="image/*,video/*"
                             onChange={handleMainImageUpload}
                             className="hidden"
                           />
@@ -511,7 +528,6 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                 )}
               </div>
             </div>
-
           </div>
 
           {/* Corps de l'éditeur */}
@@ -572,10 +588,10 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center justify-center gap-1.5 px-7 py-3 rounded-xl text-sm font-bold bg-emerald-500 text-slate-950 hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="flex items-center justify-center gap-1.5 px-7 py-3 rounded-xl text-sm font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
             ) : (
               <Save className="w-4 h-4" />
             )}

@@ -6,11 +6,12 @@ import { authOptions } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { slugify } from '@/lib/utils';
 import { z } from 'zod';
+import { logAction } from '@/lib/audit';
 
 const articleSchema = z.object({
   titre: z.string().min(5, 'Le titre doit contenir au moins 5 caractères.'),
   contenu: z.string().min(20, 'Le contenu doit contenir au moins 20 caractères.'),
-  imagePrincipale: z.string().min(1, 'L’image principale est obligatoire.'),
+  imagePrincipale: z.string().min(1, 'L’image ou vidéo principale est obligatoire.'),
   menuId: z.string().min(1, 'Sélectionnez un menu.'),
   submenuId: z.string().nullable().optional(),
   alsoInActualites: z.boolean().default(false),
@@ -70,6 +71,8 @@ export async function saveArticle(
         actualitesSubmenuId: validatedData.actualitesSubmenuId || null,
       },
     });
+
+    await logAction('ARTICLE_UPDATE', `Article mis à jour : "${validatedData.titre}" (slug: ${finalSlug})`);
   } else {
     // Création d'un nouvel article
     await db.article.create({
@@ -85,6 +88,8 @@ export async function saveArticle(
         auteurId: (session.user as any).id,
       },
     });
+
+    await logAction('ARTICLE_CREATE', `Nouvel article rédigé : "${validatedData.titre}" (slug: ${finalSlug})`);
   }
 
   // Mettre à jour le cache de rendu Next.js
@@ -99,19 +104,23 @@ export async function saveArticle(
   return { success: true, slug: finalSlug };
 }
 
-
- 
-
 export async function deleteArticleAction(articleId: string) {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as any)?.id;
+  const role = (session?.user as any)?.role;
 
   if (!userId) throw new Error('Non authentifié');
 
   const article = await db.article.findUnique({ where: { id: articleId } });
-  if (article && article.auteurId === userId) {
+  if (!article) throw new Error('Article non trouvé.');
+
+  if (article.auteurId === userId || role === 'admin') {
     await db.article.delete({ where: { id: articleId } });
+    await logAction('ARTICLE_DELETE', `Article supprimé définitivement : "${article.titre}"`);
+    
     revalidatePath('/journalist');
     revalidatePath('/');
+  } else {
+    throw new Error('Droit de suppression refusé.');
   }
 }
