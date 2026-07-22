@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { Menu as MenuIcon, X, ChevronDown, User, Shield, PenTool, LogOut, LogIn } from 'lucide-react';
+import { Menu as MenuIcon, X, ChevronDown, User, Shield, PenTool, LogOut, LogIn, Search } from 'lucide-react';
 import Logo from './Logo';
+import { useRouter } from 'next/navigation';
 
 interface SubMenuData {
   id: string;
@@ -28,12 +29,23 @@ export default function Navbar({ menus }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   const toggleDropdown = (menuId: string) => {
     if (activeDropdown === menuId) {
       setActiveDropdown(null);
     } else {
       setActiveDropdown(menuId);
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      setMobileMenuOpen(false);
     }
   };
 
@@ -102,8 +114,18 @@ export default function Navbar({ menus }: NavbarProps) {
             ))}
           </div>
 
-          {/* User Profile / Dashboard links */}
+          {/* User Profile / Dashboard links & Desktop Search */}
           <div className="hidden md:flex items-center space-x-3">
+            <form onSubmit={handleSearch} className="relative group mr-2">
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-48 bg-slate-800/80 border border-slate-700 text-sm text-white rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all placeholder:text-slate-500"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            </form>
             {session ? (
               <div className="relative">
                 <button
@@ -193,7 +215,19 @@ export default function Navbar({ menus }: NavbarProps) {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-slate-900 border-t border-slate-800">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <div className="px-4 pt-4 pb-2">
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-800/80 border border-slate-700 text-sm text-white rounded-md pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all placeholder:text-slate-500"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            </form>
+          </div>
+          <div className="px-2 pb-3 space-y-1 sm:px-3">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
