@@ -72,14 +72,9 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // S'assurer que le dossier d'uploads local existe
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
     let filename = '';
     let finalBuffer: Buffer | any = buffer;
+    let contentType = 'application/octet-stream';
 
     if (isVideo) {
       // Obtenir l'extension d'origine de la vidéo
@@ -89,6 +84,7 @@ export async function POST(req: NextRequest) {
       else if (file.type === 'video/quicktime') ext = 'mov';
       
       filename = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${ext}`;
+      contentType = file.type || 'video/mp4';
     } else {
       // Optimisation de l'image (Redimensionnement 1200px, compression WebP)
       try {
@@ -105,8 +101,48 @@ export async function POST(req: NextRequest) {
       }
       
       filename = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.webp`;
+      contentType = 'image/webp';
     }
 
+    // Initialisation conditionnelle du client Cloudflare R2
+    const isR2Configured =
+      process.env.R2_ACCOUNT_ID &&
+      process.env.R2_ACCESS_KEY_ID &&
+      process.env.R2_SECRET_ACCESS_KEY &&
+      process.env.R2_BUCKET_NAME &&
+      process.env.R2_PUBLIC_URL;
+
+    if (isR2Configured) {
+      const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3');
+      const R2 = new S3Client({
+        region: 'auto',
+        endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+        },
+      });
+
+      const key = `articles/${filename}`;
+      await R2.send(
+        new PutObjectCommand({
+          Bucket: process.env.R2_BUCKET_NAME,
+          Key: key,
+          Body: finalBuffer,
+          ContentType: contentType,
+          CacheControl: 'public, max-age=31536000, immutable',
+        })
+      );
+      
+      const publicUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
+      return NextResponse.json({ url: publicUrl });
+    }
+
+    // S'assurer que le dossier d'uploads local existe (Fallback Développement)
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
     const filePath = path.join(uploadsDir, filename);
 
     // Écriture du fichier sur le stockage local

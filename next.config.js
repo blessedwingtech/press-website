@@ -52,6 +52,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.r2.cloudflarestorage.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'pub-89e90effd8c84fc486672a8cfe792db8.r2.dev',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.r2.dev',
+      },
     ],
   },
 };
