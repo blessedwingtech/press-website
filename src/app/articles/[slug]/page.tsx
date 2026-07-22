@@ -9,11 +9,64 @@ import ShareButton from '@/components/ShareButton';
 import { cookies } from 'next/headers';
 import ViewsTrigger from '@/components/ViewsTrigger';
 
+import { Metadata, ResolvingMetadata } from 'next';
+
 export const revalidate = 0; // Pas de cache pour faciliter l'édition temps réel
 
 interface ArticlePageProps {
   params: {
     slug: string;
+  };
+}
+
+export async function generateMetadata(
+  { params }: ArticlePageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const article = await db.article.findUnique({
+    where: { slug: params.slug },
+    select: { titre: true, contenu: true, imagePrincipale: true, datePublication: true },
+  });
+
+  if (!article) {
+    return {
+      title: 'Article introuvable | PressTonik',
+    };
+  }
+
+  const plainTextDescription = article.contenu.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...';
+  
+  // Format the image URL for social media cards
+  let imageUrl = article.imagePrincipale;
+  if (!imageUrl.startsWith('http')) {
+    const siteUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
+    imageUrl = `${siteUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+  }
+
+  return {
+    title: `${article.titre} | PressTonik`,
+    description: plainTextDescription,
+    openGraph: {
+      title: article.titre,
+      description: plainTextDescription,
+      url: `/articles/${params.slug}`,
+      type: 'article',
+      publishedTime: article.datePublication.toISOString(),
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: article.titre,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.titre,
+      description: plainTextDescription,
+      images: [imageUrl],
+    },
   };
 }
 
