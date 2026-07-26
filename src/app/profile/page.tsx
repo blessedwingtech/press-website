@@ -144,7 +144,7 @@ export default async function ProfilePage() {
         {/* Section Statistiques Journaliste */}
         {user.role === 'journalist' && (
           <div className="space-y-4 relative z-10">
-            <h2 className="text-xs font-bold text-slate-450 uppercase tracking-widest flex items-center gap-1.5">
+            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
               <PenTool className="w-4 h-4 text-amber-400" /> Vos Performances Rédactionnelles
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -170,7 +170,7 @@ export default async function ProfilePage() {
         {/* Métadonnées du compte */}
         <div className="bg-slate-950/40 border border-slate-800/80 p-5 rounded-xl text-xs sm:text-sm text-slate-300 space-y-3 relative z-10">
           <div className="flex justify-between items-center py-1.5 border-b border-slate-800/40">
-            <span className="text-slate-450 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"><Calendar className="w-4 h-4 text-teal-400" /> Date d'inscription</span>
+            <span className="text-slate-400 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"><Calendar className="w-4 h-4 text-teal-400" /> Date d'inscription</span>
             <span className="text-white font-semibold">
               {new Date(user.createdAt).toLocaleDateString('fr-FR', {
                 day: '2-digit',
@@ -180,7 +180,7 @@ export default async function ProfilePage() {
             </span>
           </div>
           <div className="flex justify-between items-center py-1.5">
-            <span className="text-slate-450 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"><UserCheck className="w-4 h-4 text-teal-400" /> Statut du compte</span>
+            <span className="text-slate-400 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"><UserCheck className="w-4 h-4 text-teal-400" /> Statut du compte</span>
             <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
               {user.status === 'active' ? 'Actif' : 'Banni / Restreint'}
             </span>
@@ -207,7 +207,7 @@ export default async function ProfilePage() {
           )}
           <Link
             href="/"
-            className="flex-grow flex justify-center items-center gap-1.5 py-3 px-4 rounded-xl text-sm font-bold bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white transition-all border border-slate-800"
+            className="flex-grow flex justify-center items-center gap-1.5 py-3 px-4 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white transition-all border border-slate-700"
           >
             Retourner à l'accueil
           </Link>
@@ -222,7 +222,7 @@ export default async function ProfilePage() {
               <TrendingUp className="w-4 h-4 text-amber-500" />
               Vos Campagnes Sponsorisées & Publicités
             </h2>
-            <p className="text-[11px] text-slate-450 mt-1.5">
+            <p className="text-[11px] text-slate-400 mt-1.5">
               Retrouvez ci-dessous l'affichage et les statistiques de clics de vos annonces sponsorisées diffusées sur PressTonik Ayiti.
             </p>
           </div>
@@ -231,9 +231,9 @@ export default async function ProfilePage() {
             {userAds.map((ad) => (
               <div key={ad.id} className="border border-slate-800 bg-slate-950/40 rounded-xl overflow-hidden flex flex-col justify-between p-4 space-y-4">
                 <div className="space-y-3">
-                  <div className="w-full h-24 rounded-lg overflow-hidden border border-slate-850 bg-slate-950 relative">
+                  <div className="w-full h-24 rounded-lg overflow-hidden border border-slate-800 bg-slate-950 relative">
                     <img src={ad.imageUrl} alt={ad.titre} className="w-full h-full object-cover" />
-                    <span className="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-sm text-[8px] font-black uppercase px-2 py-0.5 rounded border border-slate-850 text-amber-400">
+                    <span className="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-sm text-[8px] font-black uppercase px-2 py-0.5 rounded border border-slate-800 text-amber-400">
                       {ad.position}
                     </span>
                   </div>

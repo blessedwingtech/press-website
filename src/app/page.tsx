@@ -14,7 +14,7 @@ interface HomeProps {
 
 export default async function Home({ searchParams }: HomeProps) {
   const page = parseInt(searchParams.page || '1') || 1;
-  const limit = 6;
+  const limit = 9;
   const skip = (page - 1) * limit;
 
   // Récupérer le paramètre de démonstration
@@ -168,69 +168,69 @@ export default async function Home({ searchParams }: HomeProps) {
               </div>
             ) : (
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                   {paginatedArticles.map((article) => (
                     <article
                       key={article.id}
                       className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-2xl transition-all duration-300 group"
                     >
-                      <Link href={`/articles/${article.slug}`} className="block relative h-48 sm:h-52 overflow-hidden bg-slate-955">
+                      <Link href={`/articles/${article.slug}`} className="block relative h-40 overflow-hidden bg-slate-955">
                         <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
-                        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-20">
-                          <span className="bg-emerald-500 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded shadow-lg tracking-wider">
+                        <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 z-20">
+                          <span className="bg-emerald-500 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded shadow-md tracking-wider">
                             {article.menu.nom}
                           </span>
                           {article.submenu && (
-                            <span className="bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800 font-bold text-[9px] uppercase px-2 py-0.5 rounded shadow-lg tracking-wider">
+                            <span className="bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800 font-bold text-[8px] uppercase px-1.5 py-0.5 rounded shadow-md tracking-wider">
                               {article.submenu.nom}
                             </span>
                           )}
                         </div>
                       </Link>
                       
-                      <div className="p-5 flex-grow flex flex-col justify-between">
+                      <div className="p-4 flex-grow flex flex-col justify-between">
                         <div>
-                          <span className="text-[11px] text-slate-450 flex items-center justify-between gap-1 mb-2 font-medium">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                          <span className="text-[10px] text-slate-450 flex items-center justify-between gap-1 mb-2 font-medium">
+                            <span className="flex items-center gap-1 truncate">
+                              <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
                               {new Date(article.datePublication).toLocaleDateString('fr-FR', {
                                 day: 'numeric',
-                                month: 'long',
+                                month: 'short',
                                 year: 'numeric',
                               })}
                             </span>
-                            <span className="flex items-center gap-1 text-slate-500">
+                            <span className="flex items-center gap-1 text-slate-500 shrink-0">
                               <Eye className="w-3 h-3 text-cyan-500/80" />
-                              {article.views} vue{article.views > 1 ? 's' : ''}
+                              {article.views}
                             </span>
                           </span>
-                          <h2 className="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+                          <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                             <Link href={`/articles/${article.slug}`}>
                               {article.titre}
                             </Link>
                           </h2>
                           <div
-                            className="mt-3 text-xs text-slate-400 line-clamp-3 leading-relaxed"
+                            className="mt-2.5 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
                             dangerouslySetInnerHTML={{
-                              __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 160) + '...',
+                              __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                             }}
                           />
                         </div>
-                        <div className="mt-4 pt-4 border-t border-slate-800/80 flex justify-between items-center text-[11px]">
-                          <span className="text-slate-400 flex items-center gap-1.5 font-medium">
-                            <User className="w-3.5 h-3.5 text-slate-500" />
-                            <span>{article.auteur.name}</span>
+                        <div className="mt-3 pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px]">
+                          <span className="text-slate-400 flex items-center gap-1 font-medium truncate pr-1">
+                            <User className="w-3 h-3 text-slate-500 shrink-0" />
+                            <span className="truncate">{article.auteur.name}</span>
                             {article.authorAverageRating > 0 && (
-                              <span className="text-amber-400 font-extrabold flex items-center gap-0.5 ml-1 bg-amber-950/20 px-1.5 py-0.5 rounded border border-amber-500/10">
+                              <span className="text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-950/25 px-1 py-0.5 rounded border border-amber-500/10 shrink-0">
                                 ★ {article.authorAverageRating.toFixed(1)}
                               </span>
                             )}
                           </span>
                           <Link
                             href={`/articles/${article.slug}`}
-                            className="text-emerald-400 hover:text-emerald-300 font-extrabold flex items-center gap-0.5 hover:translate-x-0.5 transition-all"
+                            className="text-emerald-400 hover:text-emerald-300 font-extrabold flex items-center gap-0.5 hover:translate-x-0.5 transition-all shrink-0"
                           >
-                            Lire l'article <ArrowRight className="w-3.5 h-3.5" />
+                            Lire <ArrowRight className="w-3 h-3" />
                           </Link>
                         </div>
                       </div>

@@ -30,7 +30,7 @@ export default async function MenuCategoryPage({ params, searchParams }: MenuPag
   }
 
   const page = parseInt(searchParams.page || '1') || 1;
-  const limit = 6;
+  const limit = 9;
   const skip = (page - 1) * limit;
 
   // Récupérer le paramètre de démonstration
@@ -78,9 +78,9 @@ export default async function MenuCategoryPage({ params, searchParams }: MenuPag
 
       {/* Fil d'Ariane */}
       <div className="flex items-center gap-1.5 my-4 text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">
-        <Link href="/" className="hover:text-emerald-450 transition-colors">Accueil</Link>
+        <Link href="/" className="hover:text-emerald-400 transition-colors">Accueil</Link>
         <ChevronRight className="w-3 h-3 text-slate-600" />
-        <span className="text-slate-205">{menu.nom}</span>
+        <span className="text-slate-300">{menu.nom}</span>
       </div>
 
       {/* En-tête de section */}
@@ -124,43 +124,47 @@ export default async function MenuCategoryPage({ params, searchParams }: MenuPag
             </div>
           ) : (
             <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {articles.map((article) => (
                   <div
                     key={article.id}
-                    className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 transition-all duration-300 group"
+                    className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 group"
                   >
-                    <Link href={`/articles/${article.slug}`} className="block relative h-48 overflow-hidden bg-slate-955">
+                    <Link href={`/articles/${article.slug}`} className="block relative h-40 overflow-hidden bg-slate-955">
                       <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
                       {article.submenu && (
-                        <span className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800/60 text-[8px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider shadow-md">
+                        <span className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800/60 text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded tracking-wider shadow-md">
                           {article.submenu.nom}
                         </span>
                       )}
                     </Link>
-                    <div className="p-5 flex-grow flex flex-col justify-between">
+                    <div className="p-4 flex-grow flex flex-col justify-between">
                       <div>
                         <span className="text-[10px] text-slate-450 flex items-center gap-1 mb-2 font-semibold">
-                          <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                          {new Date(article.datePublication).toLocaleDateString('fr-FR')}
+                          <Calendar className="w-3 h-3 text-slate-500" />
+                          {new Date(article.datePublication).toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
                         </span>
-                        <h2 className="text-base font-bold text-white hover:text-emerald-450 transition-colors line-clamp-2 leading-snug">
+                        <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>
                         </h2>
                         <div
-                          className="mt-3 text-xs text-slate-400 line-clamp-3 leading-relaxed"
+                          className="mt-2.5 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
                           dangerouslySetInnerHTML={{
-                            __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 160) + '...',
+                            __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                           }}
                         />
                       </div>
-                      <div className="mt-4 pt-4 border-t border-slate-850 flex justify-between items-center text-[10px] font-semibold text-slate-450">
-                        <span>Par {article.auteur.name}</span>
+                      <div className="mt-3 pt-3 border-t border-slate-850 flex justify-between items-center text-[10px] font-semibold text-slate-400">
+                        <span className="truncate pr-2">Par {article.auteur.name}</span>
                         <Link
                           href={`/articles/${article.slug}`}
-                          className="text-emerald-400 hover:text-emerald-350 transition-colors font-extrabold"
+                          className="text-emerald-400 hover:text-emerald-300 transition-colors font-extrabold shrink-0"
                         >
-                          Lire l'article
+                          Lire
                         </Link>
                       </div>
                     </div>

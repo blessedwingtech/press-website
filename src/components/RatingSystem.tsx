@@ -85,12 +85,10 @@ export default function RatingSystem({
                 }`}
               >
                 <Star
-                  className={`w-6 h-6 stroke-1.5 ${
+                  className={`w-6 h-6 transition-transform duration-200 ${
                     isFilled
-                      ? isMyRating
-                        ? 'fill-amber-400 stroke-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]'
-                        : 'fill-cyan-400 stroke-cyan-500 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]'
-                      : 'text-slate-600 hover:text-slate-400'
+                      ? 'fill-amber-400 stroke-transparent drop-shadow-[0_0_10px_rgba(251,191,36,0.75)]'
+                      : 'text-slate-600 stroke-1 stroke-slate-600 hover:text-slate-500'
                   }`}
                 />
               </button>
@@ -99,14 +97,14 @@ export default function RatingSystem({
         </div>
 
         {/* Text Stats */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-300 font-medium">
-          <span className="font-extrabold text-white text-sm leading-none bg-slate-800/80 px-2 py-1 rounded border border-slate-700">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300 font-medium">
+          <span className="font-extrabold text-white text-sm leading-none bg-slate-800/90 px-2.5 py-1 rounded-md shadow-md">
             {average.toFixed(1)}
           </span>
-          <span className="text-slate-500">({count} évaluation{count > 1 ? 's' : ''})</span>
+          <span className="text-slate-400">({count} évaluation{count > 1 ? 's' : ''})</span>
           {myVote !== null && (
-            <span className="text-[9px] uppercase font-black tracking-wider text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-800/30">
-              Votre note : {myVote}
+            <span className="text-[10px] uppercase font-black tracking-wider text-amber-300 bg-amber-500/15 px-2.5 py-1 rounded-full shadow-sm">
+              Votre évaluation : {myVote} ★
             </span>
           )}
         </div>

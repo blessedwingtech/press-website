@@ -36,7 +36,7 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
   }
 
   const page = parseInt(searchParams.page || '1') || 1;
-  const limit = 6;
+  const limit = 9;
   const skip = (page - 1) * limit;
 
   // Récupérer le paramètre de démonstration
@@ -83,11 +83,11 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
 
       {/* Fil d'Ariane */}
       <div className="flex items-center gap-1.5 my-4 text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">
-        <Link href="/" className="hover:text-emerald-450 transition-colors">Accueil</Link>
+        <Link href="/" className="hover:text-emerald-400 transition-colors">Accueil</Link>
         <ChevronRight className="w-3 h-3 text-slate-600" />
-        <Link href={`/category/${menu.slug}`} className="hover:text-emerald-450 transition-colors">{menu.nom}</Link>
+        <Link href={`/category/${menu.slug}`} className="hover:text-emerald-400 transition-colors">{menu.nom}</Link>
         <ChevronRight className="w-3 h-3 text-slate-600" />
-        <span className="text-slate-205">{submenu.nom}</span>
+        <span className="text-slate-300">{submenu.nom}</span>
       </div>
 
       {/* En-tête de section */}
@@ -106,42 +106,46 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
           {articles.length === 0 ? (
             <div className="text-center py-16 bg-slate-900/30 rounded-xl border border-slate-800/80">
               <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-405 font-medium">Aucun article n'est encore disponible dans cette sous-rubrique.</p>
+              <p className="text-slate-400 font-medium">Aucun article n'est encore disponible dans cette sous-rubrique.</p>
             </div>
           ) : (
             <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {articles.map((article) => (
                   <div
                     key={article.id}
-                    className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 transition-all duration-300 group"
+                    className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 group"
                   >
-                    <Link href={`/articles/${article.slug}`} className="block relative h-48 overflow-hidden bg-slate-955">
+                    <Link href={`/articles/${article.slug}`} className="block relative h-40 overflow-hidden bg-slate-950">
                       <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
                     </Link>
-                    <div className="p-5 flex-grow flex flex-col justify-between">
+                    <div className="p-4 flex-grow flex flex-col justify-between">
                       <div>
-                        <span className="text-[10px] text-slate-450 flex items-center gap-1 mb-2 font-semibold">
-                          <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                          {new Date(article.datePublication).toLocaleDateString('fr-FR')}
+                        <span className="text-[10px] text-slate-400 flex items-center gap-1 mb-2 font-semibold">
+                          <Calendar className="w-3 h-3 text-slate-500" />
+                          {new Date(article.datePublication).toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
                         </span>
-                        <h2 className="text-base font-bold text-white hover:text-emerald-455 transition-colors line-clamp-2 leading-snug">
+                        <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>
                         </h2>
                         <div
-                          className="mt-3 text-xs text-slate-400 line-clamp-3 leading-relaxed"
+                          className="mt-2.5 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
                           dangerouslySetInnerHTML={{
-                            __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 160) + '...',
+                            __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                           }}
                         />
                       </div>
-                      <div className="mt-4 pt-4 border-t border-slate-855 flex justify-between items-center text-[10px] font-semibold text-slate-450">
-                        <span>Par {article.auteur.name}</span>
+                      <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px] font-semibold text-slate-400">
+                        <span className="truncate pr-2">Par {article.auteur.name}</span>
                         <Link
                           href={`/articles/${article.slug}`}
-                          className="text-emerald-400 hover:text-emerald-350 transition-colors font-extrabold"
+                          className="text-emerald-400 hover:text-emerald-300 transition-colors font-extrabold shrink-0"
                         >
-                          Lire l'article
+                          Lire
                         </Link>
                       </div>
                     </div>
