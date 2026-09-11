@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
 import NavbarWrapper from "@/components/NavbarWrapper";
+import ReviewToast from "@/components/ReviewToast";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -10,6 +11,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "PressTonik | Actualités & Presse Rédactionnelle",
   description: "Plateforme indépendante de journalisme et de rédaction sportive et généraliste en temps réel.",
+  icons: {
+    icon: '/icon.svg',
+  }
 };
 
 export default function RootLayout({
@@ -37,9 +41,14 @@ export default function RootLayout({
                 <Link href="/terms" className="hover:text-emerald-400 transition-colors">Conditions d'utilisation</Link>
                 <span className="text-slate-700">•</span>
                 <Link href="/privacy" className="hover:text-emerald-400 transition-colors">Politique de confidentialité</Link>
+                <span className="text-slate-700">•</span>
+                <Link href="/avis" className="hover:text-emerald-400 transition-colors">Avis des lecteurs</Link>
+                <span className="text-slate-700">•</span>
+                <a href={`${process.env.NEXT_PUBLIC_AVIS_HUB_URL || 'https://avis.bittonik.com'}?source=PRESSTONIK`} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 font-extrabold transition-colors">Donner votre avis</a>
               </div>
             </div>
           </footer>
+          <ReviewToast currentSite="PRESSTONIK" hubUrl={process.env.NEXT_PUBLIC_AVIS_HUB_URL || 'https://avis.bittonik.com'} intervalMinutes={3} />
         </SessionProvider>
       </body>
     </html>

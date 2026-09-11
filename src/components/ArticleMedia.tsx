@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import SafeImage from './SafeImage';
 
 interface ArticleMediaProps {
   src: string;
@@ -32,7 +32,7 @@ export default function ArticleMedia({ src, alt, mode = 'preview' }: ArticleMedi
     }
     return (
       <div className="relative w-full h-full">
-        <Image src={mediaSrc} alt={alt} fill sizes="60px" className="object-cover" />
+        <SafeImage src={mediaSrc} alt={alt} fill sizes="60px" className="object-cover" />
       </div>
     );
   }
@@ -50,7 +50,7 @@ export default function ArticleMedia({ src, alt, mode = 'preview' }: ArticleMedi
         {isVideo ? (
           <video src={mediaSrc} muted loop className="w-full h-full object-cover" />
         ) : (
-          <Image src={mediaSrc} alt="" fill sizes="10vw" className="object-cover" />
+          <SafeImage src={mediaSrc} alt="" fill sizes="10vw" className="object-cover" />
         )}
       </div>
 
@@ -71,7 +71,7 @@ export default function ArticleMedia({ src, alt, mode = 'preview' }: ArticleMedi
           />
         ) : (
           <div className="relative w-full h-full">
-            <Image
+            <SafeImage
               src={mediaSrc}
               alt={alt}
               fill
