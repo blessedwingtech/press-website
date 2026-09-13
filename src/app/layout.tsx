@@ -4,6 +4,7 @@ import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
 import NavbarWrapper from "@/components/NavbarWrapper";
 import ReviewToast from "@/components/ReviewToast";
+import ReviewCTA from "@/components/ReviewCTA";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -44,7 +45,7 @@ export default function RootLayout({
                 <span className="text-slate-700">•</span>
                 <Link href="/avis" className="hover:text-emerald-400 transition-colors">Avis des lecteurs</Link>
                 <span className="text-slate-700">•</span>
-                <a href={`${process.env.NEXT_PUBLIC_AVIS_HUB_URL || 'https://avis.bittonik.com'}?source=PRESSTONIK`} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 font-extrabold transition-colors">Donner votre avis</a>
+                <ReviewCTA />
               </div>
             </div>
           </footer>

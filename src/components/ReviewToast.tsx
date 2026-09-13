@@ -88,9 +88,13 @@ export default function ReviewToast({ currentSite, hubUrl = 'http://localhost:30
         
         <div className="flex gap-3">
           {/* Avatar */}
-          <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex-shrink-0 flex items-center justify-center font-bold text-sm">
-            {currentReview.userName ? currentReview.userName[0].toUpperCase() : 'U'}
-          </div>
+          {currentReview.avatarUrl ? (
+            <img src={currentReview.avatarUrl} alt={currentReview.userName || 'Avatar'} className="w-10 h-10 rounded-full object-cover flex-shrink-0 shadow-sm" />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex-shrink-0 flex items-center justify-center font-bold text-sm shadow-sm">
+              {currentReview.userName ? currentReview.userName[0].toUpperCase() : 'U'}
+            </div>
+          )}
           
           {/* Contenu */}
           <div>

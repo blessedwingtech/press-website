@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Star, MessageSquare, Loader2, Globe, MapPin } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 interface Review {
   id: string;
@@ -27,6 +28,7 @@ export default function ReviewWidget({ currentSite, hubUrl = 'http://localhost:3
   const [error, setError] = useState('');
   
   const [stats, setStats] = useState({ averageRating: 0, totalReviews: 0 });
+  const { data: session } = useSession();
 
   const fetchReviews = async () => {
     setLoading(true);
@@ -66,9 +68,22 @@ export default function ReviewWidget({ currentSite, hubUrl = 'http://localhost:3
     fetchReviews();
   }, [mode, currentSite]);
 
-  const leaveReviewUrl = typeof window !== 'undefined'
-    ? `${hubUrl}?source=${currentSite}&return_url=${encodeURIComponent(window.location.href)}`
-    : `${hubUrl}?source=${currentSite}`;
+  let leaveReviewUrl = `${hubUrl}?source=${currentSite}`;
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams();
+    params.append('source', currentSite);
+    
+    if (session?.user) {
+      const user = session.user as any;
+      if (user.id) params.append('user_id', user.id);
+      if (user.name) params.append('full_name', user.name);
+      if (user.email) params.append('email', user.email);
+      if (user.image) params.append('avatar', user.image);
+    }
+    
+    params.append('return_url', window.location.href);
+    leaveReviewUrl = `${hubUrl}?${params.toString()}`;
+  }
 
   return (
     <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] max-w-5xl w-full mx-auto font-sans">
@@ -140,9 +155,13 @@ export default function ReviewWidget({ currentSite, hubUrl = 'http://localhost:3
                 <div>
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-600 rounded-full flex items-center justify-center font-black text-sm uppercase shadow-inner">
-                        {review.userName ? review.userName[0] : 'U'}
-                      </div>
+                      {review.avatarUrl ? (
+                        <img src={review.avatarUrl} alt={review.userName || 'Avatar'} className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100" />
+                      ) : (
+                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-600 rounded-full flex items-center justify-center font-black text-sm uppercase shadow-inner">
+                          {review.userName ? review.userName[0] : 'U'}
+                        </div>
+                      )}
                       <div>
                         <p className="text-base font-bold text-slate-800 leading-tight">
                           {review.userName || 'Utilisateur anonyme'}
