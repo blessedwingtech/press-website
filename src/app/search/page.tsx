@@ -25,7 +25,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   });
   const showDemo = demoSetting ? demoSetting.value === 'true' : true;
 
-  const where: any = {};
+  const where: any = { published: true };
   if (!showDemo) {
     where.isDemo = false;
   }

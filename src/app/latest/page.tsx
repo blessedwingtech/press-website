@@ -5,7 +5,7 @@ import { Calendar, User, ArrowRight, BookOpen, Clock } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import ArticleMedia from '@/components/ArticleMedia';
 
-export const revalidate = 0; // Desactiver le cache pour charger en temps réel
+export const revalidate = 60; // Cache 60s avec revalidation ISR
 
 export default async function LatestArticlesPage() {
   // Récupérer le paramètre de démonstration
@@ -14,7 +14,7 @@ export default async function LatestArticlesPage() {
   });
   const showDemo = demoSetting ? demoSetting.value === 'true' : true;
 
-  const where: any = {};
+  const where: any = { published: true };
   if (!showDemo) {
     where.isDemo = false;
   }

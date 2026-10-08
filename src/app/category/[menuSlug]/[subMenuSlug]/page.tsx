@@ -6,7 +6,7 @@ import { Calendar, ChevronRight, BookOpen } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import ArticleMedia from '@/components/ArticleMedia';
 
-export const revalidate = 0; // Pas de cache
+export const revalidate = 60; // Cache 60s avec revalidation ISR
 
 interface SubMenuPageProps {
   params: {
@@ -45,7 +45,7 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
   });
   const showDemo = demoSetting ? demoSetting.value === 'true' : true;
 
-  const where: any = {};
+  const where: any = { published: true };
   if (!showDemo) {
     where.isDemo = false;
   }

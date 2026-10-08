@@ -14,7 +14,12 @@ export const metadata: Metadata = {
   description: "Plateforme indépendante de journalisme et de rédaction sportive et généraliste en temps réel.",
   icons: {
     icon: '/icon.svg',
-  }
+  },
+  alternates: {
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
+  },
 };
 
 export default function RootLayout({
@@ -44,6 +49,8 @@ export default function RootLayout({
                 <Link href="/privacy" className="hover:text-emerald-400 transition-colors">Politique de confidentialité</Link>
                 <span className="text-slate-700">•</span>
                 <Link href="/avis" className="hover:text-emerald-400 transition-colors">Avis des lecteurs</Link>
+                <span className="text-slate-700">•</span>
+                <Link href="/feed.xml" target="_blank" className="hover:text-emerald-400 transition-colors">Flux RSS</Link>
                 <span className="text-slate-700">•</span>
                 <ReviewCTA />
               </div>

@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { topic, menuId, authorId } = body;
+    const { topic, menuId, submenuId, tone = 'factual', authorId } = body;
 
     if (!topic || !menuId || !authorId) {
       return NextResponse.json({ error: 'Paramètres manquants.' }, { status: 400 });
@@ -104,8 +104,18 @@ export async function POST(req: Request) {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const candidateModels = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.1-flash-lite"];
 
+    // Spécification de l'angle éditorial
+    let toneInstruction = "Style dépêche de presse : direct, factuel, concis et chronologique.";
+    if (tone === 'analysis') {
+      toneInstruction = "Style analyse & décryptage : mise en perspective, éclairage des causes et conséquences, décryptage d'experts.";
+    } else if (tone === 'investigation') {
+      toneInstruction = "Style enquête & grand dossier : immersion approfondie, analyse critique, comparaison des sources et mise en lumière des enjeux majeurs.";
+    }
+
     const prompt = `
       Tu es un journaliste expert, neutre et professionnel travaillant pour le média PressTonik.
+      Angle et ligne éditoriale demandés : ${toneInstruction}
+
       Voici une liste des dernières actualités concernant le sujet "${topic}" :
       
       ${newsContext}
@@ -114,9 +124,9 @@ export async function POST(req: Request) {
       1. Règle de la pyramide inversée :
          - Commence impérativement par un "Chapô" (1 paragraphe d'accroche résumant les faits clés : Qui, Quoi, Quand, Où, Pourquoi) en gras (<p><strong>...</strong></p>).
          - Développe ensuite les détails, le contexte et les analyses avec au moins 2 ou 3 sous-titres pertinents (balises <h2>).
-         - Rédige un article complet, fluide et captivant (entre 450 et 700 mots).
+         - Rédige un article complet, fluide et captivant (entre 450 et 750 mots).
       2. Déontologie et style :
-         - Style journalistique neutre, informatif, factuel et percutant.
+         - Respecte scrupuleusement l'angle éditorial : ${toneInstruction}
          - Pas de formules génériques d'IA comme "Dans cet article, nous allons voir...". Entre directement dans le vif du sujet.
       3. Formatage HTML :
          - Formaté proprement avec des balises <p>, <h2>, <strong>, <blockquote>.
@@ -201,6 +211,7 @@ export async function POST(req: Request) {
         imagePrincipale: coverImage,
         auteurId: authorId,
         menuId: menuId,
+        submenuId: submenuId || null,
         published: false,
       }
     });

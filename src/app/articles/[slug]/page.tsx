@@ -11,7 +11,7 @@ import ViewsTrigger from '@/components/ViewsTrigger';
 
 import { Metadata, ResolvingMetadata } from 'next';
 
-export const revalidate = 0; // Pas de cache pour faciliter l'édition temps réel
+export const revalidate = 60; // Cache ISR 60s avec revalidation automatique lors des modifications
 
 interface ArticlePageProps {
   params: {

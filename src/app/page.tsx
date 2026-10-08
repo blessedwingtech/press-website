@@ -4,7 +4,7 @@ import { Calendar, User, ArrowRight, BookOpen, Eye } from 'lucide-react';
 import ArticleMedia from '@/components/ArticleMedia';
 import AdSlot from '@/components/AdSlot';
 
-export const revalidate = 0; // Désactiver le cache pour charger les ajouts en temps réel
+export const revalidate = 60; // Cache ISR 60s avec revalidation automatique lors des publications
 
 interface HomeProps {
   searchParams: {
