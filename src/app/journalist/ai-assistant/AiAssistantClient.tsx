@@ -104,10 +104,21 @@ export default function AiAssistantClient({ menus, authorId }: { menus: Menu[]; 
       });
 
       clearTimeout(writingTimer);
-      const data = await response.json();
+
+      const rawText = await response.text();
+      let data: any = null;
+
+      try {
+        data = JSON.parse(rawText);
+      } catch (parseErr) {
+        if (response.status === 504 || response.status === 502) {
+          throw new Error("Le serveur a mis trop de temps à répondre (Timeout passerelle). Veuillez relancer la génération.");
+        }
+        throw new Error(`Erreur de communication (${response.status}) : La réponse reçue n'est pas au format attendu. Veuillez réessayer.`);
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de la génération de l'article.");
+        throw new Error(data?.error || `Erreur lors de la génération de l'article (Code ${response.status}).`);
       }
 
       setGeneratedResult(data);
@@ -115,9 +126,9 @@ export default function AiAssistantClient({ menus, authorId }: { menus: Menu[]; 
       setStatus('success');
     } catch (error: any) {
       clearTimeout(writingTimer);
-      console.error(error);
+      console.error('Erreur génération IA:', error);
       setStatus('error');
-      setErrorMessage(error.message);
+      setErrorMessage(error.message || "Une erreur inattendue s'est produite lors de la génération.");
     } finally {
       setIsLoading(false);
     }

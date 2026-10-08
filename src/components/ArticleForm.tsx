@@ -4,9 +4,10 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { saveArticle } from '@/app/journalist/actions';
-import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw, Image as ImageIcon, X, Check, Search } from 'lucide-react';
 import Link from 'next/link';
 import ArticleMedia from './ArticleMedia';
+import SafeImage from './SafeImage';
 import UnsplashImageModal from './UnsplashImageModal';
 
 // Chargement dynamique de ReactQuill pour éviter les erreurs SSR de compilation
@@ -77,6 +78,35 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
   const [success, setSuccess] = useState(false);
   const [autosaved, setAutosaved] = useState(false);
   const [isUnsplashOpen, setIsUnsplashOpen] = useState(false);
+  const [quickSuggestions, setQuickSuggestions] = useState<Array<{ id: string; url: string; thumb: string; photographer: string }>>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
+  // Charger automatiquement les suggestions dès qu'un titre existe
+  const fetchSuggestions = async (searchQuery?: string) => {
+    const q = (searchQuery || titre || '').trim();
+    if (!q || q.length < 3) return;
+
+    setLoadingSuggestions(true);
+    try {
+      const res = await fetch(`/api/ai/unsplash-search?q=${encodeURIComponent(q)}&per_page=6`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.images) && data.images.length > 0) {
+          setQuickSuggestions(data.images);
+        }
+      }
+    } catch (err) {
+      console.warn('Erreur suggestions Unsplash:', err);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  useEffect(() => {
+    if (titre && titre.length >= 4 && quickSuggestions.length === 0) {
+      fetchSuggestions(titre);
+    }
+  }, [titre]);
 
   // Filtrer les sous-menus en fonction du menu sélectionné
   const availableSubmenus = useMemo(() => {
@@ -508,65 +538,172 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
 
             {/* Illustration image/video selector */}
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
-                Média d'Illustration Principal
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  Média d'Illustration Principal
+                </label>
+                {imagePrincipale && (
+                  <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Illustration active
+                  </span>
+                )}
+              </div>
               
-              <div className="bg-slate-950 border border-slate-800 border-dashed rounded-xl p-5 text-center flex flex-col items-center justify-center min-h-[176px] relative overflow-hidden">
-                {imagePrincipale ? (
-                  <div className="absolute inset-0 group flex items-center justify-center">
-                    <ArticleMedia src={imagePrincipale} alt="Aperçu" mode="preview" />
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                      <label className="cursor-pointer bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold text-white hover:bg-slate-800 transition shadow-lg flex items-center gap-1.5">
-                        <Upload className="w-3.5 h-3.5" /> Fichier
-                        <input
-                          type="file"
-                          accept="image/*,video/*"
-                          onChange={handleMainImageUpload}
-                          className="hidden"
-                        />
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => setIsUnsplashOpen(true)}
-                        className="bg-emerald-600 border border-emerald-500 px-3 py-1.5 rounded-lg text-xs font-bold text-white hover:bg-emerald-500 transition shadow-lg flex items-center gap-1.5"
-                      >
-                        <ImageIcon className="w-3.5 h-3.5" /> Unsplash
-                      </button>
+              {imagePrincipale ? (
+                <div className="space-y-3">
+                  {/* Aperçu du média actuel */}
+                  <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 aspect-[16/9] max-h-72 w-full flex items-center justify-center shadow-lg">
+                    <ArticleMedia src={imagePrincipale} alt="Aperçu principal" mode="preview" />
+                  </div>
+
+                  {/* Barre d'action permanente (toujours visible sans survol) */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsUnsplashOpen(true)}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <ImageIcon className="w-4 h-4" />
+                      Choisir sur Unsplash
+                    </button>
+
+                    <label className="cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                      <Upload className="w-4 h-4" />
+                      Remplacer par un fichier
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={handleMainImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => setImagePrincipale('')}
+                      className="bg-slate-950 hover:bg-red-950/40 text-slate-400 hover:text-red-400 border border-slate-800 hover:border-red-800/50 px-3 py-2 rounded-xl text-xs font-medium transition flex items-center gap-1 ml-auto cursor-pointer"
+                      title="Retirer cette illustration"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      Retirer
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-slate-950 border border-slate-800 border-dashed rounded-xl p-6 text-center flex flex-col items-center justify-center min-h-[180px]">
+                  {uploadingMain ? (
+                    <div className="flex flex-col items-center">
+                      <Loader2 className="w-8 h-8 text-emerald-400 animate-spin mb-2" />
+                      <span className="text-xs text-slate-400">Téléversement du média...</span>
                     </div>
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-slate-500 mb-2" />
+                      <span className="text-xs text-slate-400 mb-3">Téléversez un fichier ou choisissez une photo HD Unsplash</span>
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        <label className="cursor-pointer bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-800 hover:text-white transition flex items-center gap-1.5">
+                          <Upload className="w-3.5 h-3.5" /> Téléverser un fichier
+                          <input
+                            type="file"
+                            accept="image/*,video/*"
+                            onChange={handleMainImageUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setIsUnsplashOpen(true)}
+                          className="bg-emerald-600/20 border border-emerald-500/40 px-3.5 py-2 rounded-lg text-xs font-bold text-emerald-400 hover:bg-emerald-600 hover:text-white transition flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <ImageIcon className="w-3.5 h-3.5" /> Choisir sur Unsplash
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Galerie de bascule rapide d'illustrations (Suggestions Unsplash) */}
+              <div className="mt-4 p-3.5 bg-slate-950/70 border border-slate-800/80 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="text-xs font-bold text-slate-300">
+                      Basculer entre les illustrations suggérées :
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fetchSuggestions()}
+                      disabled={loadingSuggestions}
+                      className="text-[11px] text-slate-400 hover:text-slate-200 flex items-center gap-1 transition cursor-pointer"
+                      title="Actualiser les suggestions pour ce sujet"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${loadingSuggestions ? 'animate-spin text-amber-400' : ''}`} />
+                      Actualiser
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsUnsplashOpen(true)}
+                      className="text-[11px] text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 transition hover:underline cursor-pointer"
+                    >
+                      <Search className="w-3 h-3" />
+                      Explorer +
+                    </button>
+                  </div>
+                </div>
+
+                {loadingSuggestions && quickSuggestions.length === 0 ? (
+                  <div className="flex items-center justify-center py-6 text-slate-500 text-xs gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                    Recherche d&apos;illustrations adaptées au sujet...
+                  </div>
+                ) : quickSuggestions.length > 0 ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 pt-1">
+                    {quickSuggestions.map((img) => {
+                      const isSelected = imagePrincipale === img.url;
+                      return (
+                        <div
+                          key={img.id}
+                          onClick={() => setImagePrincipale(img.url)}
+                          title={`Sélectionner cette photo par ${img.photographer}`}
+                          className={`group relative aspect-[16/10] rounded-lg overflow-hidden border-2 cursor-pointer transition-all bg-slate-900 ${
+                            isSelected
+                              ? 'border-emerald-500 ring-2 ring-emerald-500/30 scale-[1.03] shadow-md'
+                              : 'border-slate-800 hover:border-slate-600 opacity-70 hover:opacity-100'
+                          }`}
+                        >
+                          <SafeImage
+                            src={img.thumb || img.url}
+                            alt="Suggestion"
+                            fill
+                            sizes="120px"
+                            className="object-cover"
+                          />
+                          {isSelected && (
+                            <div className="absolute top-1 right-1 p-0.5 bg-emerald-500 text-slate-950 rounded-full shadow z-10 flex items-center justify-center">
+                              <Check className="w-3 h-3 stroke-[3]" />
+                            </div>
+                          )}
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-1 py-0.5 text-[9px] text-slate-300 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                            {img.photographer}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
-                  <>
-                    {uploadingMain ? (
-                      <div className="flex flex-col items-center">
-                        <Loader2 className="w-8 h-8 text-emerald-400 animate-spin mb-2" />
-                        <span className="text-xs text-slate-400">Téléversement du média...</span>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 text-slate-500 mb-2" />
-                        <span className="text-xs text-slate-400 mb-3">Téléversez un fichier ou choisissez une photo HD Unsplash</span>
-                        <div className="flex flex-wrap items-center justify-center gap-2">
-                          <label className="cursor-pointer bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-800 hover:text-white transition flex items-center gap-1.5">
-                            <Upload className="w-3.5 h-3.5" /> Téléverser un fichier
-                            <input
-                              type="file"
-                              accept="image/*,video/*"
-                              onChange={handleMainImageUpload}
-                              className="hidden"
-                            />
-                          </label>
-                          <button
-                            type="button"
-                            onClick={() => setIsUnsplashOpen(true)}
-                            className="bg-emerald-600/20 border border-emerald-500/40 px-3.5 py-2 rounded-lg text-xs font-bold text-emerald-400 hover:bg-emerald-600 hover:text-white transition flex items-center gap-1.5"
-                          >
-                            <ImageIcon className="w-3.5 h-3.5" /> Choisir sur Unsplash
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </>
+                  <div className="flex items-center justify-between text-slate-500 text-xs py-2 px-1">
+                    <span>Saisissez un titre pour afficher des suggestions d&apos;illustrations instantanées.</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsUnsplashOpen(true)}
+                      className="text-xs text-emerald-400 hover:underline font-bold cursor-pointer"
+                    >
+                      Ouvrir Unsplash
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

@@ -5,6 +5,9 @@ import { db } from '@/lib/db';
 import { canAccessAiAssistant } from '@/lib/ai-access';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 // Fonction utilitaire pour générer un slug
 function generateSlug(text: string) {
   return text
@@ -57,7 +60,10 @@ export async function POST(req: Request) {
 
       if (cleanGNewsTopic) {
         const gnewsUrl = `https://gnews.io/api/v4/search?q=${encodeURIComponent(cleanGNewsTopic)}&lang=fr&max=5&apikey=${GNEWS_API_KEY}`;
-        const gnewsResponse = await fetch(gnewsUrl, { cache: 'no-store' });
+        const gnewsResponse = await fetch(gnewsUrl, { 
+          cache: 'no-store',
+          signal: AbortSignal.timeout(7000)
+        });
         const gnewsData = await gnewsResponse.json();
 
         if (gnewsResponse.ok && Array.isArray(gnewsData.articles) && gnewsData.articles.length > 0) {
@@ -87,7 +93,10 @@ export async function POST(req: Request) {
       try {
         const cleanRssTopic = topic.replace(/['"&|]/g, ' ').trim();
         const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cleanRssTopic)}&hl=fr&gl=FR&ceid=FR:fr`;
-        const rssRes = await fetch(rssUrl, { cache: 'no-store' });
+        const rssRes = await fetch(rssUrl, { 
+          cache: 'no-store',
+          signal: AbortSignal.timeout(7000)
+        });
         const xmlText = await rssRes.text();
         
         // Extraction légère via Regex pour lire le flux RSS de Google News
@@ -115,9 +124,9 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. RÉDACTION PAR L'IA (Gemini avec cascade de secours)
+    // 3. RÉDACTION PAR L'IA (Gemini avec cascade de secours sur modèles valides et rapides)
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const candidateModels = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.1-flash-lite"];
+    const candidateModels = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-flash-latest"];
 
     // Spécification de l'angle éditorial
     let toneInstruction = "Style dépêche de presse : direct, factuel, concis et chronologique.";
@@ -205,7 +214,8 @@ export async function POST(req: Request) {
     if (UNSPLASH_ACCESS_KEY && articleData.image_query) {
       try {
         const unsplashRes = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(articleData.image_query)}&orientation=landscape&per_page=6`, {
-          headers: { 'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}` }
+          headers: { 'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}` },
+          signal: AbortSignal.timeout(7000)
         });
         const unsplashData = await unsplashRes.json();
         if (unsplashData.results && unsplashData.results.length > 0) {
