@@ -124,9 +124,15 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. RÉDACTION PAR L'IA (Gemini avec cascade de secours sur modèles valides et rapides)
+    // 3. RÉDACTION PAR L'IA (Gemini avec cascade sur les modèles actifs vérifiés)
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const candidateModels = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-flash-latest"];
+    const candidateModels = [
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite",
+      "gemini-flash-lite-latest",
+      "gemini-3.8-flash",
+      "gemini-flash-latest"
+    ];
 
     // Spécification de l'angle éditorial
     let toneInstruction = "Style dépêche de presse : direct, factuel, concis et chronologique.";
@@ -204,6 +210,9 @@ export async function POST(req: Request) {
     }
 
     if (!articleData) {
+      if (lastError?.message?.includes('503') || lastError?.message?.includes('high demand') || lastError?.message?.includes('overloaded')) {
+        throw new Error("Les serveurs de Google IA sont momentanément très sollicités (Erreur 503 temporaire). Veuillez patienter 5 à 10 secondes puis relancer la génération.");
+      }
       throw new Error(`Aucun modèle IA n'a pu répondre. Dernier motif : ${lastError?.message || 'Erreur inconnue'}`);
     }
 
