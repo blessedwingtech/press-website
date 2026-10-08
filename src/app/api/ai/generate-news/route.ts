@@ -43,34 +43,50 @@ export async function POST(req: Request) {
       }, { status: 500 });
     }
 
-    // 2. RECHERCHE DES ACTUALITÉS (GNews API)
-    // GNews plante si on envoie des apostrophes ou des guillemets dans la requête
-    const safeTopic = topic.replace(/['"&|]/g, ' ').trim();
-    const gnewsUrl = `https://gnews.io/api/v4/search?q=${encodeURIComponent(safeTopic)}&lang=fr&country=fr&max=5&apikey=${GNEWS_API_KEY}`;
-    const gnewsResponse = await fetch(gnewsUrl, { cache: 'no-store' });
-    const gnewsData = await gnewsResponse.json();
+    // 2. RECHERCHE DES ACTUALITÉS (GNews API avec bascule automatique vers Google News RSS)
+    let newsContext = "";
+    let fetchedArticles: any[] = [];
 
-    if (!gnewsResponse.ok || !gnewsData.articles) {
-      console.error("Erreur GNews complète:", gnewsData);
-      throw new Error(`Impossible de récupérer les actualités depuis GNews. Motif: ${gnewsData.errors?.q || gnewsData.errors?.[0] || 'Inconnu'}`);
+    try {
+      // Nettoyer tous les caractères de syntaxe qui peuvent troubler le parseur booléen de GNews
+      const cleanGNewsTopic = topic
+        .replace(/[^a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆœæ\s]/g, ' ')
+        .replace(/\b(and|or|not)\b/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (cleanGNewsTopic) {
+        const gnewsUrl = `https://gnews.io/api/v4/search?q=${encodeURIComponent(cleanGNewsTopic)}&lang=fr&max=5&apikey=${GNEWS_API_KEY}`;
+        const gnewsResponse = await fetch(gnewsUrl, { cache: 'no-store' });
+        const gnewsData = await gnewsResponse.json();
+
+        if (gnewsResponse.ok && Array.isArray(gnewsData.articles) && gnewsData.articles.length > 0) {
+          fetchedArticles = gnewsData.articles;
+        } else {
+          console.warn("GNews retour sans articles ou syntax error, bascule vers Google News RSS:", gnewsData?.errors || gnewsData);
+        }
+      }
+    } catch (gnewsErr) {
+      console.warn("Exception lors de l'appel GNews, bascule automatique vers Google News RSS:", gnewsErr);
     }
 
-    // Formater les sources pour l'IA (ou utiliser le fallback si aucun résultat)
-    let newsContext = "";
-    if (gnewsData.articles && gnewsData.articles.length > 0) {
+    // Si GNews a trouvé des articles, on les utilise
+    if (fetchedArticles.length > 0) {
       newsContext = "Voici une liste des dernières actualités concernant le sujet :\n" + 
-        gnewsData.articles.map((article: any, index: number) => `
+        fetchedArticles.map((article: any, index: number) => `
         Article ${index + 1}:
         Titre: ${article.title}
         Description: ${article.description}
         Contenu: ${article.content}
-        Source: ${article.source.name}
+        Source: ${article.source?.name || 'Média d\'information'}
         URL: ${article.url}
       `).join('\n\n');
     } else {
-      console.log("GNews a retourné 0 résultats. Fallback vers Google News RSS...");
+      // Fallback vers le flux Google News RSS
+      console.log("Bascule vers Google News RSS pour collecter les informations en direct...");
       try {
-        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(topic)}&hl=fr&gl=FR&ceid=FR:fr`;
+        const cleanRssTopic = topic.replace(/['"&|]/g, ' ').trim();
+        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cleanRssTopic)}&hl=fr&gl=FR&ceid=FR:fr`;
         const rssRes = await fetch(rssUrl, { cache: 'no-store' });
         const xmlText = await rssRes.text();
         
@@ -86,7 +102,6 @@ export async function POST(req: Request) {
             
             const title = titleMatch ? titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1') : '';
             const link = linkMatch ? linkMatch[1] : '';
-            // On nettoie le HTML de la description Google News
             const desc = descMatch ? descMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/<[^>]*>?/gm, '') : '';
             
             newsContext += `\nArticle ${index + 1}:\nTitre: ${title}\nDescription détaillée: ${desc}\nSource URL: ${link}\n`;
