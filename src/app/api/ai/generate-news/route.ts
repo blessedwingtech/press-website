@@ -183,20 +183,27 @@ export async function POST(req: Request) {
       throw new Error(`Aucun modèle IA n'a pu répondre. Dernier motif : ${lastError?.message || 'Erreur inconnue'}`);
     }
 
-    // 4. RECHERCHE DE L'IMAGE SUR UNSPLASH
+    // 4. RECHERCHE DES IMAGES CANDIDATES SUR UNSPLASH
     let coverImage = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1200'; // Fallback
-    
+    let candidateImages: Array<{ id: string; url: string; thumb: string; photographer: string }> = [];
+
     if (UNSPLASH_ACCESS_KEY && articleData.image_query) {
       try {
-        const unsplashRes = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(articleData.image_query)}&orientation=landscape&per_page=1`, {
+        const unsplashRes = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(articleData.image_query)}&orientation=landscape&per_page=6`, {
           headers: { 'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}` }
         });
         const unsplashData = await unsplashRes.json();
         if (unsplashData.results && unsplashData.results.length > 0) {
           coverImage = unsplashData.results[0].urls.regular;
+          candidateImages = unsplashData.results.map((p: any) => ({
+            id: p.id,
+            url: p.urls.regular,
+            thumb: p.urls.small,
+            photographer: p.user?.name || 'Unsplash',
+          }));
         }
       } catch (e) {
-        console.error("Erreur lors de la récupération de l'image Unsplash", e);
+        console.error("Erreur lors de la récupération des images Unsplash", e);
       }
     }
 
@@ -216,7 +223,13 @@ export async function POST(req: Request) {
       }
     });
 
-    return NextResponse.json({ articleId: newArticle.id });
+    return NextResponse.json({
+      articleId: newArticle.id,
+      titre: articleData.titre,
+      coverImage,
+      candidateImages,
+      imageQuery: articleData.image_query,
+    });
 
   } catch (error: any) {
     console.error('Erreur IA détaillée:', error);

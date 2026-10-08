@@ -4,9 +4,10 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { saveArticle } from '@/app/journalist/actions';
-import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import ArticleMedia from './ArticleMedia';
+import UnsplashImageModal from './UnsplashImageModal';
 
 // Chargement dynamique de ReactQuill pour éviter les erreurs SSR de compilation
 // const ReactQuill = dynamic(() => import('react-quill'), {
@@ -75,6 +76,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [autosaved, setAutosaved] = useState(false);
+  const [isUnsplashOpen, setIsUnsplashOpen] = useState(false);
 
   // Filtrer les sous-menus en fonction du menu sélectionné
   const availableSubmenus = useMemo(() => {
@@ -514,9 +516,9 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                 {imagePrincipale ? (
                   <div className="absolute inset-0 group flex items-center justify-center">
                     <ArticleMedia src={imagePrincipale} alt="Aperçu" mode="preview" />
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                      <label className="cursor-pointer bg-slate-900 border border-slate-700 px-3.5 py-2 rounded text-xs font-bold text-white hover:bg-slate-800 transition shadow-lg">
-                        Changer de média
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                      <label className="cursor-pointer bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold text-white hover:bg-slate-800 transition shadow-lg flex items-center gap-1.5">
+                        <Upload className="w-3.5 h-3.5" /> Fichier
                         <input
                           type="file"
                           accept="image/*,video/*"
@@ -524,6 +526,13 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                           className="hidden"
                         />
                       </label>
+                      <button
+                        type="button"
+                        onClick={() => setIsUnsplashOpen(true)}
+                        className="bg-emerald-600 border border-emerald-500 px-3 py-1.5 rounded-lg text-xs font-bold text-white hover:bg-emerald-500 transition shadow-lg flex items-center gap-1.5"
+                      >
+                        <ImageIcon className="w-3.5 h-3.5" /> Unsplash
+                      </button>
                     </div>
                   </div>
                 ) : (
@@ -536,16 +545,25 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                     ) : (
                       <>
                         <Upload className="w-8 h-8 text-slate-500 mb-2" />
-                        <span className="text-xs text-slate-400 mb-3">Téléversez une image ou vidéo <small>(5Mo max)</small></span>
-                        <label className="cursor-pointer bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-850 hover:text-white transition">
-                          Choisir un fichier
-                          <input
-                            type="file"
-                            accept="image/*,video/*"
-                            onChange={handleMainImageUpload}
-                            className="hidden"
-                          />
-                        </label>
+                        <span className="text-xs text-slate-400 mb-3">Téléversez un fichier ou choisissez une photo HD Unsplash</span>
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                          <label className="cursor-pointer bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-800 hover:text-white transition flex items-center gap-1.5">
+                            <Upload className="w-3.5 h-3.5" /> Téléverser un fichier
+                            <input
+                              type="file"
+                              accept="image/*,video/*"
+                              onChange={handleMainImageUpload}
+                              className="hidden"
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setIsUnsplashOpen(true)}
+                            className="bg-emerald-600/20 border border-emerald-500/40 px-3.5 py-2 rounded-lg text-xs font-bold text-emerald-400 hover:bg-emerald-600 hover:text-white transition flex items-center gap-1.5"
+                          >
+                            <ImageIcon className="w-3.5 h-3.5" /> Choisir sur Unsplash
+                          </button>
+                        </div>
                       </>
                     )}
                   </>
@@ -624,6 +642,13 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
         </div>
 
       </form>
+
+      <UnsplashImageModal
+        isOpen={isUnsplashOpen}
+        onClose={() => setIsUnsplashOpen(false)}
+        onSelectImage={(url) => setImagePrincipale(url)}
+        defaultQuery={titre}
+      />
     </div>
   );
 }

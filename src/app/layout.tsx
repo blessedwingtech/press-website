@@ -5,6 +5,8 @@ import SessionProvider from "@/components/SessionProvider";
 import NavbarWrapper from "@/components/NavbarWrapper";
 import ReviewToast from "@/components/ReviewToast";
 import ReviewCTA from "@/components/ReviewCTA";
+import NavigationProgressBar from "@/components/NavigationProgressBar";
+import { Suspense } from "react";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -32,6 +34,9 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased`}
       >
+        <Suspense fallback={null}>
+          <NavigationProgressBar />
+        </Suspense>
         <SessionProvider>
           <NavbarWrapper />
           <main className="flex-grow flex flex-col">

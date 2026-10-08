@@ -128,3 +128,27 @@ export async function deleteArticleAction(articleId: string) {
     throw new Error('Droit de suppression refusé.');
   }
 }
+
+export async function updateArticleCoverImage(articleId: string, imageUrl: string) {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  const role = (session?.user as any)?.role;
+
+  if (!userId) throw new Error('Non authentifié');
+
+  const article = await db.article.findUnique({ where: { id: articleId } });
+  if (!article) throw new Error('Article non trouvé.');
+
+  if (article.auteurId !== userId && role !== 'admin') {
+    throw new Error('Non autorisé.');
+  }
+
+  await db.article.update({
+    where: { id: articleId },
+    data: { imagePrincipale: imageUrl },
+  });
+
+  revalidatePath('/journalist');
+  revalidatePath(`/articles/${article.slug}`);
+  return { success: true };
+}
