@@ -46,12 +46,19 @@ export async function POST(req: Request) {
       }, { status: 500 });
     }
 
-    // 2. RECHERCHE DES ACTUALITÉS (GNews API avec bascule automatique vers Google News RSS)
-    let newsContext = "";
+    // 2. RECHERCHE DES ACTUALITÉS ET EXTRACTION DES SOURCES VÉRIFIÉES
+    interface VerifiedSource {
+      media: string;
+      title: string;
+      url: string;
+      description: string;
+    }
+
+    let verifiedSources: VerifiedSource[] = [];
     let fetchedArticles: any[] = [];
 
     try {
-      // Nettoyer tous les caractères de syntaxe qui peuvent troubler le parseur booléen de GNews
+      // Nettoyer la requête pour GNews
       const cleanGNewsTopic = topic
         .replace(/[^a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆœæ\s]/g, ' ')
         .replace(/\b(and|or|not)\b/gi, ' ')
@@ -68,28 +75,25 @@ export async function POST(req: Request) {
 
         if (gnewsResponse.ok && Array.isArray(gnewsData.articles) && gnewsData.articles.length > 0) {
           fetchedArticles = gnewsData.articles;
-        } else {
-          console.warn("GNews retour sans articles ou syntax error, bascule vers Google News RSS:", gnewsData?.errors || gnewsData);
+          fetchedArticles.forEach((art: any) => {
+            if (art.title && art.url) {
+              verifiedSources.push({
+                media: art.source?.name || 'Agence de presse',
+                title: art.title,
+                url: art.url,
+                description: art.description || art.content || '',
+              });
+            }
+          });
         }
       }
     } catch (gnewsErr) {
-      console.warn("Exception lors de l'appel GNews, bascule automatique vers Google News RSS:", gnewsErr);
+      console.warn("Exception lors de l'appel GNews, bascule vers Google News RSS:", gnewsErr);
     }
 
-    // Si GNews a trouvé des articles, on les utilise
-    if (fetchedArticles.length > 0) {
-      newsContext = "Voici une liste des dernières actualités concernant le sujet :\n" + 
-        fetchedArticles.map((article: any, index: number) => `
-        Article ${index + 1}:
-        Titre: ${article.title}
-        Description: ${article.description}
-        Contenu: ${article.content}
-        Source: ${article.source?.name || 'Média d\'information'}
-        URL: ${article.url}
-      `).join('\n\n');
-    } else {
-      // Fallback vers le flux Google News RSS
-      console.log("Bascule vers Google News RSS pour collecter les informations en direct...");
+    // Si GNews n'a rien trouvé, repli vers Google News RSS avec extraction détaillée des médias
+    if (verifiedSources.length === 0) {
+      console.log("Recherche via Google News RSS pour collecter les informations en direct...");
       try {
         const cleanRssTopic = topic.replace(/['"&|]/g, ' ').trim();
         const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cleanRssTopic)}&hl=fr&gl=FR&ceid=FR:fr`;
@@ -99,29 +103,46 @@ export async function POST(req: Request) {
         });
         const xmlText = await rssRes.text();
         
-        // Extraction légère via Regex pour lire le flux RSS de Google News
         const items = Array.from(xmlText.matchAll(/<item>([\s\S]*?)<\/item>/g)).slice(0, 5);
         
-        if (items.length > 0) {
-          newsContext = "Voici une liste d'actualités vérifiées trouvées via Google News :\n";
-          items.forEach((item, index) => {
-            const titleMatch = item[1].match(/<title>([\s\S]*?)<\/title>/);
-            const linkMatch = item[1].match(/<link>([\s\S]*?)<\/link>/);
-            const descMatch = item[1].match(/<description>([\s\S]*?)<\/description>/);
-            
-            const title = titleMatch ? titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1') : '';
-            const link = linkMatch ? linkMatch[1] : '';
-            const desc = descMatch ? descMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/<[^>]*>?/gm, '') : '';
-            
-            newsContext += `\nArticle ${index + 1}:\nTitre: ${title}\nDescription détaillée: ${desc}\nSource URL: ${link}\n`;
-          });
-        } else {
-          newsContext = "Aucune actualité ultra-récente n'a été trouvée en ligne. Rédige un article informatif et pertinent d'analyse générale sur ce sujet.";
-        }
+        items.forEach((item) => {
+          const rawTitle = item[1].match(/<title>([\s\S]*?)<\/title>/)?.[1]?.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1') || '';
+          const sourceName = item[1].match(/<source[^>]*>([\s\S]*?)<\/source>/)?.[1]?.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1')?.trim() || '';
+          const link = item[1].match(/<link>([\s\S]*?)<\/link>/)?.[1] || '';
+          const rawDesc = item[1].match(/<description>([\s\S]*?)<\/description>/)?.[1]?.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1')?.replace(/<[^>]*>?/gm, '') || '';
+          
+          let cleanTitle = rawTitle;
+          if (sourceName && cleanTitle.endsWith(` - ${sourceName}`)) {
+            cleanTitle = cleanTitle.substring(0, cleanTitle.length - (sourceName.length + 3)).trim();
+          }
+
+          if (cleanTitle && link) {
+            verifiedSources.push({
+              media: sourceName || 'Presse d\'information',
+              title: cleanTitle,
+              url: link,
+              description: rawDesc,
+            });
+          }
+        });
       } catch (e) {
         console.error("Erreur RSS Fallback:", e);
-        newsContext = "Aucune actualité ultra-récente n'a été trouvée en ligne. Rédige un article informatif et pertinent d'analyse générale sur ce sujet.";
       }
+    }
+
+    // Construction du contexte factuel et des sources réelles
+    let newsContext = "";
+    if (verifiedSources.length > 0) {
+      newsContext = "DOSSIER DES SOURCES DE PRESSE VÉRIFIÉES :\n" +
+        verifiedSources.map((s, index) => `
+Source ${index + 1}:
+- Média émetteur : ${s.media}
+- Titre original : ${s.title}
+- Faits et informations rapportés : ${s.description}
+- Lien officiel : ${s.url}
+`).join('\n');
+    } else {
+      newsContext = "Aucune dépêche spécifique récente trouvée sur le web. Rédige un article d'analyse factuel basé sur les connaissances avérées du sujet.";
     }
 
     // 3. RÉDACTION PAR L'IA (Gemini avec cascade sur les modèles actifs vérifiés)
@@ -143,37 +164,41 @@ export async function POST(req: Request) {
     }
 
     const prompt = `
-      Tu es un journaliste expert, neutre et professionnel travaillant pour le média PressTonik.
-      Angle et ligne éditoriale demandés : ${toneInstruction}
+      Tu es un journaliste professionnel, rigoureux et neutre pour le média d'actualité PressTonik.
+      Ligne éditoriale demandée : ${toneInstruction}
 
-      Voici une liste des dernières actualités concernant le sujet "${topic}" :
-      
+      SUJET : "${topic}"
+
       ${newsContext}
 
-      Instructions rédactionnelles strictes (Standards de la presse professionnelle) :
-      1. Règle de la pyramide inversée :
-         - Commence impérativement par un "Chapô" (1 paragraphe d'accroche résumant les faits clés : Qui, Quoi, Quand, Où, Pourquoi) en gras (<p><strong>...</strong></p>).
-         - Développe ensuite les détails, le contexte et les analyses avec au moins 2 ou 3 sous-titres pertinents (balises <h2>).
-         - Rédige un article complet, fluide et captivant (entre 450 et 750 mots).
-      2. Déontologie et style :
-         - Respecte scrupuleusement l'angle éditorial : ${toneInstruction}
-         - Pas de formules génériques d'IA comme "Dans cet article, nous allons voir...". Entre directement dans le vif du sujet.
-      3. Formatage HTML :
-         - Formaté proprement avec des balises <p>, <h2>, <strong>, <blockquote>.
-         - Pas de balises <html>, <head> ou <body>.
-      4. Sources tierces et attribution :
-         - À la fin, insère obligatoirement une section d'attribution :
+      CONSIGNES STRICTES D'EXACTITUDE ET D'ATTRIBUTION DES SOURCES :
+      1. RÈGLE D'OR (Pas d'extrapolations ni d'inventions) :
+         - Tu dois rapporter UNIQUEMENT et STRICTEMENT les faits, déclarations, chiffres et événements décrits dans les sources ci-dessus.
+         - N'invente AUCUN fait, aucun chiffre, aucun résultat imaginaire.
+         - Dans le corps de l'article, attribue fidèlement chaque fait ou citation à son média d'origine (ex: "Selon les informations rapportées par [Nom du média]...", "D'après les déclarations relayées par [Nom du média]..."). Ne confonds pas les médias entre eux.
+      
+      2. STRUCTURE PROFESSIONNELLE (Pyramide inversée) :
+         - Commence impérativement par un Chapô d'accroche (1 paragraphe résumant Qui, Quoi, Quand, Où, Pourquoi) en gras (<p><strong>...</strong></p>).
+         - Développe ensuite les éléments et le contexte avec au moins 2 ou 3 sous-titres pertinents (balises <h2>).
+         - Rédige un article complet et captivant (entre 450 et 750 mots).
+         - Formatage HTML propre (<p>, <h2>, <strong>, <blockquote>). Pas de balises <html>, <head> ou <body>.
+
+      3. SECTION SOURCES ET RÉFÉRENCES (OBLIGATOIRE ET CONFORME) :
+         - Tout à la fin de l'article, insère obligatoirement :
            <h2>Sources et Références</h2>
            <ul>
-             (Insère chaque source tierce avec le nom du média et un lien cliquable <a href="..." target="_blank" rel="noopener noreferrer">Nom du Média / Titre</a>)
+             ${verifiedSources.length > 0 ? verifiedSources.map(s => `<li><a href="${s.url}" target="_blank" rel="noopener noreferrer"><strong>${s.media}</strong> : ${s.title}</a></li>`).join('\n             ') : '<li>Presse et analyses documentées</li>'}
            </ul>
-      5. Titre : Un titre percutant, percutant et professionnel (sans guillemets superflus).
-      6. Requête image Unsplash : 1 à 3 mots-clés en anglais pour illustrer le thème (ex: "family artificial intelligence").
+         - RÈGLE FORMELLE : N'invente AUCUN nom de média fictif et AUCUN lien URL imaginaire. Utilise scrupuleusement la liste ci-dessus.
+
+      4. MÉTADONNÉES :
+         - Titre : Un titre percutant, professionnel et fidèle aux faits réels (sans guillemets).
+         - Requête image Unsplash : 1 à 3 mots-clés simples en anglais pour illustrer le sujet (ex: "stadium football action").
 
       Réponds impérativement avec un objet JSON valide ayant cette structure :
       {
         "titre": "Titre professionnel de l'article",
-        "contenu": "Tout le code HTML de l'article suivant les consignes",
+        "contenu": "Corps HTML complet de l'article avec la section Sources et Références",
         "image_query": "mots clés en anglais"
       }
     `;
@@ -216,7 +241,18 @@ export async function POST(req: Request) {
       throw new Error(`Aucun modèle IA n'a pu répondre. Dernier motif : ${lastError?.message || 'Erreur inconnue'}`);
     }
 
-    // 4. RECHERCHE DES IMAGES CANDIDATES SUR UNSPLASH
+    // 4. GARANTIE D'AUTHENTICITÉ DES SOURCES ET RÉFÉRENCES
+    if (verifiedSources.length > 0) {
+      const verifiedSourcesHtml = `<h2>Sources et Références</h2>\n<ul>\n${verifiedSources.map(s => `  <li><a href="${s.url}" target="_blank" rel="noopener noreferrer"><strong>${s.media}</strong> : ${s.title}</a></li>`).join('\n')}\n</ul>`;
+      
+      if (articleData.contenu.includes('<h2>Sources')) {
+        articleData.contenu = articleData.contenu.replace(/<h2>Sources[\s\S]*$/i, verifiedSourcesHtml);
+      } else {
+        articleData.contenu = articleData.contenu.trim() + '\n\n' + verifiedSourcesHtml;
+      }
+    }
+
+    // 5. RECHERCHE DES IMAGES CANDIDATES SUR UNSPLASH
     let coverImage = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1200'; // Fallback
     let candidateImages: Array<{ id: string; url: string; thumb: string; photographer: string }> = [];
 

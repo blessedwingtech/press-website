@@ -168,13 +168,99 @@ export default async function Home({ searchParams }: HomeProps) {
               </div>
             ) : (
               <div>
+                {/* 1. PREMIER GRAND CARD HERO (À LA UNE) - Visible en page 1 */}
+                {page === 1 && (
+                  (() => {
+                    const hero = paginatedArticles[0];
+                    return (
+                      <article className="mb-8 bg-slate-900/50 rounded-2xl overflow-hidden border border-slate-800/90 hover:border-emerald-500/40 hover:shadow-2xl transition-all duration-300 group">
+                        <div className="grid grid-cols-1 md:grid-cols-12">
+                          {/* Image Hero : grand format 16/10, jamais déformée */}
+                          <Link
+                            href={`/articles/${hero.slug}`}
+                            className="block relative md:col-span-7 w-full aspect-[16/10] md:aspect-auto min-h-[240px] sm:min-h-[320px] md:min-h-[380px] overflow-hidden bg-slate-955"
+                          >
+                            <ArticleMedia src={hero.imagePrincipale} alt={hero.titre} mode="preview" />
+                            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-20">
+                              <span className="bg-emerald-500 text-white font-black text-[10px] uppercase px-2.5 py-1 rounded-md shadow-lg tracking-wider">
+                                {hero.menu.nom}
+                              </span>
+                              {hero.submenu && (
+                                <span className="bg-slate-950/85 backdrop-blur-md text-slate-200 border border-slate-700/60 font-bold text-[9px] uppercase px-2 py-0.5 rounded-md shadow-lg tracking-wider">
+                                  {hero.submenu.nom}
+                                </span>
+                              )}
+                              <span className="bg-amber-500/95 text-slate-950 font-black text-[9px] uppercase px-2.5 py-1 rounded-md shadow-lg tracking-wider flex items-center gap-1">
+                                ★ À LA UNE
+                              </span>
+                            </div>
+                          </Link>
+
+                          {/* Contenu Hero */}
+                          <div className="p-6 sm:p-8 md:col-span-5 flex flex-col justify-between">
+                            <div>
+                              <div className="text-xs text-slate-400 flex items-center justify-between gap-2 mb-3 font-medium">
+                                <span className="flex items-center gap-1.5">
+                                  <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                                  {new Date(hero.datePublication).toLocaleDateString('fr-FR', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
+                                  })}
+                                </span>
+                                <span className="flex items-center gap-1 text-slate-400 shrink-0">
+                                  <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                                  {hero.views} vues
+                                </span>
+                              </div>
+
+                              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white hover:text-emerald-400 transition-colors leading-tight line-clamp-3">
+                                <Link href={`/articles/${hero.slug}`}>
+                                  {hero.titre}
+                                </Link>
+                              </h2>
+
+                              <div
+                                className="mt-3.5 text-xs sm:text-sm text-slate-300 line-clamp-3 sm:line-clamp-4 leading-relaxed"
+                                dangerouslySetInnerHTML={{
+                                  __html: hero.contenu.replace(/<[^>]*>/g, '').substring(0, 240) + '...',
+                                }}
+                              />
+                            </div>
+
+                            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                              <span className="text-slate-300 flex items-center gap-2 font-medium truncate pr-2">
+                                <User className="w-4 h-4 text-emerald-400 shrink-0" />
+                                <span className="truncate font-semibold">{hero.auteur.name}</span>
+                                {hero.authorAverageRating > 0 && (
+                                  <span className="text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-500/20 shrink-0 text-[10px]">
+                                    ★ {hero.authorAverageRating.toFixed(1)}
+                                  </span>
+                                )}
+                              </span>
+
+                              <Link
+                                href={`/articles/${hero.slug}`}
+                                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md shadow-emerald-950/40 hover:translate-x-0.5 shrink-0"
+                              >
+                                Lire l'article <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })()
+                )}
+
+                {/* 2. GRILLE DES AUTRES ARTICLES PLUS PETITS (Adaptés tous écrans sans déformer les images) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {paginatedArticles.map((article) => (
+                  {(page === 1 ? paginatedArticles.slice(1) : paginatedArticles).map((article) => (
                     <article
                       key={article.id}
                       className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-2xl transition-all duration-300 group"
                     >
-                      <Link href={`/articles/${article.slug}`} className="block relative h-40 overflow-hidden bg-slate-955">
+                      <Link href={`/articles/${article.slug}`} className="block relative aspect-[16/10] w-full overflow-hidden bg-slate-955">
                         <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
                         <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 z-20">
                           <span className="bg-emerald-500 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded shadow-md tracking-wider">
