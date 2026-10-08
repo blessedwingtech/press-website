@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { PenTool, ListFilter, FilePlus, Home } from 'lucide-react';
+import { canAccessAiAssistant } from '@/lib/ai-access';
 
 export default async function JournalistLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -40,6 +41,15 @@ export default async function JournalistLayout({ children }: { children: React.R
               <FilePlus className="w-4 h-4 text-emerald-400" />
               Écrire un article
             </Link>
+            {canAccessAiAssistant(session.user?.email) && (
+              <Link
+                href="/journalist/ai-assistant"
+                className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-amber-400 hover:bg-slate-800 hover:text-amber-300 transition-all border border-amber-900/50 bg-amber-950/20"
+              >
+                <PenTool className="w-4 h-4" />
+                Assistant IA
+              </Link>
+            )}
             <Link
               href="/"
               className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-850 hover:text-white transition-all border-t border-slate-800/80 mt-4 pt-4"

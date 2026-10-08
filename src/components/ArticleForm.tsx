@@ -68,6 +68,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
   // Cross-publishing sous le menu Actualités
   const [alsoInActualites, setAlsoInActualites] = useState(initialData?.alsoInActualites || false);
   const [actualitesSubmenuId, setActualitesSubmenuId] = useState(initialData?.actualitesSubmenuId || '');
+  const [published, setPublished] = useState((initialData as any)?.published ?? true);
 
   const [uploadingMain, setUploadingMain] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -314,6 +315,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
         submenuId: submenuId || null,
         alsoInActualites,
         actualitesSubmenuId: alsoInActualites ? actualitesSubmenuId || null : null,
+        published,
       });
 
       if (res.success) {
@@ -478,6 +480,28 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* Statut de publication */}
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-8">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="relative flex items-center justify-center mt-0.5">
+                  <input
+                    type="checkbox"
+                    checked={published}
+                    onChange={(e) => setPublished(e.target.checked)}
+                    className="w-4 h-4 rounded text-emerald-500 border-slate-700 bg-slate-950 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                  />
+                </div>
+                <div>
+                  <span className="block text-sm font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">
+                    Publier publiquement
+                  </span>
+                  <span className="block text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                    Si décoché, l'article sera sauvegardé en tant que brouillon et ne sera pas visible par les lecteurs.
+                  </span>
+                </div>
+              </label>
             </div>
 
             {/* Illustration image/video selector */}

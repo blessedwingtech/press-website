@@ -15,7 +15,10 @@ export default function ReviewCTA({ className }: ReviewCTAProps) {
     setReturnUrl(window.location.href);
   }, []);
 
-  const baseUrl = process.env.NEXT_PUBLIC_AVIS_HUB_URL || 'https://avis.bittonik.com';
+  let baseUrl = process.env.NEXT_PUBLIC_AVIS_HUB_URL || 'https://avis.bittonik.com';
+  if (baseUrl && !baseUrl.startsWith('http')) {
+    baseUrl = `http://${baseUrl}`;
+  }
   let href = `${baseUrl}?source=PRESSTONIK`;
 
   if (session?.user) {

@@ -16,6 +16,7 @@ const articleSchema = z.object({
   submenuId: z.string().nullable().optional(),
   alsoInActualites: z.boolean().default(false),
   actualitesSubmenuId: z.string().nullable().optional(),
+  published: z.boolean().default(true),
 });
 
 export async function saveArticle(
@@ -28,6 +29,7 @@ export async function saveArticle(
     submenuId: string | null;
     alsoInActualites?: boolean;
     actualitesSubmenuId?: string | null;
+    published?: boolean;
   }
 ) {
   const session = await getServerSession(authOptions);
@@ -69,6 +71,7 @@ export async function saveArticle(
         submenuId: validatedData.submenuId || null,
         alsoInActualites: validatedData.alsoInActualites,
         actualitesSubmenuId: validatedData.actualitesSubmenuId || null,
+        published: validatedData.published,
       },
     });
 
@@ -86,6 +89,7 @@ export async function saveArticle(
         alsoInActualites: validatedData.alsoInActualites,
         actualitesSubmenuId: validatedData.actualitesSubmenuId || null,
         auteurId: (session.user as any).id,
+        published: validatedData.published,
       },
     });
 

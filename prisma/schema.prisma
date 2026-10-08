@@ -60,6 +60,7 @@ model Article {
   alsoInActualites     Boolean  @default(false)
   actualitesSubmenuId  String?
   actualitesSubmenu    SubMenu? @relation("ActualitesSubMenu", fields: [actualitesSubmenuId], references: [id], onDelete: SetNull)
+  published            Boolean  @default(true)
   isDemo               Boolean  @default(false)
   views                Int      @default(0)
   ratings              Rating[]

@@ -87,6 +87,7 @@ export default async function JournalistDashboard() {
                         className="text-xs sm:text-sm font-bold text-white hover:text-emerald-450 line-clamp-1 hover:underline transition-colors"
                         target="_blank"
                       >
+                        {!article.published && <span className="inline-block bg-amber-500/20 text-amber-500 border border-amber-500/30 px-1.5 py-0.5 rounded text-[9px] uppercase font-black mr-2">Brouillon</span>}
                         {article.titre}
                       </Link>
                       <span className="text-[10px] text-slate-500 font-mono block truncate mt-0.5">{article.slug}</span>
