@@ -56,7 +56,7 @@ export default function Navbar({ menus }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo */} 
-          <div className="flex items-center">
+          <div className="flex items-center shrink-0 min-w-0 pr-2">
             <Logo size="md" />
           </div>
 

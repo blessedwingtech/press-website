@@ -27,8 +27,10 @@ const SafeImage: React.FC<SafeImageProps> = ({
 
   // Images uploadées localement
   if (src && src.startsWith('/uploads/')) {
+    const isContain = className?.includes('object-contain');
+    const objectFitValue = isContain ? 'contain' : 'cover';
     const imgStyle = fill
-      ? { objectFit: 'cover', width: '100%', height: '100%', ...(style as object) }
+      ? { objectFit: objectFitValue, width: '100%', height: '100%', ...(style as object) }
       : style;
 
     return (

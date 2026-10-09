@@ -197,7 +197,7 @@ export default async function Home({ searchParams }: HomeProps) {
                           </Link>
 
                           {/* Contenu Hero */}
-                          <div className="p-6 sm:p-8 md:col-span-5 flex flex-col justify-between">
+                          <div className="p-4 sm:p-6 md:p-8 md:col-span-5 flex flex-col justify-between">
                             <div>
                               <div className="text-xs text-slate-400 flex items-center justify-between gap-2 mb-3 font-medium">
                                 <span className="flex items-center gap-1.5">
