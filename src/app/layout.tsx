@@ -15,7 +15,12 @@ export const metadata: Metadata = {
   title: "PressTonik | Actualités & Presse Rédactionnelle",
   description: "Plateforme indépendante de journalisme et de rédaction sportive et généraliste en temps réel.",
   icons: {
-    icon: '/icon.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: '16x16 32x32', type: 'image/x-icon' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/icon.svg',
   },
   alternates: {
     types: {
