@@ -37,31 +37,31 @@ export default function RootLayout({
   return (
     <html lang="fr" className="dark scroll-smooth">
       <body
-        className={`${inter.className} bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased`}
+        className={`${inter.className} bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased overflow-x-hidden`}
       >
         <Suspense fallback={null}>
           <NavigationProgressBar />
         </Suspense>
         <SessionProvider>
           <NavbarWrapper />
-          <main className="flex-grow flex flex-col">
+          <main className="flex-grow flex flex-col min-w-0">
             {children}
           </main>
-          <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
-            <div className="max-w-7xl mx-auto px-4 space-y-2">
+          <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500 w-full">
+            <div className="max-w-7xl mx-auto px-4 space-y-3">
               <p className="font-semibold text-slate-400"><strong>PressTonik</strong> Presse Rédactionnelle © {new Date().getFullYear()}</p>
               <p>Powered by <a href="https://bwt.bittonik.com" className="hover:text-blue-400">Blessed Wing Technology</a></p>
-              <div className="pt-2 flex justify-center gap-4 text-[10px] uppercase font-bold tracking-wider">
-                <Link href="/request-account" className="hover:text-emerald-400 transition-colors">Demander un compte</Link>
-                <span className="text-slate-700">•</span>
-                <Link href="/terms" className="hover:text-emerald-400 transition-colors">Conditions d'utilisation</Link>
-                <span className="text-slate-700">•</span>
-                <Link href="/privacy" className="hover:text-emerald-400 transition-colors">Politique de confidentialité</Link>
-                <span className="text-slate-700">•</span>
-                <Link href="/avis" className="hover:text-emerald-400 transition-colors">Avis des lecteurs</Link>
-                <span className="text-slate-700">•</span>
-                <Link href="/feed.xml" target="_blank" className="hover:text-emerald-400 transition-colors">Flux RSS</Link>
-                <span className="text-slate-700">•</span>
+              <div className="pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-2 text-[10px] uppercase font-bold tracking-wider">
+                <Link href="/request-account" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Demander un compte</Link>
+                <span className="text-slate-700 hidden sm:inline">•</span>
+                <Link href="/terms" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Conditions d'utilisation</Link>
+                <span className="text-slate-700 hidden sm:inline">•</span>
+                <Link href="/privacy" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Politique de confidentialité</Link>
+                <span className="text-slate-700 hidden sm:inline">•</span>
+                <Link href="/avis" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Avis des lecteurs</Link>
+                <span className="text-slate-700 hidden sm:inline">•</span>
+                <Link href="/feed.xml" target="_blank" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Flux RSS</Link>
+                <span className="text-slate-700 hidden sm:inline">•</span>
                 <ReviewCTA />
               </div>
             </div>
