@@ -32,32 +32,32 @@ export default function ArticleMedia({ src, alt, mode = 'preview' }: ArticleMedi
     }
     return (
       <div className="relative w-full h-full">
-        <SafeImage src={mediaSrc} alt={alt} fill sizes="60px" className="object-cover" />
+        <SafeImage src={mediaSrc} alt={alt} fill sizes="60px" className="object-cover object-center" />
       </div>
     );
   }
 
-  // Preview & Full views: Blurred background with proportional object-cover/contain
+  // Preview & Full views: Blurred ambient background with proportional foreground
   const isFull = mode === 'full';
   const containerClasses = isFull
-    ? 'w-full h-64 sm:h-[450px] relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center shadow-xl'
+    ? 'w-full h-64 sm:h-[420px] md:h-[480px] relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center shadow-xl'
     : 'w-full h-full relative flex items-center justify-center bg-slate-950 overflow-hidden';
 
   return (
     <div className={containerClasses}>
       {/* 1. Blurred background layer (fills space seamlessly without deforming) */}
-      <div className="absolute inset-0 opacity-30 blur-xl scale-110 pointer-events-none select-none">
+      <div className="absolute inset-0 opacity-40 blur-2xl scale-125 pointer-events-none select-none">
         {isVideo ? (
           <video src={mediaSrc} muted loop className="w-full h-full object-cover" />
         ) : (
-          <SafeImage src={mediaSrc} alt="" fill sizes="10vw" className="object-cover" />
+          <SafeImage src={mediaSrc} alt="" fill sizes="10vw" className="object-cover object-center" />
         )}
       </div>
 
       {/* Dark overlay for contrast */}
-      <div className="absolute inset-0 bg-slate-950/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-slate-950/30 pointer-events-none" />
 
-      {/* 2. Main layer (keeps exact aspect ratio, never deforms) */}
+      {/* 2. Main layer: preserves exact aspect ratio, never distorts */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">
         {isVideo ? (
           <video
@@ -67,7 +67,7 @@ export default function ArticleMedia({ src, alt, mode = 'preview' }: ArticleMedi
             autoPlay={!isFull}
             loop={!isFull}
             playsInline
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className={`w-full h-full ${isFull ? 'object-contain' : 'object-cover'} object-center transition-transform duration-500 group-hover:scale-105`}
           />
         ) : (
           <div className="relative w-full h-full">
@@ -76,7 +76,7 @@ export default function ArticleMedia({ src, alt, mode = 'preview' }: ArticleMedi
               alt={alt}
               fill
               sizes={isFull ? '(max-width: 1024px) 100vw, 75vw' : '(max-width: 768px) 100vw, 33vw'}
-              className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+              className={`${isFull ? 'object-contain' : 'object-cover'} object-center w-full h-full transition-transform duration-500 group-hover:scale-105`}
               priority={isFull}
             />
           </div>

@@ -18,25 +18,42 @@ const SafeImage: React.FC<SafeImageProps> = ({
   sizes,
   ...rest
 }) => {
-  const [imgSrc, setImgSrc] = useState(src);
+  const [imgSrc, setImgSrc] = useState(src || fallbackSrc);
 
   // Synchroniser imgSrc avec la prop src
   useEffect(() => {
-    setImgSrc(src);
-  }, [src]);
+    setImgSrc(src || fallbackSrc);
+  }, [src, fallbackSrc]);
+
+  const isContain = className?.includes('object-contain');
+  const objectFitValue: 'contain' | 'cover' = isContain ? 'contain' : 'cover';
 
   // Images uploadées localement
   if (src && src.startsWith('/uploads/')) {
-    const isContain = className?.includes('object-contain');
-    const objectFitValue = isContain ? 'contain' : 'cover';
-    const imgStyle = fill
-      ? { objectFit: objectFitValue, width: '100%', height: '100%', ...(style as object) }
-      : style;
+    const imgStyle: React.CSSProperties = fill
+      ? {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: objectFitValue,
+          objectPosition: 'center',
+          ...(style as object),
+        }
+      : {
+          maxWidth: '100%',
+          height: 'auto',
+          objectFit: objectFitValue,
+          ...(style as object),
+        };
 
     return (
       <img
         src={imgSrc}
-        alt={alt}
+        alt={alt || ''}
         className={className}
         style={imgStyle}
         onError={() => {
@@ -54,9 +71,11 @@ const SafeImage: React.FC<SafeImageProps> = ({
     <Image
       {...rest}
       src={imgSrc}
-      alt={alt}
+      alt={alt || ''}
       fill={fill}
       sizes={sizes}
+      className={className}
+      style={style}
       unoptimized={true}
       onError={() => {
         if (fallbackSrc && imgSrc !== fallbackSrc) {

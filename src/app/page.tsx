@@ -173,33 +173,33 @@ export default async function Home({ searchParams }: HomeProps) {
                   (() => {
                     const hero = paginatedArticles[0];
                     return (
-                      <article className="mb-8 bg-slate-900/50 rounded-2xl overflow-hidden border border-slate-800/90 hover:border-emerald-500/40 hover:shadow-2xl transition-all duration-300 group">
+                      <article className="mb-8 bg-gradient-to-b from-slate-900/80 to-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/90 hover:border-emerald-500/40 hover:shadow-2xl transition-all duration-300 group shadow-xl">
                         <div className="grid grid-cols-1 md:grid-cols-12">
-                          {/* Image Hero : grand format 16/10, jamais déformée */}
+                          {/* Image Hero : format 16/9 sur mobile, pleine hauteur sur desktop */}
                           <Link
                             href={`/articles/${hero.slug}`}
-                            className="block relative md:col-span-7 w-full aspect-[16/10] md:aspect-auto min-h-[240px] sm:min-h-[320px] md:min-h-[380px] overflow-hidden bg-slate-955"
+                            className="block relative md:col-span-7 w-full aspect-[16/9] sm:aspect-[16/10] md:aspect-auto md:h-full md:min-h-[360px] overflow-hidden bg-slate-950"
                           >
                             <ArticleMedia src={hero.imagePrincipale} alt={hero.titre} mode="preview" />
                             <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-20">
-                              <span className="bg-emerald-500 text-white font-black text-[10px] uppercase px-2.5 py-1 rounded-md shadow-lg tracking-wider">
+                              <span className="bg-emerald-500 text-white font-black text-[9px] sm:text-[10px] uppercase px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md shadow-lg tracking-wider">
                                 {hero.menu.nom}
                               </span>
                               {hero.submenu && (
-                                <span className="bg-slate-950/85 backdrop-blur-md text-slate-200 border border-slate-700/60 font-bold text-[9px] uppercase px-2 py-0.5 rounded-md shadow-lg tracking-wider">
+                                <span className="bg-slate-950/85 backdrop-blur-md text-slate-200 border border-slate-700/60 font-bold text-[8px] sm:text-[9px] uppercase px-1.5 sm:px-2 py-0.5 rounded-md shadow-lg tracking-wider">
                                   {hero.submenu.nom}
                                 </span>
                               )}
-                              <span className="bg-amber-500/95 text-slate-950 font-black text-[9px] uppercase px-2.5 py-1 rounded-md shadow-lg tracking-wider flex items-center gap-1">
+                              <span className="bg-amber-500 text-slate-950 font-black text-[8px] sm:text-[9px] uppercase px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md shadow-lg tracking-wider flex items-center gap-1">
                                 ★ À LA UNE
                               </span>
                             </div>
                           </Link>
 
                           {/* Contenu Hero */}
-                          <div className="p-4 sm:p-6 md:p-8 md:col-span-5 flex flex-col justify-between">
+                          <div className="p-4 sm:p-6 md:p-8 md:col-span-5 flex flex-col justify-between space-y-4">
                             <div>
-                              <div className="text-xs text-slate-400 flex items-center justify-between gap-2 mb-3 font-medium">
+                              <div className="text-xs text-slate-400 flex items-center justify-between gap-2 mb-2 sm:mb-3 font-medium">
                                 <span className="flex items-center gap-1.5">
                                   <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                                   {new Date(hero.datePublication).toLocaleDateString('fr-FR', {
@@ -214,24 +214,24 @@ export default async function Home({ searchParams }: HomeProps) {
                                 </span>
                               </div>
 
-                              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white hover:text-emerald-400 transition-colors leading-tight line-clamp-3">
+                              <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white hover:text-emerald-400 transition-colors leading-tight line-clamp-2 sm:line-clamp-3">
                                 <Link href={`/articles/${hero.slug}`}>
                                   {hero.titre}
                                 </Link>
                               </h2>
 
                               <div
-                                className="mt-3.5 text-xs sm:text-sm text-slate-300 line-clamp-3 sm:line-clamp-4 leading-relaxed"
+                                className="mt-2.5 sm:mt-3.5 text-xs sm:text-sm text-slate-300 line-clamp-2 sm:line-clamp-4 leading-relaxed"
                                 dangerouslySetInnerHTML={{
                                   __html: hero.contenu.replace(/<[^>]*>/g, '').substring(0, 240) + '...',
                                 }}
                               />
                             </div>
 
-                            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                              <span className="text-slate-300 flex items-center gap-2 font-medium truncate pr-2">
+                            <div className="pt-3.5 sm:pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+                              <span className="text-slate-300 flex items-center gap-2 font-medium truncate pr-1">
                                 <User className="w-4 h-4 text-emerald-400 shrink-0" />
-                                <span className="truncate font-semibold">{hero.auteur.name}</span>
+                                <span className="truncate font-semibold text-xs">{hero.auteur.name}</span>
                                 {hero.authorAverageRating > 0 && (
                                   <span className="text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-500/20 shrink-0 text-[10px]">
                                     ★ {hero.authorAverageRating.toFixed(1)}
@@ -241,7 +241,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
                               <Link
                                 href={`/articles/${hero.slug}`}
-                                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md shadow-emerald-950/40 hover:translate-x-0.5 shrink-0"
+                                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3.5 sm:px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md shadow-emerald-950/40 hover:translate-x-0.5 shrink-0 text-xs"
                               >
                                 Lire l'article <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
                               </Link>
@@ -253,14 +253,27 @@ export default async function Home({ searchParams }: HomeProps) {
                   })()
                 )}
 
-                {/* 2. GRILLE DES AUTRES ARTICLES PLUS PETITS (Adaptés tous écrans sans déformer les images) */}
+                {/* Séparateur clair pour délimiter la Une du reste des actualités sur mobile et desktop */}
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-6 mt-8 sm:mt-10">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <h2 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
+                      Autres Reportages &amp; Publications Récentes
+                    </h2>
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                    {paginatedArticles.length > 1 ? `${paginatedArticles.length - (page === 1 ? 1 : 0)} articles` : 'En continu'}
+                  </span>
+                </div>
+
+                {/* 2. GRILLE DES AUTRES ARTICLES (Adaptés tous écrans sans déformer les images) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                   {(page === 1 ? paginatedArticles.slice(1) : paginatedArticles).map((article) => (
                     <article
                       key={article.id}
-                      className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-2xl transition-all duration-300 group"
+                      className="flex flex-col bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/90 hover:border-slate-700/80 hover:shadow-2xl transition-all duration-300 group justify-between"
                     >
-                      <Link href={`/articles/${article.slug}`} className="block relative aspect-[16/10] w-full overflow-hidden bg-slate-955">
+                      <Link href={`/articles/${article.slug}`} className="block relative aspect-[16/9] sm:aspect-[16/10] w-full overflow-hidden bg-slate-950">
                         <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
                         <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 z-20">
                           <span className="bg-emerald-500 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded shadow-md tracking-wider">
@@ -296,7 +309,7 @@ export default async function Home({ searchParams }: HomeProps) {
                             </Link>
                           </h2>
                           <div
-                            className="mt-2.5 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
+                            className="mt-2 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
                             dangerouslySetInnerHTML={{
                               __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                             }}
