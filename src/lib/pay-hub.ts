@@ -28,35 +28,49 @@ const PAY_HUB_API_KEY = process.env.PAY_HUB_API_KEY || '';
 const PAY_HUB_WEBHOOK_SECRET = process.env.PAY_HUB_WEBHOOK_SECRET || '';
 
 /**
- * 1. Génère l'URL de redirection sécurisée vers Pay-Hub Checkout
+ * 1. Génère l'URL de redirection sécurisée vers Pay-Hub Checkout.
+ * Transmet les paramètres normalisés attendus par Pay-Hub (source_site, type, etc.)
  */
 export function createPayHubCheckoutUrl(options: PayHubCheckoutOptions): string {
-  const url = new URL(`${PAY_HUB_BASE_URL}/checkout`);
+  const baseUrl = PAY_HUB_BASE_URL.replace(/\/+$/, '');
+  const url = new URL(`${baseUrl}/checkout`);
 
+  // Identifiant du site satellite (compatible avec toutes les variantes de Pay-Hub)
+  url.searchParams.set('source_site', 'PRESSTONIK');
+  url.searchParams.set('sourceSite', 'PRESSTONIK');
   url.searchParams.set('source', 'PRESSTONIK');
+
+  // Montant et devise
   url.searchParams.set('amount', options.amount.toString());
   url.searchParams.set('currency', options.currency || 'USD');
+
+  // Type d'opération
+  url.searchParams.set('type', options.purpose);
   url.searchParams.set('purpose', options.purpose);
+
+  // Description & URLs de retour
   url.searchParams.set('description', options.description);
   url.searchParams.set('return_url', options.returnUrl);
   url.searchParams.set('cancel_url', options.cancelUrl);
 
+  // Utilisateur (optionnel si invité)
   if (options.userId) url.searchParams.set('user_id', options.userId);
   if (options.email) url.searchParams.set('email', options.email);
   if (options.fullName) url.searchParams.set('full_name', options.fullName);
 
-  if (options.metadata) {
-    url.searchParams.set('metadata', JSON.stringify({
-      source_site: 'PRESSTONIK',
-      ...options.metadata,
-    }));
-  }
+  // Métadonnées
+  const metadata = {
+    source_site: 'PRESSTONIK',
+    ...options.metadata,
+  };
+  url.searchParams.set('metadata', JSON.stringify(metadata));
 
   return url.toString();
 }
 
 /**
- * 2. Vérifie la signature cryptographique HMAC-SHA256 d'un webhook entrant
+ * 2. Vérifie la signature cryptographique HMAC-SHA256 d'un webhook entrant.
+ * Gère automatiquement le préfixe standard "sha256=" envoyé par Pay-Hub.
  */
 export function verifyPayHubSignature(payload: string, receivedSignature: string): boolean {
   if (!PAY_HUB_WEBHOOK_SECRET) {
@@ -65,15 +79,20 @@ export function verifyPayHubSignature(payload: string, receivedSignature: string
   }
 
   try {
+    const cleanSignature = receivedSignature.replace(/^sha256=/, '').trim();
     const computedSignature = crypto
       .createHmac('sha256', PAY_HUB_WEBHOOK_SECRET)
       .update(payload)
       .digest('hex');
 
+    if (cleanSignature.length !== computedSignature.length) {
+      return false;
+    }
+
     // Comparaison en temps constant pour éviter les attaques temporelles (timing attacks)
     return crypto.timingSafeEqual(
       Buffer.from(computedSignature, 'utf8'),
-      Buffer.from(receivedSignature, 'utf8')
+      Buffer.from(cleanSignature, 'utf8')
     );
   } catch (error) {
     console.error('[Pay-Hub] Erreur lors de la vérification de la signature:', error);
@@ -82,14 +101,15 @@ export function verifyPayHubSignature(payload: string, receivedSignature: string
 }
 
 /**
- * 3. Déclenche une demande de reversement (Payout) pour un journaliste ou vendeur
+ * 3. Déclenche une demande de reversement (Payout) pour un journaliste ou contributeur
  */
 export async function createPayHubPayout(options: PayHubPayoutOptions) {
   if (!PAY_HUB_API_KEY) {
     throw new Error('PAY_HUB_API_KEY manquante pour ordonner un payout.');
   }
 
-  const response = await fetch(`${PAY_HUB_BASE_URL}/api/payouts/create`, {
+  const baseUrl = PAY_HUB_BASE_URL.replace(/\/+$/, '');
+  const response = await fetch(`${baseUrl}/api/payouts/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

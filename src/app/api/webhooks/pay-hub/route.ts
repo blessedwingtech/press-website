@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: Request) {
   try {
     const rawBody = await req.text();
-    const signature = req.headers.get('x-payhub-signature');
+    const signature = req.headers.get('x-payhub-signature') || req.headers.get('x-hub-signature');
 
     // 1. Validation de la signature cryptographique (si configurée en prod)
     if (process.env.NODE_ENV === 'production' || process.env.PAY_HUB_WEBHOOK_SECRET) {
@@ -18,16 +18,17 @@ export async function POST(req: Request) {
     }
 
     const payload = JSON.parse(rawBody);
-    const { event, data } = payload;
+    const event = payload.eventType || payload.event;
+    const data = payload.data || {};
 
-    if (!event || !data) {
-      return NextResponse.json({ error: 'Payload webhook incomplet' }, { status: 400 });
+    if (!event) {
+      return NextResponse.json({ error: 'Payload webhook incomplet (événement manquant)' }, { status: 400 });
     }
 
-    const transactionId = data.transaction_id || data.id || `TX_${Date.now()}`;
+    const transactionId = data.transactionId || data.transaction_id || data.id || payload.eventId || `TX_${Date.now()}`;
     const idempotencyKey = `PAYHUB_TX_${transactionId}`;
 
-    // 2. Vérification d'idempotence (éviter le double traitement)
+    // 2. Vérification d'idempotence (éviter le double traitement d'un même événement)
     const alreadyProcessed = await db.auditLog.findFirst({
       where: {
         action: idempotencyKey,
@@ -39,23 +40,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true, status: 'already_processed' }, { status: 200 });
     }
 
-    const metadata = data.metadata || {};
-    const userId = data.user_id || metadata.user_id;
+    const metadata = data.metadata || payload.metadata || {};
+    const userId = data.satelliteUserId || data.userId || data.user_id || metadata.userId || metadata.user_id;
 
-    console.log(`[Pay-Hub Webhook] Traitement de l'événement : ${event}`, { transactionId, userId });
+    console.log(`[Pay-Hub Webhook] Traitement de l'événement : ${event}`, { transactionId, userId, amount: data.amount });
 
     // 3. Traitement métier selon l'événement
     switch (event) {
       case 'payment.completed':
       case 'subscription.created': {
-        const itemType = metadata.type || 'DONATION';
+        const itemType = data.type || metadata.type || 'DONATION';
 
-        // A. Activation d'un abonnement lecteur ou journaliste
+        // A. Activation d'un abonnement lecteur VIP
         if (itemType === 'SUBSCRIPTION' && userId) {
           const targetRole = metadata.target_role || 'reader_vip';
           await db.user.update({
             where: { id: userId },
             data: { role: targetRole },
+          }).catch((err) => {
+            console.error(`[Pay-Hub] Utilisateur ${userId} introuvable pour upgrade :`, err);
           });
         }
 
@@ -67,12 +70,14 @@ export async function POST(req: Request) {
               active: true,
               ownerId: userId || undefined,
             },
+          }).catch((err) => {
+            console.error(`[Pay-Hub] Annonce ${metadata.ad_id} introuvable :`, err);
           });
         }
 
-        // C. Don ou soutien financier
+        // C. Don ou soutien financier à la rédaction
         if (itemType === 'DONATION') {
-          console.log(`[Pay-Hub] Don reçu de ${data.amount} ${data.currency} par l'utilisateur ${userId || 'Anonyme'}`);
+          console.log(`[Pay-Hub] Don reçu de ${data.amount} ${data.currency || 'USD'} par l'utilisateur ${userId || 'Anonyme'}`);
         }
         break;
       }
@@ -84,18 +89,18 @@ export async function POST(req: Request) {
           await db.user.update({
             where: { id: userId },
             data: { role: 'reader' },
-          });
+          }).catch(() => {});
         }
         break;
       }
 
       case 'payout.succeeded': {
-        console.log(`[Pay-Hub] Reversement réussi pour le journaliste/bénéficiaire ${data.recipient_id} : ${data.amount} ${data.currency}`);
+        console.log(`[Pay-Hub] Reversement réussi pour le journaliste/bénéficiaire ${data.recipientId || data.sellerId} : ${data.amount} ${data.currency}`);
         break;
       }
 
       default:
-        console.log(`[Pay-Hub] Événement ignoré ou non géré : ${event}`);
+        console.log(`[Pay-Hub] Événement ignoré ou non spécifique : ${event}`);
     }
 
     // 4. Enregistrement de l'idempotence et de l'audit
@@ -106,12 +111,15 @@ export async function POST(req: Request) {
           event,
           amount: data.amount,
           currency: data.currency,
+          provider: data.provider,
           userId,
           metadata,
           processedAt: new Date().toISOString(),
         }),
         userId: userId || null,
       },
+    }).catch((err) => {
+      console.warn('[Pay-Hub Webhook] Impossible d\'écrire l\'audit log :', err);
     });
 
     return NextResponse.json({ received: true, status: 'processed' }, { status: 200 });
