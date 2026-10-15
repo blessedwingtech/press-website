@@ -266,30 +266,35 @@ export default async function Home({ searchParams }: HomeProps) {
                   </span>
                 </div>
 
-                {/* 2. GRILLE DES AUTRES ARTICLES (Adaptés tous écrans sans déformer les images) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {/* 2. GRILLE DES AUTRES ARTICLES (Compact horizontal sur mobile, Cartes complètes sur grand écran) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-5">
                   {(page === 1 ? paginatedArticles.slice(1) : paginatedArticles).map((article) => (
                     <article
                       key={article.id}
-                      className="flex flex-col bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/90 hover:border-slate-700/80 hover:shadow-2xl transition-all duration-300 group justify-between"
+                      className="flex flex-row sm:flex-col bg-slate-900/40 hover:bg-slate-900/70 rounded-2xl overflow-hidden border border-slate-800/90 hover:border-slate-700/80 hover:shadow-xl transition-all duration-300 group p-2.5 sm:p-0 gap-3 sm:gap-0 justify-between"
                     >
-                      <Link href={`/articles/${article.slug}`} className="block relative aspect-[16/9] sm:aspect-[16/10] w-full overflow-hidden bg-slate-950">
+                      {/* Vignette : compacte (w-28 h-24) sur mobile, grand format sur grand écran */}
+                      <Link
+                        href={`/articles/${article.slug}`}
+                        className="block relative w-28 h-24 sm:w-full sm:h-44 shrink-0 rounded-xl sm:rounded-t-2xl sm:rounded-b-none overflow-hidden bg-slate-950"
+                      >
                         <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
-                        <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 z-20">
-                          <span className="bg-emerald-500 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded shadow-md tracking-wider">
+                        <div className="absolute top-1.5 left-1.5 sm:top-2.5 sm:left-2.5 flex flex-wrap gap-1 z-20">
+                          <span className="bg-emerald-500 text-white font-black text-[8px] sm:text-[9px] uppercase px-1.5 sm:px-2 py-0.5 rounded shadow-md tracking-wider">
                             {article.menu.nom}
                           </span>
                           {article.submenu && (
-                            <span className="bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800 font-bold text-[8px] uppercase px-1.5 py-0.5 rounded shadow-md tracking-wider">
+                            <span className="hidden sm:inline-block bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800 font-bold text-[8px] uppercase px-1.5 py-0.5 rounded shadow-md tracking-wider">
                               {article.submenu.nom}
                             </span>
                           )}
                         </div>
                       </Link>
                       
-                      <div className="p-4 flex-grow flex flex-col justify-between">
+                      {/* Contenu textuel : concis et ultra-lisible sur mobile */}
+                      <div className="flex-grow flex flex-col justify-between min-w-0 sm:p-4">
                         <div>
-                          <span className="text-[10px] text-slate-450 flex items-center justify-between gap-1 mb-2 font-medium">
+                          <span className="text-[9px] sm:text-[10px] text-slate-450 flex items-center justify-between gap-1 mb-1 sm:mb-2 font-medium">
                             <span className="flex items-center gap-1 truncate">
                               <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
                               {new Date(article.datePublication).toLocaleDateString('fr-FR', {
@@ -303,19 +308,19 @@ export default async function Home({ searchParams }: HomeProps) {
                               {article.views}
                             </span>
                           </span>
-                          <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+                          <h2 className="text-xs sm:text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                             <Link href={`/articles/${article.slug}`}>
                               {article.titre}
                             </Link>
                           </h2>
                           <div
-                            className="mt-2 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
+                            className="hidden sm:block mt-2 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
                             dangerouslySetInnerHTML={{
                               __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                             }}
                           />
                         </div>
-                        <div className="mt-3 pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px]">
+                        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px]">
                           <span className="text-slate-400 flex items-center gap-1 font-medium truncate pr-1">
                             <User className="w-3 h-3 text-slate-500 shrink-0" />
                             <span className="truncate">{article.auteur.name}</span>
@@ -388,21 +393,21 @@ export default async function Home({ searchParams }: HomeProps) {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-6">
                 {cat.articles.map((article) => (
                   <div
                     key={article.id}
-                    className="bg-slate-900/20 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-750/60 hover:shadow-xl transition-all duration-300 flex flex-col group"
+                    className="bg-slate-900/20 hover:bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-750/60 hover:shadow-xl transition-all duration-300 flex flex-row sm:flex-col group p-2.5 sm:p-0 gap-3 sm:gap-0 justify-between"
                   >
-                    <Link href={`/articles/${article.slug}`} className="block relative h-36 overflow-hidden bg-slate-955">
+                    <Link href={`/articles/${article.slug}`} className="block relative w-24 h-20 sm:w-full sm:h-36 shrink-0 rounded-lg sm:rounded-none overflow-hidden bg-slate-955">
                       <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
                       {article.submenu && (
-                        <span className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800/60 text-[8px] font-bold uppercase px-2 py-0.5 rounded tracking-wide shadow-md">
+                        <span className="hidden sm:inline-block absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800/60 text-[8px] font-bold uppercase px-2 py-0.5 rounded tracking-wide shadow-md">
                           {article.submenu.nom}
                         </span>
                       )}
                     </Link>
-                    <div className="p-4 flex-grow flex flex-col justify-between">
+                    <div className="flex-grow flex flex-col justify-between min-w-0 sm:p-4">
                       <div>
                         <span className="text-[9px] text-slate-550 block mb-1 font-semibold">
                           {new Date(article.datePublication).toLocaleDateString('fr-FR')}
@@ -411,7 +416,7 @@ export default async function Home({ searchParams }: HomeProps) {
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>
                         </h3>
                       </div>
-                      <p className="text-[10px] text-slate-500 mt-3 pt-2 border-t border-slate-800/50 truncate font-medium">
+                      <p className="text-[10px] text-slate-500 mt-2 sm:mt-3 pt-1.5 sm:pt-2 border-t border-slate-800/50 truncate font-medium">
                         Par {article.auteur.name}
                       </p>
                     </div>
