@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { BookOpen, Users, Landmark, ListCollapse, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { BookOpen, Users, Landmark, ListCollapse, Eye, EyeOff, ShieldCheck, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { toggleDemoDataVisibility } from './actions';
 
@@ -10,6 +10,7 @@ export default async function AdminDashboardOverview() {
   const usersCount = await db.user.count();
   const adsCount = await db.ad.count({ where: { active: true } });
   const menusCount = await db.menu.count();
+  const pendingPayoutsCount = await db.payout.count({ where: { status: 'PENDING' } });
 
   const journalistsCount = await db.user.count({ where: { role: 'journalist' } });
   const adminsCount = await db.user.count({ where: { role: 'admin' } });
@@ -82,6 +83,31 @@ export default async function AdminDashboardOverview() {
           </form>
         </div>
       </div>
+
+      {/* Alerte Payouts en attente */}
+      {pendingPayoutsCount > 0 && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3">
+            <span className="p-2 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
+              <Wallet className="w-5 h-5" />
+            </span>
+            <div>
+              <p className="text-xs font-black text-amber-400 uppercase tracking-wider">
+                {pendingPayoutsCount} Demande{pendingPayoutsCount > 1 ? 's' : ''} de reversement (Payout) en attente
+              </p>
+              <p className="text-[11px] text-slate-350 mt-0.5">
+                Des journalistes ont demandé le retrait de leurs pourboires. Veuillez vérifier et valider les virements.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/payouts"
+            className="px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider bg-amber-500 hover:bg-amber-400 text-slate-950 transition-colors whitespace-nowrap text-center"
+          >
+            Gérer les Retraits
+          </Link>
+        </div>
+      )}
 
       {/* Grille de cartes statistiques */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

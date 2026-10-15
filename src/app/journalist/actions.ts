@@ -185,11 +185,12 @@ export async function updateJournalistProfile(data: {
 
 /**
  * Demande de reversement (Payout) du solde collecté par un journaliste
+ * Supporte MonCash, PayPal, Carte Bancaire et Virement Bancaire
  */
 export async function requestPayoutAction(data: {
   amount: number;
   currency: 'HTG' | 'USD';
-  method: 'MONCASH' | 'BANK_TRANSFER';
+  method: 'MONCASH' | 'PAYPAL' | 'CARD' | 'BANK_TRANSFER';
   methodDetails: string;
 }) {
   const session = await getServerSession(authOptions);
@@ -230,7 +231,10 @@ export async function requestPayoutAction(data: {
     },
   });
 
-  await logAction('PAYOUT_REQUEST', `Demande de reversement de ${data.amount} ${data.currency} par ${user.name} (${data.method})`);
+  await logAction(
+    'PAYOUT_REQUEST',
+    `Demande de reversement de ${data.amount} ${data.currency} par ${user.name} via ${data.method} (${data.methodDetails})`
+  );
 
   revalidatePath('/journalist');
   return { success: true, payoutId: payout.id };

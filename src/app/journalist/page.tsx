@@ -30,6 +30,12 @@ export default async function JournalistDashboard() {
     where: { authorId: userId },
   });
 
+  const recentPayouts = await db.payout.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    take: 5,
+  });
+
   // Récupérer les articles rédigés par l'utilisateur connecté
   const articles = await db.article.findMany({
     where: { auteurId: userId },
@@ -50,6 +56,7 @@ export default async function JournalistDashboard() {
         initialWhatsappChannel={user?.whatsappChannel ?? null}
         initialBio={user?.bio ?? null}
         initialTwitter={user?.twitter ?? null}
+        recentPayouts={recentPayouts}
       />
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
