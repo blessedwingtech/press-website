@@ -1,4 +1,6 @@
 import { db } from '@/lib/db';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import AdRotator from './AdRotator';
 
 interface AdSlotProps {
@@ -6,6 +8,12 @@ interface AdSlotProps {
 }
 
 export default async function AdSlot({ position }: AdSlotProps) {
+  // Les membres VIP / PRO bénéficient d'une expérience 100% sans publicité
+  const session = await getServerSession(authOptions);
+  if (session?.user && (session.user as any).role === 'reader_vip') {
+    return null;
+  }
+
   // 1. Récupérer la configuration de rotation
   const setting = await db.adSetting.findUnique({
     where: { position },

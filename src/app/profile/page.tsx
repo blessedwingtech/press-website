@@ -17,7 +17,8 @@ import {
   PenTool,
   TrendingUp,
   ExternalLink,
-  MousePointerClick
+  MousePointerClick,
+  Crown
 } from 'lucide-react';
 
 export const revalidate = 0; // Pas de cache pour afficher les statistiques à jour
@@ -53,10 +54,16 @@ export default async function ProfilePage() {
       border: 'border-amber-500/20'
     },
     reader: {
-      label: 'Lecteur Privilégié',
+      label: 'Lecteur Standard',
       color: 'text-teal-400',
       bg: 'bg-teal-500/10',
       border: 'border-teal-500/20'
+    },
+    reader_vip: {
+      label: 'Membre VIP / PRO',
+      color: 'text-amber-400',
+      bg: 'bg-gradient-to-r from-amber-500/20 to-emerald-500/20',
+      border: 'border-amber-500/40'
     }
   };
 
@@ -164,6 +171,55 @@ export default async function ProfilePage() {
                 <p className="text-[10px] text-slate-500 uppercase font-extrabold tracking-wider">Note Moyenne ({stats.ratingsCount} votes)</p>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Section VIP : Affichage des privilèges ou Bannière d'Upgrade */}
+        {user.role === 'reader_vip' ? (
+          <div className="bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-slate-950 border border-amber-500/30 p-5 sm:p-6 rounded-2xl relative z-10 space-y-3">
+            <div className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-amber-400 fill-amber-400" />
+              <h2 className="text-sm font-black text-white uppercase tracking-wider">
+                Vos Privilèges PressTonik VIP Actifs
+              </h2>
+            </div>
+            <p className="text-xs text-slate-350">
+              Merci pour votre soutien précieux à la rédaction indépendante. Vous bénéficiez des avantages suivants :
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 text-xs">
+              <div className="flex items-center gap-2 text-emerald-350 font-semibold bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                <span className="text-emerald-400 font-bold">✓</span>
+                <span>Lecture 100% Sans Publicité</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-350 font-semibold bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                <span className="text-emerald-400 font-bold">✓</span>
+                <span>Dossiers d'investigation exclusifs</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-350 font-semibold bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                <span className="text-emerald-400 font-bold">✓</span>
+                <span>Badge VIP Doré certifié</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-350 font-semibold bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                <span className="text-emerald-400 font-bold">✓</span>
+                <span>Support d'écoute et alertes flash</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/30 border border-emerald-500/30 p-5 sm:p-6 rounded-2xl relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-amber-400 font-black text-xs uppercase tracking-wider">
+                <Crown className="w-4 h-4" /> Passez à PressTonik VIP
+              </div>
+              <p className="text-sm font-black text-white">Supprimez les pubs et débloquez les enquêtes exclusives</p>
+              <p className="text-xs text-slate-400">À partir de 4.99 $ / mois ou 650 HTG via MonCash, CB ou PayPal.</p>
+            </div>
+            <Link
+              href="/abonnement"
+              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-950/50 shrink-0 text-center flex items-center justify-center gap-1.5"
+            >
+              Découvrir les offres <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         )}
 

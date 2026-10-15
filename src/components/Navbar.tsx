@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { Menu as MenuIcon, X, ChevronDown, User, Shield, PenTool, LogOut, LogIn, Search } from 'lucide-react';
+import { Menu as MenuIcon, X, ChevronDown, User, Shield, PenTool, LogOut, LogIn, Search, Crown } from 'lucide-react';
 import Logo from './Logo';
 import { useRouter } from 'next/navigation';
 
@@ -126,6 +126,17 @@ export default function Navbar({ menus }: NavbarProps) {
               />
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </form>
+
+            {/* Bouton Accès VIP */}
+            <Link
+              href="/abonnement"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/20 to-emerald-500/20 border border-amber-500/30 text-amber-300 hover:border-amber-400 hover:text-white transition-all shadow-sm shrink-0"
+              title="Découvrir les offres PressTonik VIP"
+            >
+              <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+              <span>VIP</span>
+            </Link>
+
             {session ? (
               <div className="relative">
                 <button
@@ -167,6 +178,14 @@ export default function Navbar({ menus }: NavbarProps) {
                           Espace Rédacteur
                         </Link>
                       )}
+                      <Link
+                        href="/abonnement"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-amber-300 hover:bg-slate-700 transition-colors font-semibold"
+                      >
+                        <Crown className="w-4 h-4 text-amber-400 fill-amber-400" />
+                        Abonnement VIP
+                      </Link>
                       <Link
                         href="/profile"
                         onClick={() => setUserDropdownOpen(false)}
@@ -317,6 +336,14 @@ export default function Navbar({ menus }: NavbarProps) {
                       Espace Rédacteur
                     </Link>
                   )}
+                  <Link
+                    href="/abonnement"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold text-amber-300 bg-amber-500/10 border border-amber-500/20"
+                  >
+                    <Crown className="w-4 h-4 text-amber-400 fill-amber-400" />
+                    Abonnement VIP
+                  </Link>
                   <Link
                     href="/profile"
                     onClick={() => setMobileMenuOpen(false)}

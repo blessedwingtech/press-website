@@ -8,6 +8,7 @@ import RatingSystem from '@/components/RatingSystem';
 import ShareButton from '@/components/ShareButton';
 import { cookies } from 'next/headers';
 import ViewsTrigger from '@/components/ViewsTrigger';
+import SupportBox from '@/components/SupportBox';
 
 import { Metadata, ResolvingMetadata } from 'next';
 
@@ -212,6 +213,13 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
           <div
             className="prose prose-invert prose-emerald max-w-none text-slate-350 leading-relaxed text-sm sm:text-base space-y-4"
             dangerouslySetInnerHTML={{ __html: article.contenu }}
+          />
+
+          {/* Bloc de Soutien / Pourboire pour les journalistes via Pay-Hub */}
+          <SupportBox
+            articleId={article.id}
+            articleTitle={article.titre}
+            authorName={article.auteur?.name}
           />
         </div>
 
