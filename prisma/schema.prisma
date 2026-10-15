@@ -12,15 +12,22 @@ model User {
   name             String
   email            String   @unique
   password         String
-  role             String   @default("reader")
+  role             String   @default("reader") // reader, reader_vip, journalist, admin
   status           String   @default("active")
   resetToken       String?  @unique
   resetTokenExpiry DateTime?
   profilePhoto     String?
+  bio              String?
+  whatsappChannel  String?  // Canal / Groupe WhatsApp personnel du journaliste
+  twitter          String?
+  balanceHTG       Float    @default(0) // Solde disponible en Gourdes (85% des dons)
+  balanceUSD       Float    @default(0) // Solde disponible en USD (85% des dons)
   createdAt        DateTime @default(now())
   articles         Article[]
-  galleryImages GalleryImage[]
-  ads           Ad[]           @relation("UserAds")
+  galleryImages    GalleryImage[]
+  ads              Ad[]           @relation("UserAds")
+  donationsReceived Donation[]    @relation("AuthorDonations")
+  payouts          Payout[]
 }
 
 model Menu {
@@ -62,14 +69,51 @@ model Article {
   actualitesSubmenu    SubMenu? @relation("ActualitesSubMenu", fields: [actualitesSubmenuId], references: [id], onDelete: SetNull)
   published            Boolean  @default(true)
   isDemo               Boolean  @default(false)
+  isVip                Boolean  @default(false) // 🔒 Enquête Exclusive réservée aux membres VIP
   views                Int      @default(0)
   ratings              Rating[]
+  donations            Donation[]
 
   @@index([menuId])
   @@index([submenuId])
   @@index([datePublication])
   @@index([slug])
   @@index([actualitesSubmenuId])
+}
+
+model Donation {
+  id            String   @id @default(uuid())
+  transactionId String   @unique
+  amount        Float
+  currency      String   @default("USD")
+  netAmount     Float    // 85% pour le journaliste
+  platformFee   Float    // 15% pour PressTonik
+  authorId      String
+  author        User     @relation("AuthorDonations", fields: [authorId], references: [id], onDelete: Cascade)
+  articleId     String?
+  article       Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  donorName     String?
+  donorEmail    String?
+  createdAt     DateTime @default(now())
+
+  @@index([authorId])
+  @@index([articleId])
+}
+
+model Payout {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount        Float
+  currency      String   @default("HTG")
+  method        String   // "MONCASH", "BANK_TRANSFER"
+  methodDetails String   // Numéro MonCash ou coordonnées de virement
+  status        String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, REJECTED
+  note          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Ad {
@@ -141,4 +185,3 @@ model AccountRequest {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
-

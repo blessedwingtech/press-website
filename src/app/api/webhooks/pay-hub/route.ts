@@ -75,9 +75,54 @@ export async function POST(req: Request) {
           });
         }
 
-        // C. Don ou soutien financier à la rédaction
+        // C. Don ou soutien financier avec partage 85% Journaliste / 15% PressTonik
         if (itemType === 'DONATION') {
-          console.log(`[Pay-Hub] Don reçu de ${data.amount} ${data.currency || 'USD'} par l'utilisateur ${userId || 'Anonyme'}`);
+          const amount = Number(data.amount) || 0;
+          const currency = (data.currency || 'USD').toUpperCase();
+          const authorId = metadata.authorId;
+          const articleId = metadata.articleId;
+
+          // Règle financière convenue : 85% au journaliste indépendant, 15% pour PressTonik
+          const platformFee = Math.round(amount * 0.15 * 100) / 100;
+          const netAmount = Math.round((amount - platformFee) * 100) / 100;
+
+          if (authorId) {
+            // Créer l'enregistrement de don
+            await db.donation.create({
+              data: {
+                transactionId,
+                amount,
+                currency,
+                netAmount,
+                platformFee,
+                authorId,
+                articleId: articleId || null,
+                donorName: data.fullName || metadata.donorName || null,
+                donorEmail: data.email || metadata.donorEmail || null,
+              },
+            }).catch((err) => console.error('[Pay-Hub] Erreur création don :', err));
+
+            // Créditer le solde du journaliste
+            if (currency === 'HTG') {
+              await db.user.update({
+                where: { id: authorId },
+                data: {
+                  balanceHTG: { increment: netAmount },
+                },
+              }).catch(() => {});
+            } else {
+              await db.user.update({
+                where: { id: authorId },
+                data: {
+                  balanceUSD: { increment: netAmount },
+                },
+              }).catch(() => {});
+            }
+
+            console.log(`[Pay-Hub] Don de ${amount} ${currency} crédité à l'auteur ${authorId} (Net: ${netAmount}, Commission PressTonik: ${platformFee})`);
+          } else {
+            console.log(`[Pay-Hub] Don général reçu de ${amount} ${currency} pour la rédaction.`);
+          }
         }
         break;
       }

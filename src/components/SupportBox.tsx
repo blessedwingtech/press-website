@@ -9,12 +9,14 @@ interface SupportBoxProps {
   articleId?: string;
   articleTitle?: string;
   authorName?: string;
+  authorId?: string;
 }
 
 export default function SupportBox({
   articleId,
   articleTitle,
   authorName,
+  authorId,
 }: SupportBoxProps) {
   const { data: session } = useSession();
   const [currency, setCurrency] = useState<'USD' | 'HTG'>('USD');
@@ -59,6 +61,7 @@ export default function SupportBox({
         articleId,
         articleTitle,
         authorName,
+        authorId,
         type: 'DONATION',
       },
     });

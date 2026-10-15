@@ -6,12 +6,29 @@ import { Calendar, Plus, MessageSquarePlus, Trash2, PenTool } from 'lucide-react
 // import Image from 'next/image';
 import SafeImage from '@/components/SafeImage'; 
 import DeleteArticleButton from '@/components/DeleteArticleButton';
+import JournalistMonetizationCard from '@/components/JournalistMonetizationCard';
 
 export const revalidate = 0; // Charger les données dynamiquement
 
 export default async function JournalistDashboard() {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as any)?.id;
+
+  // Récupérer les informations financières et profil du journaliste
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      balanceHTG: true,
+      balanceUSD: true,
+      whatsappChannel: true,
+      bio: true,
+      twitter: true,
+    },
+  });
+
+  const donationsCount = await db.donation.count({
+    where: { authorId: userId },
+  });
 
   // Récupérer les articles rédigés par l'utilisateur connecté
   const articles = await db.article.findMany({
@@ -23,10 +40,17 @@ export default async function JournalistDashboard() {
     },
   });
 
-   
-
   return (
-    <div className="space-y-6 w-full">
+    <div className="space-y-8 w-full">
+      {/* 1. Espace Monétisation 85/15 & Canal WhatsApp Personnel */}
+      <JournalistMonetizationCard
+        balanceHTG={user?.balanceHTG ?? 0}
+        balanceUSD={user?.balanceUSD ?? 0}
+        donationsCount={donationsCount}
+        initialWhatsappChannel={user?.whatsappChannel ?? null}
+        initialBio={user?.bio ?? null}
+        initialTwitter={user?.twitter ?? null}
+      />
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">

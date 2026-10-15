@@ -17,6 +17,7 @@ const articleSchema = z.object({
   alsoInActualites: z.boolean().default(false),
   actualitesSubmenuId: z.string().nullable().optional(),
   published: z.boolean().default(true),
+  isVip: z.boolean().default(false),
 });
 
 export async function saveArticle(
@@ -30,6 +31,7 @@ export async function saveArticle(
     alsoInActualites?: boolean;
     actualitesSubmenuId?: string | null;
     published?: boolean;
+    isVip?: boolean;
   }
 ) {
   const session = await getServerSession(authOptions);
@@ -72,10 +74,11 @@ export async function saveArticle(
         alsoInActualites: validatedData.alsoInActualites,
         actualitesSubmenuId: validatedData.actualitesSubmenuId || null,
         published: validatedData.published,
+        isVip: validatedData.isVip,
       },
     });
 
-    await logAction('ARTICLE_UPDATE', `Article mis à jour : "${validatedData.titre}" (slug: ${finalSlug})`);
+    await logAction('ARTICLE_UPDATE', `Article mis à jour : "${validatedData.titre}" (slug: ${finalSlug}, VIP: ${validatedData.isVip})`);
   } else {
     // Création d'un nouvel article
     await db.article.create({
@@ -90,10 +93,11 @@ export async function saveArticle(
         actualitesSubmenuId: validatedData.actualitesSubmenuId || null,
         auteurId: (session.user as any).id,
         published: validatedData.published,
+        isVip: validatedData.isVip,
       },
     });
 
-    await logAction('ARTICLE_CREATE', `Nouvel article rédigé : "${validatedData.titre}" (slug: ${finalSlug})`);
+    await logAction('ARTICLE_CREATE', `Nouvel article rédigé : "${validatedData.titre}" (slug: ${finalSlug}, VIP: ${validatedData.isVip})`);
   }
 
   // Mettre à jour le cache de rendu Next.js
@@ -151,4 +155,83 @@ export async function updateArticleCoverImage(articleId: string, imageUrl: strin
   revalidatePath('/journalist');
   revalidatePath(`/articles/${article.slug}`);
   return { success: true };
+}
+
+/**
+ * Mise à jour du profil du journaliste indépendant (Canal WhatsApp personnel, Bio, Twitter)
+ */
+export async function updateJournalistProfile(data: {
+  bio?: string;
+  whatsappChannel?: string;
+  twitter?: string;
+}) {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  if (!userId) throw new Error('Non authentifié');
+
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      bio: data.bio?.trim() || null,
+      whatsappChannel: data.whatsappChannel?.trim() || null,
+      twitter: data.twitter?.trim() || null,
+    },
+  });
+
+  revalidatePath('/journalist');
+  revalidatePath('/profile');
+  return { success: true };
+}
+
+/**
+ * Demande de reversement (Payout) du solde collecté par un journaliste
+ */
+export async function requestPayoutAction(data: {
+  amount: number;
+  currency: 'HTG' | 'USD';
+  method: 'MONCASH' | 'BANK_TRANSFER';
+  methodDetails: string;
+}) {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  if (!userId) throw new Error('Non authentifié');
+
+  const user = await db.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error('Utilisateur non trouvé');
+
+  const availableBalance = data.currency === 'HTG' ? user.balanceHTG : user.balanceUSD;
+
+  if (data.amount <= 0 || data.amount > availableBalance) {
+    throw new Error(`Solde insuffisant. Votre solde disponible est de ${availableBalance} ${data.currency}`);
+  }
+
+  // Déduire le montant demandé du solde
+  if (data.currency === 'HTG') {
+    await db.user.update({
+      where: { id: userId },
+      data: { balanceHTG: { decrement: data.amount } },
+    });
+  } else {
+    await db.user.update({
+      where: { id: userId },
+      data: { balanceUSD: { decrement: data.amount } },
+    });
+  }
+
+  // Créer l'enregistrement de payout en attente
+  const payout = await db.payout.create({
+    data: {
+      userId,
+      amount: data.amount,
+      currency: data.currency,
+      method: data.method,
+      methodDetails: data.methodDetails,
+      status: 'PENDING',
+    },
+  });
+
+  await logAction('PAYOUT_REQUEST', `Demande de reversement de ${data.amount} ${data.currency} par ${user.name} (${data.method})`);
+
+  revalidatePath('/journalist');
+  return { success: true, payoutId: payout.id };
 }

@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { saveArticle } from '@/app/journalist/actions';
-import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw, Image as ImageIcon, X, Check, Search } from 'lucide-react';
+import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw, Image as ImageIcon, X, Check, Search, Crown } from 'lucide-react';
 import Link from 'next/link';
 import ArticleMedia from './ArticleMedia';
 import SafeImage from './SafeImage';
@@ -54,6 +54,7 @@ interface ArticleFormProps {
     submenuId: string | null;
     alsoInActualites?: boolean;
     actualitesSubmenuId?: string | null;
+    isVip?: boolean;
   };
 }
 
@@ -71,6 +72,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
   const [alsoInActualites, setAlsoInActualites] = useState(initialData?.alsoInActualites || false);
   const [actualitesSubmenuId, setActualitesSubmenuId] = useState(initialData?.actualitesSubmenuId || '');
   const [published, setPublished] = useState((initialData as any)?.published ?? true);
+  const [isVip, setIsVip] = useState((initialData as any)?.isVip || false);
 
   const [uploadingMain, setUploadingMain] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -348,6 +350,7 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
         alsoInActualites,
         actualitesSubmenuId: alsoInActualites ? actualitesSubmenuId || null : null,
         published,
+        isVip,
       });
 
       if (res.success) {
@@ -514,26 +517,50 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
               )}
             </div>
 
-            {/* Statut de publication */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-8">
-              <label className="flex items-start gap-3 cursor-pointer group">
-                <div className="relative flex items-center justify-center mt-0.5">
-                  <input
-                    type="checkbox"
-                    checked={published}
-                    onChange={(e) => setPublished(e.target.checked)}
-                    className="w-4 h-4 rounded text-emerald-500 border-slate-700 bg-slate-950 focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                  />
-                </div>
-                <div>
-                  <span className="block text-sm font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">
-                    Publier publiquement
-                  </span>
-                  <span className="block text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                    Si décoché, l'article sera sauvegardé en tant que brouillon et ne sera pas visible par les lecteurs.
-                  </span>
-                </div>
-              </label>
+            {/* Statut de publication & Enquête Exclusive VIP */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="relative flex items-center justify-center mt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={published}
+                      onChange={(e) => setPublished(e.target.checked)}
+                      className="w-4 h-4 rounded text-emerald-500 border-slate-700 bg-slate-950 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                    />
+                  </div>
+                  <div>
+                    <span className="block text-sm font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">
+                      Publier publiquement
+                    </span>
+                    <span className="block text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                      Si décoché, l'article sera sauvegardé en brouillon privé.
+                    </span>
+                  </div>
+                </label>
+              </div>
+
+              <div className="bg-gradient-to-r from-amber-500/10 via-slate-900 to-slate-900 border border-amber-500/30 rounded-xl p-5">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="relative flex items-center justify-center mt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={isVip}
+                      onChange={(e) => setIsVip(e.target.checked)}
+                      className="w-4 h-4 rounded text-amber-500 border-slate-700 bg-slate-950 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                    />
+                  </div>
+                  <div>
+                    <span className="block text-sm font-black text-amber-300 group-hover:text-amber-200 transition-colors flex items-center gap-1.5">
+                      <Crown className="w-4 h-4 text-amber-400 fill-amber-400" />
+                      Enquête Exclusive VIP
+                    </span>
+                    <span className="block text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                      Réservé aux membres VIP. Protégé par paywall sécurisé côté serveur.
+                    </span>
+                  </div>
+                </label>
+              </div>
             </div>
 
             {/* Illustration image/video selector */}
