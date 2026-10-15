@@ -48,6 +48,21 @@ export function createPayHubCheckoutUrl(options: PayHubCheckoutOptions): string 
   url.searchParams.set('type', options.purpose);
   url.searchParams.set('purpose', options.purpose);
 
+  // Branding dynamique pour Pay-Hub
+  url.searchParams.set('site_name', 'PressTonik');
+  url.searchParams.set('siteName', 'PressTonik');
+  url.searchParams.set('accent_color', '#10b981'); // Emerald
+  url.searchParams.set('accentColor', '#10b981');
+  url.searchParams.set('logo_text', 'PT');
+  url.searchParams.set('logoText', 'PT');
+
+  // Webhook dynamique de notification
+  const defaultWebhookUrl = options.returnUrl.startsWith('http')
+    ? new URL('/api/webhooks/pay-hub', options.returnUrl).toString()
+    : 'https://press.bittonik.com/api/webhooks/pay-hub';
+  url.searchParams.set('webhook_url', defaultWebhookUrl);
+  url.searchParams.set('webhookUrl', defaultWebhookUrl);
+
   // Description & URLs de retour
   url.searchParams.set('description', options.description);
   url.searchParams.set('return_url', options.returnUrl);
