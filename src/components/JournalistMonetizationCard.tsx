@@ -16,8 +16,12 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  Tag,
+  Loader2,
+  Gift,
 } from 'lucide-react';
 import { updateJournalistProfile, requestPayoutAction } from '@/app/journalist/actions';
+import { applyFreePromoCodeAction } from '@/app/actions/promo';
 
 export interface PayoutHistoryItem {
   id: string;
@@ -86,6 +90,40 @@ export default function JournalistMonetizationCard({
 
   const [payoutLoading, setPayoutLoading] = useState(false);
   const [payoutMsg, setPayoutMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Code Promo Journaliste PRO
+  const [proPromoInput, setProPromoInput] = useState('');
+  const [loadingProPromo, setLoadingProPromo] = useState(false);
+  const [proPromoError, setProPromoError] = useState<string | null>(null);
+  const [proSuccessMsg, setProSuccessMsg] = useState<string | null>(null);
+
+  const handleApplyProPromo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!proPromoInput.trim()) return;
+
+    setLoadingProPromo(true);
+    setProPromoError(null);
+
+    try {
+      const res = await applyFreePromoCodeAction({
+        code: proPromoInput.trim(),
+        targetPlan: 'JOURNALIST_PRO',
+      });
+
+      if (res.success) {
+        setProSuccessMsg(res.message || 'Félicitations ! Statut Journaliste PRO activé immédiatement.');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        setProPromoError(res.error || 'Code promo invalide pour l\'accès PRO.');
+      }
+    } catch (err: any) {
+      setProPromoError(err.message || 'Erreur lors de l\'activation.');
+    } finally {
+      setLoadingProPromo(false);
+    }
+  };
 
   // Changer de méthode ajuste intelligemment la devise par défaut
   const handleSelectMethod = (method: PayoutMethodType) => {
@@ -231,13 +269,50 @@ export default function JournalistMonetizationCard({
               </span>
             </div>
 
-            {isPro && (
+            {isPro ? (
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5 text-[11px] text-amber-300 flex items-center gap-2">
                 <span className="text-base">⚡</span>
                 <div>
                   <strong className="block text-amber-200">Retrait Express Garanti</strong>
                   Traitement prioritaire en moins de 4 heures ouvré.
                 </div>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-slate-800/80">
+                {proSuccessMsg ? (
+                  <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>{proSuccessMsg}</span>
+                  </div>
+                ) : (
+                  <form onSubmit={handleApplyProPromo} className="space-y-1.5">
+                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1">
+                      <Gift className="w-3 h-3" /> Code Promo Journaliste PRO :
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={proPromoInput}
+                        onChange={(e) => {
+                          setProPromoInput(e.target.value.toUpperCase());
+                          setProPromoError(null);
+                        }}
+                        placeholder="Ex: PRO100"
+                        className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-white uppercase placeholder-slate-600 focus:outline-none focus:border-amber-500/50 font-mono"
+                      />
+                      <button
+                        type="submit"
+                        disabled={loadingProPromo || !proPromoInput.trim()}
+                        className="px-3 py-1 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition disabled:opacity-40 cursor-pointer shrink-0"
+                      >
+                        {loadingProPromo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Activer'}
+                      </button>
+                    </div>
+                    {proPromoError && (
+                      <p className="text-[10px] text-red-400">{proPromoError}</p>
+                    )}
+                  </form>
+                )}
               </div>
             )}
           </div>

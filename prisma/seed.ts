@@ -236,7 +236,37 @@ async function main() {
     },
   });
 
-  console.log('Articles created.');
+  // Create Sample Promo Codes
+  await prisma.promoCode.createMany({
+    data: [
+      {
+        code: 'VIP100',
+        description: 'Accès Lecteur VIP 100% offert',
+        discountType: 'PERCENT',
+        discountValue: 100,
+        targetPlan: 'SUBSCRIPTION_VIP',
+        active: true,
+      },
+      {
+        code: 'PRO100',
+        description: 'Statut Journaliste PRO 100% offert',
+        discountType: 'PERCENT',
+        discountValue: 100,
+        targetPlan: 'JOURNALIST_PRO',
+        active: true,
+      },
+      {
+        code: 'VIP50',
+        description: 'Réduction de 50% sur l\'abonnement VIP',
+        discountType: 'PERCENT',
+        discountValue: 50,
+        targetPlan: 'SUBSCRIPTION_VIP',
+        active: true,
+      },
+    ],
+  });
+
+  console.log('Promo codes created: VIP100, PRO100, VIP50');
   console.log('Seeding completed successfully!');
 }
 

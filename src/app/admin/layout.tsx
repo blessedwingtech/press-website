@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Shield, Home, Menu as MenuIcon, Landmark, Users, LayoutDashboard, ImageIcon, History, UserPlus, Wallet } from 'lucide-react';
+import { Shield, Home, Menu as MenuIcon, Landmark, Users, LayoutDashboard, ImageIcon, History, UserPlus, Wallet, Tag } from 'lucide-react';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -61,6 +61,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             >
               <Wallet className="w-4 h-4 text-emerald-400" />
               Retraits (Payouts)
+            </Link>
+            <Link
+              href="/admin/promos"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+            >
+              <Tag className="w-4 h-4 text-amber-400" />
+              Codes Promo
             </Link>
             <Link
               href="/admin/gallery"

@@ -30,6 +30,7 @@ model User {
   ads              Ad[]           @relation("UserAds")
   donationsReceived Donation[]    @relation("AuthorDonations")
   payouts          Payout[]
+  promoUsages      PromoCodeUsage[]
 }
 
 model Menu {
@@ -187,3 +188,34 @@ model AccountRequest {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
+
+model PromoCode {
+  id            String           @id @default(uuid())
+  code          String           @unique // Ex: "VIP100", "PROMO50"
+  description   String?          // Ex: "Accès VIP 100% Offert"
+  discountType  String           @default("PERCENT") // "PERCENT" ou "FIXED"
+  discountValue Float            // 100 pour 100%, 50 pour 50%, etc.
+  maxUses       Int?             // Limite globale d'utilisations (null = illimité)
+  usedCount     Int              @default(0)
+  active        Boolean          @default(true)
+  targetPlan    String           @default("ALL") // "ALL", "SUBSCRIPTION_VIP", "JOURNALIST_PRO"
+  expiresAt     DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  usages        PromoCodeUsage[]
+}
+
+model PromoCodeUsage {
+  id          String    @id @default(uuid())
+  promoCodeId String
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discount    Float
+  finalAmount Float
+  createdAt   DateTime  @default(now())
+
+  @@index([promoCodeId])
+  @@index([userId])
+}
+

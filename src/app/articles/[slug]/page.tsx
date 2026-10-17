@@ -138,25 +138,34 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
     ? getSafePreviewHtml(article.contenu)
     : article.contenu;
 
-  // 2. Récupérer la réputation globale de l'auteur
+  // 2. Récupérer les avis spécifiques à cet article ET la réputation globale du journaliste
   const authorArticles = await db.article.findMany({
     where: { auteurId: article.auteurId },
     select: { id: true },
   });
   const authorArticleIds = authorArticles.map((a) => a.id);
 
-  const ratings = await db.rating.findMany({
+  // Avis sur tous les écrits du journaliste
+  const authorRatings = await db.rating.findMany({
     where: { articleId: { in: authorArticleIds } },
     select: { stars: true },
   });
+  const authorTotalCount = authorRatings.length;
+  const authorAverage = authorTotalCount > 0 ? authorRatings.reduce((acc, r) => acc + r.stars, 0) / authorTotalCount : 0;
 
-  const totalVotesCount = ratings.length;
-  const averageRating = totalVotesCount > 0 ? ratings.reduce((acc, r) => acc + r.stars, 0) / totalVotesCount : 0;
+  // Avis spécifiques à cet écrit
+  const articleRatings = await db.rating.findMany({
+    where: { articleId: article.id },
+    select: { stars: true },
+  });
+  const articleTotalCount = articleRatings.length;
+  const articleAverage = articleTotalCount > 0 ? articleRatings.reduce((acc, r) => acc + r.stars, 0) / articleTotalCount : 0;
 
-  // 3. Vérifier si l'utilisateur actuel a déjà voté
+  // 3. Vérifier si l'utilisateur actuel a déjà évalué cet écrit ou cet auteur
   const cookieStore = cookies();
   const sessionIdentifier = cookieStore.get('presstonik-session-id')?.value;
   let userVote = null;
+  let hasUserRatedAuthor = false;
 
   if (sessionIdentifier) {
     const existingRating = await db.rating.findUnique({
@@ -169,6 +178,16 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
     });
     if (existingRating) {
       userVote = existingRating.stars;
+    }
+
+    if (authorArticleIds.length > 0) {
+      const authorRatingsCount = await db.rating.count({
+        where: {
+          articleId: { in: authorArticleIds },
+          sessionIdentifier,
+        },
+      });
+      hasUserRatedAuthor = authorRatingsCount > 0;
     }
   }
 
@@ -289,9 +308,13 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
             <div className="mt-5 pt-4 border-t border-slate-800/50">
               <RatingSystem
                 articleId={article.id}
-                initialAverage={averageRating}
-                initialTotalCount={totalVotesCount}
+                initialAverage={articleAverage}
+                initialTotalCount={articleTotalCount}
                 userVote={userVote}
+                authorName={article.auteur.name}
+                authorAverage={authorAverage}
+                authorTotalCount={authorTotalCount}
+                hasUserRatedAuthor={hasUserRatedAuthor}
               />
             </div>
           </div>
