@@ -20,6 +20,7 @@ export default async function AdminPayoutsPage() {
           id: true,
           name: true,
           email: true,
+          isPro: true,
         },
       },
     },

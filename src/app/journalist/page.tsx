@@ -23,6 +23,8 @@ export default async function JournalistDashboard() {
       whatsappChannel: true,
       bio: true,
       twitter: true,
+      isPro: true,
+      proExpiresAt: true,
     },
   });
 
@@ -46,9 +48,11 @@ export default async function JournalistDashboard() {
     },
   });
 
+  const isPro = Boolean(user?.isPro || (session?.user as any)?.role === 'admin');
+
   return (
     <div className="space-y-8 w-full">
-      {/* 1. Espace Monétisation 85/15 & Canal WhatsApp Personnel */}
+      {/* 1. Espace Monétisation 95/5 PRO ou 85/15 Standard & Canal WhatsApp Personnel */}
       <JournalistMonetizationCard
         balanceHTG={user?.balanceHTG ?? 0}
         balanceUSD={user?.balanceUSD ?? 0}
@@ -57,6 +61,8 @@ export default async function JournalistDashboard() {
         initialBio={user?.bio ?? null}
         initialTwitter={user?.twitter ?? null}
         recentPayouts={recentPayouts}
+        isPro={isPro}
+        proExpiresAt={user?.proExpiresAt}
       />
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>

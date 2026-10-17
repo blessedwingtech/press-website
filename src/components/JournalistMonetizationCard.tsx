@@ -38,6 +38,8 @@ interface JournalistMonetizationProps {
   initialBio: string | null;
   initialTwitter: string | null;
   recentPayouts?: PayoutHistoryItem[];
+  isPro?: boolean;
+  proExpiresAt?: string | Date | null;
 }
 
 type PayoutMethodType = 'MONCASH' | 'PAYPAL' | 'CARD' | 'BANK_TRANSFER';
@@ -50,6 +52,8 @@ export default function JournalistMonetizationCard({
   initialBio,
   initialTwitter,
   recentPayouts = [],
+  isPro = false,
+  proExpiresAt,
 }: JournalistMonetizationProps) {
   // Profil état
   const [whatsappChannel, setWhatsappChannel] = useState(initialWhatsappChannel || '');
@@ -180,16 +184,30 @@ export default function JournalistMonetizationCard({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* 1. Carte Monétisation & Solde (85% Journaliste / 15% PressTonik) */}
-        <div className="lg:col-span-1 bg-gradient-to-br from-slate-900/90 to-emerald-950/20 border border-emerald-500/30 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-5">
+        {/* 1. Carte Monétisation & Solde (95% PRO / 85% Standard) */}
+        <div className={`lg:col-span-1 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-5 border ${
+          isPro 
+            ? 'bg-gradient-to-br from-amber-950/30 via-slate-900 to-amber-950/10 border-amber-500/40 shadow-amber-950/20' 
+            : 'bg-gradient-to-br from-slate-900/90 to-emerald-950/20 border-emerald-500/30 shadow-emerald-950/20'
+        }`}>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+              <span className={`p-2 rounded-xl border ${
+                isPro 
+                  ? 'bg-amber-500/20 border-amber-500/30 text-amber-400' 
+                  : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+              }`}>
                 <Wallet className="w-5 h-5" />
               </span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                85% Net Auteur
-              </span>
+              {isPro ? (
+                <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center gap-1 shadow-sm">
+                  ⭐ 95% Net Auteur (PRO)
+                </span>
+              ) : (
+                <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                  85% Net Auteur
+                </span>
+              )}
             </div>
 
             <div>
@@ -198,7 +216,7 @@ export default function JournalistMonetizationCard({
               </p>
               <div className="mt-2 space-y-1">
                 <p className="text-2xl font-black text-white">
-                  {balanceHTG.toLocaleString('fr-FR')} <span className="text-xs text-emerald-400 font-bold">HTG</span>
+                  {balanceHTG.toLocaleString('fr-FR')} <span className={`text-xs font-bold ${isPro ? 'text-amber-400' : 'text-emerald-400'}`}>HTG</span>
                 </p>
                 <p className="text-sm font-bold text-slate-350">
                   {balanceUSD.toFixed(2)} <span className="text-xs text-slate-500 font-semibold">$ USD</span>
@@ -208,10 +226,20 @@ export default function JournalistMonetizationCard({
 
             <div className="text-[11px] text-slate-400 border-t border-slate-800/80 pt-3 flex items-center justify-between">
               <span>Soutiens reçus : <strong className="text-white">{donationsCount}</strong></span>
-              <span className="text-slate-500 text-[10px] flex items-center gap-1" title="15% retenus pour la maintenance, passerelle Pay-Hub et sécurité">
-                <HelpCircle className="w-3 h-3" /> Frais 15%
+              <span className="text-slate-500 text-[10px] flex items-center gap-1" title={isPro ? "Frais plateforme réduits à 5% pour les journalistes PRO" : "15% retenus pour la maintenance, passerelle Pay-Hub et sécurité"}>
+                <HelpCircle className="w-3 h-3" /> Frais {isPro ? '5%' : '15%'}
               </span>
             </div>
+
+            {isPro && (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5 text-[11px] text-amber-300 flex items-center gap-2">
+                <span className="text-base">⚡</span>
+                <div>
+                  <strong className="block text-amber-200">Retrait Express Garanti</strong>
+                  Traitement prioritaire en moins de 4 heures ouvré.
+                </div>
+              </div>
+            )}
           </div>
 
           <div>

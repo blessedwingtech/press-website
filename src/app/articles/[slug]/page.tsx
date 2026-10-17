@@ -113,6 +113,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
           bio: true,
           whatsappChannel: true,
           twitter: true,
+          isPro: true,
         },
       },
       menu: true,
@@ -252,9 +253,14 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
                   Par{' '}
                   <Link
                     href={`/auteurs/${article.auteurId}`}
-                    className="font-bold text-slate-200 hover:text-emerald-400 hover:underline transition-colors"
+                    className="font-bold text-slate-200 hover:text-emerald-400 hover:underline transition-colors inline-flex items-center gap-1.5"
                   >
-                    {article.auteur.name}
+                    <span>{article.auteur.name}</span>
+                    {article.auteur.isPro && (
+                      <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.2 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center gap-0.5 shadow-sm" title="Journaliste Indépendant Certifié PRO">
+                        ⭐ PRO
+                      </span>
+                    )}
                   </Link>
                 </span>
                 <span className="flex items-center gap-1.5 font-medium">

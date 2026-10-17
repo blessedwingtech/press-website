@@ -4,22 +4,19 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { saveArticle } from '@/app/journalist/actions';
-import { ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw, Image as ImageIcon, X, Check, Search, Crown } from 'lucide-react';
+import { 
+  ArrowLeft, Save, Sparkles, Upload, Loader2, RefreshCw, Image as ImageIcon, 
+  X, Check, Search, Crown, Link2, Quote, BookOpen, Lightbulb, Lock, ExternalLink, HelpCircle
+} from 'lucide-react';
 import Link from 'next/link';
 import ArticleMedia from './ArticleMedia';
 import SafeImage from './SafeImage';
 import UnsplashImageModal from './UnsplashImageModal';
+import HyperlinkModal from './HyperlinkModal';
+import QuoteSourceModal from './QuoteSourceModal';
+import AiResearchDrawer from './AiResearchDrawer';
 
 // Chargement dynamique de ReactQuill pour éviter les erreurs SSR de compilation
-// const ReactQuill = dynamic(() => import('react-quill'), {
-//   ssr: false,
-//   loading: () => (
-//     <div className="h-64 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center text-slate-500 text-xs">
-//       Chargement de l'éditeur de texte...
-//     </div>
-//   ),
-// }); 
-
 const ReactQuill = dynamic(() => import('@/components/ReactQuillWrapper'), {
   ssr: false,
   loading: () => (
@@ -56,9 +53,10 @@ interface ArticleFormProps {
     actualitesSubmenuId?: string | null;
     isVip?: boolean;
   };
+  isPro?: boolean;
 }
 
-export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
+export default function ArticleForm({ menus, initialData, isPro = false }: ArticleFormProps) {
   const router = useRouter();
   const quillRef = useRef<any>(null);
 
@@ -82,6 +80,118 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
   const [isUnsplashOpen, setIsUnsplashOpen] = useState(false);
   const [quickSuggestions, setQuickSuggestions] = useState<Array<{ id: string; url: string; thumb: string; photographer: string }>>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
+  // Modals & Tiroir de recherche pour journaliste
+  const [isHyperlinkModalOpen, setIsHyperlinkModalOpen] = useState(false);
+  const [hyperlinkText, setHyperlinkText] = useState('');
+  const [hyperlinkUrl, setHyperlinkUrl] = useState('');
+  const [isHyperlinkEditing, setIsHyperlinkEditing] = useState(false);
+  const [savedRange, setSavedRange] = useState<any>(null);
+
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [isResearchDrawerOpen, setIsResearchDrawerOpen] = useState(false);
+  const [researchTopic, setResearchTopic] = useState('');
+  const [isProPromoOpen, setIsProPromoOpen] = useState(false);
+
+  // Détecter un paramètre d'URL ?research=... pour précharger la recherche
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const r = params.get('research');
+      if (r) {
+        setResearchTopic(r);
+        setIsResearchDrawerOpen(true);
+      }
+    }
+  }, []);
+
+  const openHyperlinkModal = () => {
+    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
+    if (quill) {
+      const range = quill.getSelection();
+      setSavedRange(range);
+      if (range && range.length > 0) {
+        const selectedText = quill.getText(range.index, range.length);
+        const format = quill.getFormat(range);
+        setHyperlinkText(selectedText);
+        setHyperlinkUrl(format.link || '');
+        setIsHyperlinkEditing(Boolean(format.link));
+      } else {
+        setHyperlinkText('');
+        setHyperlinkUrl('');
+        setIsHyperlinkEditing(false);
+      }
+    }
+    setIsHyperlinkModalOpen(true);
+  };
+
+  const handleApplyHyperlink = ({ text, url }: { text: string; url: string; openInNewTab: boolean }) => {
+    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
+    if (!quill) return;
+
+    const range = savedRange || quill.getSelection();
+    if (range && range.length > 0) {
+      quill.formatText(range.index, range.length, 'link', url);
+    } else {
+      const index = range ? range.index : quill.getLength();
+      quill.insertText(index, text, 'link', url);
+      quill.insertText(index + text.length, ' ');
+      quill.setSelection(index + text.length + 1);
+    }
+  };
+
+  const handleRemoveHyperlink = () => {
+    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
+    if (!quill) return;
+    const range = savedRange || quill.getSelection();
+    if (range) {
+      quill.format('link', false);
+    }
+  };
+
+  const handleApplyQuote = ({ quote, author, sourceUrl }: { quote: string; author: string; sourceUrl: string }) => {
+    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
+    if (!quill) return;
+    const range = quill.getSelection();
+    const index = range ? range.index : quill.getLength();
+
+    const quoteHtml = `<blockquote><p>« ${quote} »</p><cite>— <strong>${author}</strong>${sourceUrl ? ` (<a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Source</a>)` : ''}</cite></blockquote><p><br></p>`;
+    quill.clipboard.dangerouslyPasteHTML(index, quoteHtml);
+    quill.setSelection(index + quoteHtml.length);
+  };
+
+  const handleInsertCallout = () => {
+    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
+    if (!quill) return;
+    const range = quill.getSelection();
+    const index = range ? range.index : quill.getLength();
+
+    const calloutHtml = `<div class="article-callout" style="border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.08); padding: 14px 18px; margin: 18px 0; border-radius: 0 10px 10px 0;"><p><strong>💡 FAIT CLÉ / À RETENIR :</strong></p><p>[Résumez ici le chiffre ou l'information capitale pour le lecteur...]</p></div><p><br></p>`;
+    quill.clipboard.dangerouslyPasteHTML(index, calloutHtml);
+    quill.setSelection(index + calloutHtml.length);
+  };
+
+  const handleInsertQuoteFromDrawer = (data: { quote: string; media: string; url: string }) => {
+    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
+    if (!quill) return;
+    const range = quill.getSelection();
+    const index = range ? range.index : quill.getLength();
+
+    const quoteHtml = `<blockquote><p>« ${data.quote} »</p><cite>— <strong>${data.media}</strong>${data.url ? ` (<a href="${data.url}" target="_blank" rel="noopener noreferrer">Source officielle</a>)` : ''}</cite></blockquote><p><br></p>`;
+    quill.clipboard.dangerouslyPasteHTML(index, quoteHtml);
+    quill.setSelection(index + quoteHtml.length);
+  };
+
+  const handleInsertLinkFromDrawer = (data: { text: string; url: string }) => {
+    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
+    if (!quill) return;
+    const range = quill.getSelection();
+    const index = range ? range.index : quill.getLength();
+
+    quill.insertText(index, data.text, 'link', data.url);
+    quill.insertText(index + data.text.length, ' ');
+    quill.setSelection(index + data.text.length + 1);
+  };
 
   // Charger automatiquement les suggestions dès qu'un titre existe
   const fetchSuggestions = async (searchQuery?: string) => {
@@ -213,6 +323,9 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
         ['clean'],
       ],
       handlers: {
+        link: function () {
+          openHyperlinkModal();
+        },
         image: function () {
           const quill = (this as any).quill;
           const input = document.createElement('input');
@@ -394,6 +507,28 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
         </div>
 
         <div className="flex items-center gap-3">
+          {isPro ? (
+            <button
+              type="button"
+              onClick={() => setIsResearchDrawerOpen(true)}
+              className="px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+              title="Ouvrir le Carnet de Recherche IA (espace séparé)"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+              Carnet IA
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsProPromoOpen(true)}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-amber-300 bg-slate-900 border border-slate-800 hover:border-amber-500/30 transition flex items-center gap-1.5 cursor-pointer"
+              title="Avantages Journaliste PRO"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-400/80" />
+              Carnet IA (PRO)
+            </button>
+          )}
+
           {autosaved && (
             <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded flex items-center gap-1 animate-pulse">
               <RefreshCw className="w-3 h-3 animate-spin text-emerald-400" /> Brouillon sauvegardé (30s)
@@ -738,10 +873,82 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
 
           {/* Corps de l'éditeur */}
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
-              Contenu Rédactionnel (Rich Text)
-            </label>
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden focus-within:border-emerald-500/50 transition-colors">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Contenu Rédactionnel (Édition Enrichie)
+              </label>
+              <span className="text-[10px] text-slate-500 hidden sm:inline">
+                Insérez facilement des hyperliens, citations sourcées et encadrés d'enquête
+              </span>
+            </div>
+
+            {/* Barre d'outils d'enrichissement journalistique */}
+            <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-slate-900 border border-slate-800 rounded-t-xl border-b-0">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 mr-1 hidden sm:inline">
+                  Outils Journalistes :
+                </span>
+
+                <button
+                  type="button"
+                  onClick={openHyperlinkModal}
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-950 hover:bg-slate-800 text-cyan-300 border border-slate-800 hover:border-cyan-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  title="Insérer un hyperlien vers une source vérifiée"
+                >
+                  <Link2 className="w-3.5 h-3.5 text-cyan-400" />
+                  Hyperlien
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsQuoteModalOpen(true)}
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-950 hover:bg-slate-800 text-amber-300 border border-slate-800 hover:border-amber-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  title="Insérer une citation mise en forme avec nom de la source"
+                >
+                  <Quote className="w-3.5 h-3.5 text-amber-400" />
+                  Citation & Source
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleInsertCallout}
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-950 hover:bg-slate-800 text-emerald-300 border border-slate-800 hover:border-emerald-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  title="Insérer un encadré 'Fait clé / À retenir' pour aérer l'article"
+                >
+                  <Lightbulb className="w-3.5 h-3.5 text-emerald-400" />
+                  Encadré Fait Clé
+                </button>
+              </div>
+
+              <div>
+                {isPro ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsResearchDrawerOpen(true)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500/20 to-amber-600/20 hover:from-amber-500/30 hover:to-amber-600/30 text-amber-300 border border-amber-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                    title="Ouvrir le Carnet de Recherche & Sourcing IA dans un espace séparé"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                    Carnet de Recherche IA
+                    <span className="text-[9px] uppercase px-1.5 py-0.2 bg-amber-500/30 text-amber-200 rounded font-black">
+                      PRO
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsProPromoOpen(true)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-950 hover:bg-slate-850 text-slate-400 hover:text-amber-300 border border-slate-800 hover:border-amber-500/30 transition flex items-center gap-1.5 cursor-pointer"
+                    title="Activer l'assistant de sourcing IA avec un compte Journaliste PRO"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-amber-400/70" />
+                    Carnet IA (PRO)
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-slate-950 border border-slate-800 rounded-b-xl overflow-hidden focus-within:border-emerald-500/50 transition-colors">
               <ReactQuill
                 ref={quillRef}
                 value={contenu}
@@ -813,6 +1020,91 @@ export default function ArticleForm({ menus, initialData }: ArticleFormProps) {
         onSelectImage={(url) => setImagePrincipale(url)}
         defaultQuery={titre}
       />
+
+      {/* Modal Hyperlien Journalistique */}
+      <HyperlinkModal
+        isOpen={isHyperlinkModalOpen}
+        onClose={() => setIsHyperlinkModalOpen(false)}
+        onSubmit={handleApplyHyperlink}
+        onRemoveLink={handleRemoveHyperlink}
+        initialText={hyperlinkText}
+        initialUrl={hyperlinkUrl}
+        isEditing={isHyperlinkEditing}
+      />
+
+      {/* Modal Citation & Source */}
+      <QuoteSourceModal
+        isOpen={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+        onSubmit={handleApplyQuote}
+      />
+
+      {/* Tiroir / Espace Séparé : Carnet de Recherche & Sourcing IA */}
+      <AiResearchDrawer
+        isOpen={isResearchDrawerOpen}
+        onClose={() => setIsResearchDrawerOpen(false)}
+        onInsertQuote={handleInsertQuoteFromDrawer}
+        onInsertLink={handleInsertLinkFromDrawer}
+        defaultQuery={researchTopic || titre}
+      />
+
+      {/* Modal d'information sur les avantages PRO */}
+      {isProPromoOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div 
+            className="relative w-full max-w-md bg-slate-900 border border-amber-500/40 rounded-2xl shadow-2xl p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="p-2 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400">
+                  <Crown className="w-5 h-5" />
+                </span>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Statut Exclusif</span>
+                  <h3 className="text-base font-black text-white">Journaliste Certifié PRO</h3>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsProPromoOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-350 leading-relaxed">
+              Le <strong>Carnet de Recherche & Sourcing IA</strong> est un outil d'investigation avancé réservé aux membres PRO.
+            </p>
+
+            <div className="space-y-2 pt-1 text-xs text-slate-300">
+              <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                <span className="text-amber-400 font-bold">⭐ 95%</span>
+                <span>Partage net sur tous les pourboires de vos lecteurs</span>
+              </div>
+              <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                <span className="text-amber-400 font-bold">⚡ 4h</span>
+                <span>Retraits express prioritaires garantis</span>
+              </div>
+              <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                <span className="text-amber-400 font-bold">🤖 IA</span>
+                <span>Carnet d'investigation, chronologie et liens vers sources officielles</span>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsProPromoOpen(false)}
+                className="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-amber-500 hover:bg-amber-400 text-slate-950 transition cursor-pointer"
+              >
+                J'ai compris
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

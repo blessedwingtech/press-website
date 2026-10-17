@@ -1,11 +1,21 @@
-export function canAccessAiAssistant(email?: string | null): boolean {
-  if (!email) return false;
-  
-  // LOGIQUE INTELLIGENTE : 
-  // Pour l'instant, on se base sur une liste d'emails stricte.
-  // Plus tard, il suffira de remplacer ce tableau par une vérification en BDD 
-  // (ex: vérification d'un abonnement Premium ou d'un flag isPremium dans l'objet User).
+export type AiUserAccessInput = 
+  | string 
+  | { email?: string | null; isPro?: boolean | null; role?: string | null }
+  | null
+  | undefined;
+
+export function canAccessAiAssistant(target?: AiUserAccessInput): boolean {
+  if (!target) return false;
+
   const allowedEmails = ['bentz@bittonik.com', 'kystanie@bittonik.com'];
-  
-  return allowedEmails.includes(email.toLowerCase());
+
+  if (typeof target === 'object') {
+    if (target.isPro) return true;
+    if (target.role === 'admin') return true;
+    if (!target.email) return false;
+    return allowedEmails.includes(target.email.toLowerCase());
+  }
+
+  return allowedEmails.includes(target.toLowerCase());
 }
+

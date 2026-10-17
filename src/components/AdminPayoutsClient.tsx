@@ -27,6 +27,7 @@ interface PayoutRecord {
     id: string;
     name: string | null;
     email: string;
+    isPro?: boolean;
   };
 }
 
@@ -152,12 +153,21 @@ export default function AdminPayoutsClient({ initialPayouts }: { initialPayouts:
                   if (p.method === 'BANK_TRANSFER') methodIcon = <Building className="w-4 h-4 text-emerald-400 shrink-0" />;
 
                   return (
-                    <tr key={p.id} className="hover:bg-slate-900/40 transition-colors">
+                    <tr key={p.id} className={`transition-colors ${
+                      p.user.isPro ? 'bg-amber-500/5 hover:bg-amber-500/10' : 'hover:bg-slate-900/40'
+                    }`}>
                       <td className="py-3.5 px-4 text-slate-400 text-[11px] whitespace-nowrap">
                         {dateStr}
                       </td>
                       <td className="py-3.5 px-4">
-                        <div className="font-bold text-white">{p.user.name || 'Auteur anonyme'}</div>
+                        <div className="font-bold text-white flex items-center gap-2">
+                          <span>{p.user.name || 'Auteur anonyme'}</span>
+                          {p.user.isPro && (
+                            <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1 shadow-sm">
+                              ⚡ EXPRESS PRO
+                            </span>
+                          )}
+                        </div>
                         <div className="text-[10px] text-slate-500 truncate max-w-xs">{p.user.email}</div>
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">

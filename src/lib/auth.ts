@@ -42,7 +42,8 @@ export const authOptions: AuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role,
-          status: user.status
+          status: user.status,
+          isPro: Boolean(user.isPro),
         };
       }
     })
@@ -53,6 +54,7 @@ export const authOptions: AuthOptions = {
         token.id = user.id;
         token.role = (user as any).role;
         token.status = (user as any).status;
+        token.isPro = Boolean((user as any).isPro);
       }
       
       // Permettre de rafraîchir la session dynamiquement
@@ -60,6 +62,7 @@ export const authOptions: AuthOptions = {
         if (session.role) token.role = session.role;
         if (session.name) token.name = session.name;
         if (session.status) token.status = session.status;
+        if (session.isPro !== undefined) token.isPro = session.isPro;
       }
 
       return token;
@@ -69,6 +72,7 @@ export const authOptions: AuthOptions = {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
         (session.user as any).status = token.status;
+        (session.user as any).isPro = Boolean(token.isPro);
       }
       return session;
     }

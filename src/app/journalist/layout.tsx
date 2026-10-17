@@ -41,13 +41,13 @@ export default async function JournalistLayout({ children }: { children: React.R
               <FilePlus className="w-4 h-4 text-emerald-400" />
               Écrire un article
             </Link>
-            {canAccessAiAssistant(session.user?.email) && (
+            {canAccessAiAssistant(session.user as any) && (
               <Link
                 href="/journalist/ai-assistant"
                 className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-amber-400 hover:bg-slate-800 hover:text-amber-300 transition-all border border-amber-900/50 bg-amber-950/20"
               >
                 <PenTool className="w-4 h-4" />
-                Assistant IA
+                Carnet de Recherche IA
               </Link>
             )}
             <Link

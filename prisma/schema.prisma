@@ -21,7 +21,9 @@ model User {
   whatsappChannel  String?  // Canal / Groupe WhatsApp personnel du journaliste
   twitter          String?
   balanceHTG       Float    @default(0) // Solde disponible en Gourdes (85% des dons)
-  balanceUSD       Float    @default(0) // Solde disponible en USD (85% des dons)
+  balanceUSD       Float    @default(0) // Solde disponible en USD (85% des dons standard / 95% PRO)
+  isPro            Boolean  @default(false) // Statut Journaliste Certifié PRO
+  proExpiresAt     DateTime? // Date d'expiration de l'abonnement PRO
   createdAt        DateTime @default(now())
   articles         Article[]
   galleryImages    GalleryImage[]

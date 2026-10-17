@@ -8,11 +8,11 @@ import AiAssistantClient from './AiAssistantClient';
 export default async function AiAssistantPage() {
   const session = await getServerSession(authOptions);
   
-  if (!session || !canAccessAiAssistant(session.user?.email)) {
+  if (!session || !canAccessAiAssistant(session.user as any)) {
     redirect('/journalist'); // Rediriger si accès non autorisé
   }
 
-  // Récupérer les menus pour que l'IA sache dans quelle catégorie classer l'article
+  // Récupérer les menus pour le contexte
   const menus = await db.menu.findMany({
     include: {
       submenus: true
@@ -24,10 +24,10 @@ export default async function AiAssistantPage() {
       <div>
         <h1 className="text-2xl font-black text-white flex items-center gap-3">
           <span className="bg-amber-500/20 text-amber-500 p-2 rounded-xl">🤖</span>
-          Assistant Rédacteur IA
+          Carnet de Recherche & Sourcing IA
         </h1>
         <p className="text-slate-400 mt-2 max-w-2xl">
-          Lancez une recherche automatique sur l'actualité chaude et laissez l'IA rédiger un brouillon complet. Vous gardez 100% du contrôle : les articles sont sauvegardés en tant que brouillons pour relecture.
+          Espace d'investigation documentaire séparé réservé aux journalistes PRO. Recoupez les faits chauds, analysez les chronologies et vérifiez les sources officielles sans jamais déléguer l'écriture de vos articles.
         </p>
       </div>
 

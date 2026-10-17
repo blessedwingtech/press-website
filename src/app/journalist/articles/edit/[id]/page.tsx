@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
+import { canAccessAiAssistant } from '@/lib/ai-access';
 import ArticleForm from '@/components/ArticleForm';
 
 export const revalidate = 0; // Pas de cache
@@ -40,5 +41,7 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
     },
   });
 
-  return <ArticleForm menus={menus} initialData={article} />;
+  const isPro = canAccessAiAssistant(session.user as any);
+
+  return <ArticleForm menus={menus} initialData={article} isPro={isPro} />;
 }

@@ -51,14 +51,29 @@ export async function POST(req: Request) {
       case 'subscription.created': {
         const itemType = data.type || metadata.type || 'DONATION';
 
-        // A. Activation d'un abonnement lecteur VIP
+        // A. Activation d'un abonnement lecteur VIP ou Journaliste PRO
         if (itemType === 'SUBSCRIPTION' && userId) {
           const targetRole = metadata.target_role || 'reader_vip';
           await db.user.update({
             where: { id: userId },
             data: { role: targetRole },
           }).catch((err) => {
-            console.error(`[Pay-Hub] Utilisateur ${userId} introuvable pour upgrade :`, err);
+            console.error(`[Pay-Hub] Utilisateur ${userId} introuvable pour upgrade VIP :`, err);
+          });
+        }
+
+        // A2. Activation d'un abonnement Journaliste PRO (95% net, sourcing IA, badge certifié)
+        if ((itemType === 'JOURNALIST_PRO' || itemType === 'PRO_SUBSCRIPTION') && userId) {
+          const durationDays = metadata.days || 30;
+          const proExpiresAt = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000);
+          await db.user.update({
+            where: { id: userId },
+            data: {
+              isPro: true,
+              proExpiresAt,
+            },
+          }).catch((err) => {
+            console.error(`[Pay-Hub] Utilisateur ${userId} introuvable pour activation Journaliste PRO :`, err);
           });
         }
 
@@ -75,15 +90,26 @@ export async function POST(req: Request) {
           });
         }
 
-        // C. Don ou soutien financier avec partage 85% Journaliste / 15% PressTonik
+        // C. Don ou soutien financier avec partage (95% Journaliste PRO / 85% Journaliste Standard)
         if (itemType === 'DONATION') {
           const amount = Number(data.amount) || 0;
           const currency = (data.currency || 'USD').toUpperCase();
           const authorId = metadata.authorId;
           const articleId = metadata.articleId;
 
-          // Règle financière convenue : 85% au journaliste indépendant, 15% pour PressTonik
-          const platformFee = Math.round(amount * 0.15 * 100) / 100;
+          // Vérifier si l'auteur bénéficie du statut Journaliste PRO
+          let isProAuthor = false;
+          if (authorId) {
+            const author = await db.user.findUnique({
+              where: { id: authorId },
+              select: { isPro: true },
+            }).catch(() => null);
+            isProAuthor = Boolean(author?.isPro);
+          }
+
+          // Règle financière convenue : 95% net pour Journaliste PRO (5% frais) / 85% net standard (15% frais)
+          const feePercentage = isProAuthor ? 0.05 : 0.15;
+          const platformFee = Math.round(amount * feePercentage * 100) / 100;
           const netAmount = Math.round((amount - platformFee) * 100) / 100;
 
           if (authorId) {
