@@ -19,6 +19,7 @@ import ShareButton from '@/components/ShareButton';
 import { cookies } from 'next/headers';
 import ViewsTrigger from '@/components/ViewsTrigger';
 import SupportBox from '@/components/SupportBox';
+import ArticleVipToolbar from '@/components/ArticleVipToolbar';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -206,7 +207,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         
         {/* Corps de l'article (3/4 de la largeur) */}
-        <div className="lg:col-span-3 bg-slate-900/30 border border-slate-800/80 rounded-xl p-5 sm:p-8 shadow-2xl">
+        <div id="article-content-container" className="lg:col-span-3 bg-slate-900/30 border border-slate-800/80 rounded-xl p-5 sm:p-8 shadow-2xl transition-all duration-300">
           
           {/* Média d'illustration */}
           <div className="mb-6 rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
@@ -289,8 +290,16 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
             </div>
           </div>
 
+          {/* Outils Confort VIP : Synthèse Audio TTS & Mode Zen */}
+          <ArticleVipToolbar
+            articleTitle={article.titre}
+            articleContent={article.contenu}
+            isVip={isVipUser}
+          />
+
           {/* Contenu Rich Text (complet ou aperçu si paywall actif) */}
           <div
+            id="article-prose-body"
             className="prose prose-invert prose-emerald max-w-none text-slate-350 leading-relaxed text-sm sm:text-base space-y-4"
             dangerouslySetInnerHTML={{ __html: displayedContent }}
           />
@@ -379,7 +388,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
         </div>
 
         {/* Colonne publicitaire latérale (1/4 de la largeur) */}
-        <div className="lg:col-span-1">
+        <div id="article-sidebar" className="lg:col-span-1">
           <div className="sticky top-20">
             <span className="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest block mb-2 text-center">
               Partenaire
