@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import AiEthicsModal from '@/components/AiEthicsModal';
+import FormattedAiDraft from '@/components/FormattedAiDraft';
 
 interface SubMenu {
   id: string;
@@ -575,26 +576,8 @@ export default function AiAssistantClient({ menus, authorId }: { menus: Menu[]; 
 
               {aiDraft ? (
                 <div className="space-y-4">
-                  {/* Actions : Copier toute l'ébauche + Régénérer */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(aiDraft, 'main_draft_full')}
-                      className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-950/30"
-                    >
-                      {copiedId === 'main_draft_full' ? (
-                        <>
-                          <Check className="w-4 h-4 stroke-[3]" />
-                          ✓ Proposition copiée !
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          Copier toute la rédaction
-                        </>
-                      )}
-                    </button>
-
+                  {/* Bouton de régénération discrète */}
+                  <div className="flex justify-end">
                     <button
                       type="button"
                       onClick={handleGenerateDraft}
@@ -610,10 +593,8 @@ export default function AiAssistantClient({ menus, authorId }: { menus: Menu[]; 
                     </button>
                   </div>
 
-                  {/* Contenu textuel rédigé */}
-                  <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 text-sm text-slate-200 leading-relaxed whitespace-pre-wrap font-sans selection:bg-amber-500/30 select-text">
-                    {aiDraft}
-                  </div>
+                  {/* Rendu Markdown Formaté Élégant */}
+                  <FormattedAiDraft content={aiDraft} />
                 </div>
               ) : (
                 <div className="py-16 text-center space-y-4 bg-slate-950/60 rounded-2xl border border-slate-800 p-8">
