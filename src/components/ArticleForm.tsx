@@ -59,6 +59,7 @@ interface ArticleFormProps {
 export default function ArticleForm({ menus, initialData, isPro = false }: ArticleFormProps) {
   const router = useRouter();
   const quillRef = useRef<any>(null);
+  const quillInstanceRef = useRef<any>(null);
 
   const [titre, setTitre] = useState(initialData?.titre || '');
   const [contenu, setContenu] = useState(initialData?.contenu || '');
@@ -91,106 +92,238 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isResearchDrawerOpen, setIsResearchDrawerOpen] = useState(false);
   const [researchTopic, setResearchTopic] = useState('');
+  const [activeCarnetData, setActiveCarnetData] = useState<any>(null);
+  const [activeCarnetDraft, setActiveCarnetDraft] = useState<string | null>(null);
   const [isProPromoOpen, setIsProPromoOpen] = useState(false);
+  const [feedbackToast, setFeedbackToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 
-  // Détecter un paramètre d'URL ?research=... pour précharger la recherche
+  // Auto-dismiss notification feedback toast
+  useEffect(() => {
+    if (feedbackToast) {
+      const timer = setTimeout(() => setFeedbackToast(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [feedbackToast]);
+
+  // Helper pour récupérer l'instance Quill active
+  const getQuill = () => {
+    if (quillInstanceRef.current?.getEditor) return quillInstanceRef.current.getEditor();
+    if (quillInstanceRef.current?.root) return quillInstanceRef.current;
+    if (quillRef.current?.getEditor) return quillRef.current.getEditor();
+    if (quillRef.current?.root) return quillRef.current;
+    if (typeof window !== 'undefined' && (window as any).__quillEditor) return (window as any).__quillEditor;
+    return null;
+  };
+
+  // Détecter un paramètre d'URL ?research=... pour précharger la recherche et le dossier
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const r = params.get('research');
       if (r) {
         setResearchTopic(r);
+        if (!titre) {
+          setTitre(r);
+        }
         setIsResearchDrawerOpen(true);
+
+        try {
+          const rawCarnet = sessionStorage.getItem('presstonik_active_carnet');
+          if (rawCarnet) {
+            const parsed = JSON.parse(rawCarnet);
+            if (parsed.topic && parsed.topic.toLowerCase() === r.toLowerCase()) {
+              setActiveCarnetData(parsed.data || null);
+              setActiveCarnetDraft(parsed.draft || null);
+              setFeedbackToast({
+                message: `Dossier documentaire « ${parsed.topic} » et carnet IA chargés avec succès !`,
+                type: 'success',
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Erreur lecture carnet session:', e);
+        }
       }
     }
   }, []);
 
   const openHyperlinkModal = () => {
-    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
+    const quill = getQuill();
     if (quill) {
-      const range = quill.getSelection();
-      setSavedRange(range);
-      if (range && range.length > 0) {
-        const selectedText = quill.getText(range.index, range.length);
-        const format = quill.getFormat(range);
-        setHyperlinkText(selectedText);
-        setHyperlinkUrl(format.link || '');
-        setIsHyperlinkEditing(Boolean(format.link));
-      } else {
+      try {
+        const range = quill.getSelection();
+        setSavedRange(range);
+        if (range && range.length > 0) {
+          const selectedText = quill.getText(range.index, range.length);
+          const format = quill.getFormat(range);
+          setHyperlinkText(selectedText);
+          setHyperlinkUrl(format.link || '');
+          setIsHyperlinkEditing(Boolean(format.link));
+        } else {
+          setHyperlinkText('');
+          setHyperlinkUrl('');
+          setIsHyperlinkEditing(false);
+        }
+      } catch (err) {
+        setSavedRange(null);
         setHyperlinkText('');
         setHyperlinkUrl('');
         setIsHyperlinkEditing(false);
       }
+    } else {
+      setSavedRange(null);
+      setHyperlinkText('');
+      setHyperlinkUrl('');
+      setIsHyperlinkEditing(false);
     }
     setIsHyperlinkModalOpen(true);
   };
 
   const handleApplyHyperlink = ({ text, url }: { text: string; url: string; openInNewTab: boolean }) => {
-    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
-    if (!quill) return;
+    const quill = getQuill();
+    const cleanUrl = url.trim();
+    const displayText = text.trim() || cleanUrl;
 
-    const range = savedRange || quill.getSelection();
-    if (range && range.length > 0) {
-      quill.formatText(range.index, range.length, 'link', url);
+    if (quill) {
+      try {
+        const range = savedRange || quill.getSelection();
+        if (range && range.length > 0) {
+          quill.formatText(range.index, range.length, 'link', cleanUrl);
+        } else {
+          const index = range ? range.index : quill.getLength();
+          quill.insertText(index, displayText, 'link', cleanUrl);
+          quill.insertText(index + displayText.length, ' ');
+          quill.setSelection(index + displayText.length + 1);
+        }
+        // Mise à jour immédiate du state React
+        setContenu(quill.root.innerHTML);
+      } catch (err) {
+        const linkHtml = `<p><a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${displayText}</a>&nbsp;</p>`;
+        setContenu((prev) => (prev ? prev + linkHtml : linkHtml));
+      }
     } else {
-      const index = range ? range.index : quill.getLength();
-      quill.insertText(index, text, 'link', url);
-      quill.insertText(index + text.length, ' ');
-      quill.setSelection(index + text.length + 1);
+      const linkHtml = `<p><a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${displayText}</a>&nbsp;</p>`;
+      setContenu((prev) => (prev ? prev + linkHtml : linkHtml));
     }
+
+    setFeedbackToast({
+      message: `Hyperlien inséré avec succès : « ${displayText} »`,
+      type: 'success',
+    });
   };
 
   const handleRemoveHyperlink = () => {
-    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
-    if (!quill) return;
-    const range = savedRange || quill.getSelection();
-    if (range) {
-      quill.format('link', false);
+    const quill = getQuill();
+    if (quill) {
+      try {
+        const range = savedRange || quill.getSelection();
+        if (range) {
+          quill.format('link', false);
+          setContenu(quill.root.innerHTML);
+        }
+      } catch (e) {}
     }
+    setFeedbackToast({
+      message: 'Hyperlien retiré.',
+      type: 'info',
+    });
   };
 
   const handleApplyQuote = ({ quote, author, sourceUrl }: { quote: string; author: string; sourceUrl: string }) => {
-    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
-    if (!quill) return;
-    const range = quill.getSelection();
-    const index = range ? range.index : quill.getLength();
-
+    const quill = getQuill();
     const quoteHtml = `<blockquote><p>« ${quote} »</p><cite>— <strong>${author}</strong>${sourceUrl ? ` (<a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Source</a>)` : ''}</cite></blockquote><p><br></p>`;
-    quill.clipboard.dangerouslyPasteHTML(index, quoteHtml);
-    quill.setSelection(index + quoteHtml.length);
+
+    if (quill) {
+      try {
+        const range = quill.getSelection();
+        const index = range ? range.index : quill.getLength();
+        quill.clipboard.dangerouslyPasteHTML(index, quoteHtml);
+        quill.setSelection(index + quoteHtml.length);
+        setContenu(quill.root.innerHTML);
+      } catch (err) {
+        setContenu((prev) => (prev ? prev + quoteHtml : quoteHtml));
+      }
+    } else {
+      setContenu((prev) => (prev ? prev + quoteHtml : quoteHtml));
+    }
+
+    setFeedbackToast({
+      message: `Citation de « ${author} » insérée avec succès !`,
+      type: 'success',
+    });
   };
 
   const handleInsertCallout = () => {
-    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
-    if (!quill) return;
-    const range = quill.getSelection();
-    const index = range ? range.index : quill.getLength();
-
+    const quill = getQuill();
     const calloutHtml = `<div class="article-callout" style="border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.08); padding: 14px 18px; margin: 18px 0; border-radius: 0 10px 10px 0;"><p><strong>💡 FAIT CLÉ / À RETENIR :</strong></p><p>[Résumez ici le chiffre ou l'information capitale pour le lecteur...]</p></div><p><br></p>`;
-    quill.clipboard.dangerouslyPasteHTML(index, calloutHtml);
-    quill.setSelection(index + calloutHtml.length);
+
+    if (quill) {
+      try {
+        const range = quill.getSelection();
+        const index = range ? range.index : quill.getLength();
+        quill.clipboard.dangerouslyPasteHTML(index, calloutHtml);
+        quill.setSelection(index + calloutHtml.length);
+        setContenu(quill.root.innerHTML);
+      } catch (err) {
+        setContenu((prev) => (prev ? prev + calloutHtml : calloutHtml));
+      }
+    } else {
+      setContenu((prev) => (prev ? prev + calloutHtml : calloutHtml));
+    }
+
+    setFeedbackToast({
+      message: `Encadré « Fait Clé » inséré dans l'article !`,
+      type: 'success',
+    });
   };
 
   const handleInsertQuoteFromDrawer = (data: { quote: string; media: string; url: string }) => {
-    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
-    if (!quill) return;
-    const range = quill.getSelection();
-    const index = range ? range.index : quill.getLength();
-
+    const quill = getQuill();
     const quoteHtml = `<blockquote><p>« ${data.quote} »</p><cite>— <strong>${data.media}</strong>${data.url ? ` (<a href="${data.url}" target="_blank" rel="noopener noreferrer">Source officielle</a>)` : ''}</cite></blockquote><p><br></p>`;
-    quill.clipboard.dangerouslyPasteHTML(index, quoteHtml);
-    quill.setSelection(index + quoteHtml.length);
+
+    if (quill) {
+      try {
+        const range = quill.getSelection();
+        const index = range ? range.index : quill.getLength();
+        quill.clipboard.dangerouslyPasteHTML(index, quoteHtml);
+        quill.setSelection(index + quoteHtml.length);
+        setContenu(quill.root.innerHTML);
+      } catch (err) {
+        setContenu((prev) => (prev ? prev + quoteHtml : quoteHtml));
+      }
+    } else {
+      setContenu((prev) => (prev ? prev + quoteHtml : quoteHtml));
+    }
+
+    setFeedbackToast({
+      message: `Citation de la source « ${data.media} » insérée !`,
+      type: 'success',
+    });
   };
 
   const handleInsertLinkFromDrawer = (data: { text: string; url: string }) => {
-    const quill = quillRef.current?.getEditor ? quillRef.current.getEditor() : quillRef.current;
-    if (!quill) return;
-    const range = quill.getSelection();
-    const index = range ? range.index : quill.getLength();
+    const quill = getQuill();
+    if (quill) {
+      try {
+        const range = quill.getSelection();
+        const index = range ? range.index : quill.getLength();
+        quill.insertText(index, data.text, 'link', data.url);
+        quill.insertText(index + data.text.length, ' ');
+        quill.setSelection(index + data.text.length + 1);
+        setContenu(quill.root.innerHTML);
+      } catch (err) {
+        const linkHtml = `<p><a href="${data.url}" target="_blank" rel="noopener noreferrer">${data.text}</a>&nbsp;</p>`;
+        setContenu((prev) => (prev ? prev + linkHtml : linkHtml));
+      }
+    } else {
+      const linkHtml = `<p><a href="${data.url}" target="_blank" rel="noopener noreferrer">${data.text}</a>&nbsp;</p>`;
+      setContenu((prev) => (prev ? prev + linkHtml : linkHtml));
+    }
 
-    quill.insertText(index, data.text, 'link', data.url);
-    quill.insertText(index + data.text.length, ' ');
-    quill.setSelection(index + data.text.length + 1);
+    setFeedbackToast({
+      message: `Lien vers la source « ${data.text} » inséré !`,
+      type: 'success',
+    });
   };
 
   // Charger automatiquement les suggestions dès qu'un titre existe
@@ -882,6 +1015,23 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
               </span>
             </div>
 
+            {/* Notification Toast de confirmation d'insertion */}
+            {feedbackToast && (
+              <div className="mb-2.5 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center justify-between animate-in fade-in duration-200 shadow-md">
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
+                  <span>{feedbackToast.message}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFeedbackToast(null)}
+                  className="text-emerald-400 hover:text-white p-1 rounded-lg hover:bg-emerald-500/20 transition cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
             {/* Barre d'outils d'enrichissement journalistique */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-slate-900 border border-slate-800 rounded-t-xl border-b-0">
               <div className="flex flex-wrap items-center gap-1.5">
@@ -951,8 +1101,20 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
             <div className="bg-slate-950 border border-slate-800 rounded-b-xl overflow-hidden focus-within:border-emerald-500/50 transition-colors">
               <ReactQuill
                 ref={quillRef}
+                forwardedRef={quillRef}
+                onEditorReady={(editor: any) => {
+                  quillInstanceRef.current = editor;
+                  if (typeof window !== 'undefined') {
+                    (window as any).__quillEditor = editor;
+                  }
+                }}
                 value={contenu}
-                onChange={setContenu}
+                onChange={(content: string, delta: any, source: string, editor: any) => {
+                  setContenu(content);
+                  if (editor) {
+                    quillInstanceRef.current = editor;
+                  }
+                }}
                 modules={quillModules}
                 placeholder="Rédigez le corps de l'article ici... Vous pouvez utiliser le formattage riche, des listes et ajouter des images directement."
                 className="quill-editor"
@@ -1046,6 +1208,8 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
         onInsertQuote={handleInsertQuoteFromDrawer}
         onInsertLink={handleInsertLinkFromDrawer}
         defaultQuery={researchTopic || titre}
+        initialData={activeCarnetData}
+        initialDraft={activeCarnetDraft}
       />
 
       {/* Modal d'information sur les avantages PRO */}

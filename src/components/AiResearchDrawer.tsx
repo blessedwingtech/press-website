@@ -15,8 +15,9 @@ import {
   X,
   Loader2,
   AlertCircle,
-  HelpCircle,
   Layers,
+  FileText,
+  RotateCcw,
 } from 'lucide-react';
 import AiEthicsModal from './AiEthicsModal';
 
@@ -41,6 +42,8 @@ interface AiResearchDrawerProps {
   onInsertQuote?: (data: { quote: string; media: string; url: string }) => void;
   onInsertLink?: (data: { text: string; url: string }) => void;
   defaultQuery?: string;
+  initialData?: ResearchData | null;
+  initialDraft?: string | null;
 }
 
 export default function AiResearchDrawer({
@@ -49,13 +52,19 @@ export default function AiResearchDrawer({
   onInsertQuote,
   onInsertLink,
   defaultQuery = '',
+  initialData = null,
+  initialDraft = null,
 }: AiResearchDrawerProps) {
   const [query, setQuery] = useState(defaultQuery);
   const [tone, setTone] = useState<'factual' | 'analysis' | 'investigation'>('factual');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<ResearchData | null>(null);
-  const [activeTab, setActiveTab] = useState<'facts' | 'sources' | 'timeline' | 'angles'>('facts');
+  const [data, setData] = useState<ResearchData | null>(initialData);
+  const [draft, setDraft] = useState<string | null>(initialDraft);
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
+  const [activeTab, setActiveTab] = useState<'facts' | 'sources' | 'timeline' | 'angles' | 'draft'>(
+    initialDraft ? 'draft' : 'facts'
+  );
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Modal Déontologique
@@ -77,16 +86,28 @@ export default function AiResearchDrawer({
     }
   }, [defaultQuery]);
 
+  useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    if (initialDraft) {
+      setDraft(initialDraft);
+      setActiveTab('draft');
+    }
+  }, [initialDraft]);
+
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    setTimeout(() => setCopiedId(null), 2500);
   };
 
   const handleLaunchSearch = async () => {
     if (!query.trim()) return;
 
-    // Si la charte n'a pas été acceptée, ouvrir le modal obligatoire
     if (!hasAcceptedEthics) {
       setIsEthicsModalOpen(true);
       return;
@@ -108,7 +129,6 @@ export default function AiResearchDrawer({
       }
 
       setData(json.data);
-      // Sélectionner le premier onglet qui contient des données
       if (json.data?.keyFacts?.length) {
         setActiveTab('facts');
       } else if (json.data?.sources?.length) {
@@ -121,13 +141,49 @@ export default function AiResearchDrawer({
     }
   };
 
+  const handleGenerateDraft = async () => {
+    if (!query.trim()) return;
+
+    if (!hasAcceptedEthics) {
+      setIsEthicsModalOpen(true);
+      return;
+    }
+
+    setIsGeneratingDraft(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/ai/draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: query,
+          tone,
+          researchData: data,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || 'Erreur lors de la génération de la proposition de rédaction.');
+      }
+
+      setDraft(json.draft);
+      setActiveTab('draft');
+    } catch (err: any) {
+      setError(err.message || 'Impossible de générer la proposition de rédaction.');
+    } finally {
+      setIsGeneratingDraft(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <>
       {/* Panneau latéral rétractable (Drawer) */}
       <div 
-        className="fixed inset-y-0 right-0 z-40 w-full sm:w-[500px] lg:w-[540px] bg-slate-900 border-l border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-250"
+        className="fixed inset-y-0 right-0 z-40 w-full sm:w-[540px] lg:w-[580px] bg-slate-900 border-l border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-250"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -200,7 +256,7 @@ export default function AiResearchDrawer({
                 type="button"
                 onClick={handleLaunchSearch}
                 disabled={isLoading || !query.trim()}
-                className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-amber-500 hover:bg-amber-400 text-slate-950 transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md shadow-amber-950/30"
+                className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-amber-500 hover:bg-amber-400 text-slate-950 transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md shadow-amber-950/30 shrink-0"
               >
                 {isLoading ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -212,23 +268,46 @@ export default function AiResearchDrawer({
             </div>
           </div>
 
-          {/* Sélecteur d'angle */}
-          <div className="flex items-center gap-2 pt-0.5">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Angle :</span>
-            {(['factual', 'analysis', 'investigation'] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTone(t)}
-                className={`text-[10px] px-2.5 py-1 rounded-lg font-bold transition ${
-                  tone === t
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
-                }`}
-              >
-                {t === 'factual' ? 'Factuel' : t === 'analysis' ? 'Décryptage' : 'Enquête'}
-              </button>
-            ))}
+          {/* Ligne d'actions : Angle + Bouton discret de rédaction IA */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Angle :</span>
+              {(['factual', 'analysis', 'investigation'] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTone(t)}
+                  className={`text-[10px] px-2 py-0.5 rounded-lg font-bold transition ${
+                    tone === t
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                      : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                  }`}
+                >
+                  {t === 'factual' ? 'Factuel' : t === 'analysis' ? 'Décryptage' : 'Enquête'}
+                </button>
+              ))}
+            </div>
+
+            {/* Bouton discret permettant à l'IA de rédiger une proposition */}
+            <button
+              type="button"
+              onClick={handleGenerateDraft}
+              disabled={isGeneratingDraft || !query.trim()}
+              className="text-[11px] font-bold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 px-3 py-1 rounded-lg transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+              title="Demander à l'IA de proposer une ébauche rédigée complète dans son onglet dédié"
+            >
+              {isGeneratingDraft ? (
+                <>
+                  <Loader2 className="w-3 h-3 animate-spin text-amber-400" />
+                  Rédaction en cours...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3 h-3 text-amber-400" />
+                  ✦ Proposer une rédaction IA (Brouillon)
+                </>
+              )}
+            </button>
           </div>
         </div>
 
@@ -253,22 +332,22 @@ export default function AiResearchDrawer({
             </div>
           )}
 
-          {!isLoading && !data && !error && (
+          {!isLoading && !data && !draft && !error && (
             <div className="py-14 text-center space-y-3 px-4">
               <div className="w-12 h-12 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center mx-auto text-slate-500">
                 <BookOpen className="w-6 h-6 text-slate-600" />
               </div>
               <h3 className="text-xs font-bold text-slate-300">Votre carnet de recherche est vierge</h3>
               <p className="text-[11px] text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Lancez une recherche sur un fait d'actualité pour obtenir une fiche factuelle, les sources médias avec liens directs, et des citations recoupées.
+                Lancez une recherche sur un fait d'actualité pour obtenir une fiche factuelle, les sources médias avec liens directs, ou demandez une proposition de rédaction IA.
               </p>
             </div>
           )}
 
-          {!isLoading && data && (
+          {(!isLoading && (data || draft)) && (
             <div className="space-y-4">
               {/* Synthèse globale neutre */}
-              {data.summary && (
+              {data?.summary && (
                 <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 text-xs text-slate-300 leading-relaxed">
                   <div className="flex items-center gap-1.5 text-amber-400 font-bold mb-1 text-[11px]">
                     <Sparkles className="w-3.5 h-3.5" />
@@ -278,38 +357,38 @@ export default function AiResearchDrawer({
                 </div>
               )}
 
-              {/* Onglets thématiques */}
-              <div className="flex items-center gap-1 border-b border-slate-800 pb-2">
+              {/* Barre d'onglets thématiques incluant l'onglet Rédaction IA */}
+              <div className="flex items-center gap-1 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar">
                 <button
                   type="button"
                   onClick={() => setActiveTab('facts')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
                     activeTab === 'facts'
                       ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
-                  Faits ({data.keyFacts?.length || 0})
+                  Faits ({data?.keyFacts?.length || 0})
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setActiveTab('sources')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
                     activeTab === 'sources'
                       ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
-                  Sources ({data.sources?.length || 0})
+                  Sources ({data?.sources?.length || 0})
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setActiveTab('timeline')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
                     activeTab === 'timeline'
                       ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                       : 'text-slate-400 hover:text-white'
@@ -322,7 +401,7 @@ export default function AiResearchDrawer({
                 <button
                   type="button"
                   onClick={() => setActiveTab('angles')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
                     activeTab === 'angles'
                       ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                       : 'text-slate-400 hover:text-white'
@@ -331,12 +410,26 @@ export default function AiResearchDrawer({
                   <Compass className="w-3.5 h-3.5" />
                   Angles
                 </button>
+
+                {/* Onglet IA dédié pour la rédaction */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('draft')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                    activeTab === 'draft'
+                      ? 'bg-amber-500 text-slate-950 font-black shadow'
+                      : 'text-amber-400/90 hover:text-amber-300 bg-amber-500/10 border border-amber-500/20'
+                  }`}
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  ✍️ Rédaction IA {draft && '✓'}
+                </button>
               </div>
 
-              {/* Contenu de l'onglet Faits */}
+              {/* 1. Contenu de l'onglet Faits */}
               {activeTab === 'facts' && (
                 <div className="space-y-2.5">
-                  {data.keyFacts && data.keyFacts.length > 0 ? (
+                  {data?.keyFacts && data.keyFacts.length > 0 ? (
                     data.keyFacts.map((f, idx) => (
                       <div
                         key={f.id || idx}
@@ -367,15 +460,15 @@ export default function AiResearchDrawer({
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-slate-500">Aucun fait saillant extrait.</p>
+                    <p className="text-xs text-slate-500">Aucun fait saillant extrait pour l'instant.</p>
                   )}
                 </div>
               )}
 
-              {/* Contenu de l'onglet Sources */}
+              {/* 2. Contenu de l'onglet Sources */}
               {activeTab === 'sources' && (
                 <div className="space-y-3">
-                  {data.sources && data.sources.length > 0 ? (
+                  {data?.sources && data.sources.length > 0 ? (
                     data.sources.map((src, idx) => (
                       <div
                         key={src.id || idx}
@@ -409,7 +502,7 @@ export default function AiResearchDrawer({
 
                         {/* Citation & Boutons d'action pour l'éditeur */}
                         <div className="pt-2 border-t border-slate-900 flex flex-wrap items-center gap-2">
-                          {onInsertQuote && src.keyQuote && (
+                          {onInsertQuote && (src.keyQuote || src.title) && (
                             <button
                               type="button"
                               onClick={() => onInsertQuote({
@@ -448,10 +541,10 @@ export default function AiResearchDrawer({
                 </div>
               )}
 
-              {/* Contenu de l'onglet Chronologie */}
+              {/* 3. Contenu de l'onglet Chronologie */}
               {activeTab === 'timeline' && (
                 <div className="relative pl-5 border-l-2 border-slate-800 space-y-4 my-2">
-                  {data.timeline && data.timeline.length > 0 ? (
+                  {data?.timeline && data.timeline.length > 0 ? (
                     data.timeline.map((item, idx) => (
                       <div key={idx} className="relative group">
                         <div className="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-amber-500 border-2 border-slate-900" />
@@ -469,10 +562,10 @@ export default function AiResearchDrawer({
                 </div>
               )}
 
-              {/* Contenu de l'onglet Angles */}
+              {/* 4. Contenu de l'onglet Angles */}
               {activeTab === 'angles' && (
                 <div className="space-y-2.5">
-                  {data.investigativeAngles && data.investigativeAngles.length > 0 ? (
+                  {data?.investigativeAngles && data.investigativeAngles.length > 0 ? (
                     data.investigativeAngles.map((a, idx) => (
                       <div
                         key={idx}
@@ -489,6 +582,99 @@ export default function AiResearchDrawer({
                     ))
                   ) : (
                     <p className="text-xs text-slate-500">Aucun angle suggéré.</p>
+                  )}
+                </div>
+              )}
+
+              {/* 5. Contenu de l'onglet Rédaction IA (Espace séparé & Copiable) */}
+              {activeTab === 'draft' && (
+                <div className="space-y-4 animate-in fade-in duration-200">
+                  {/* Avertissement éthique & Déontologique */}
+                  <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/30 text-xs space-y-1.5">
+                    <div className="flex items-center justify-between text-amber-400 font-bold text-[11px]">
+                      <span className="flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        Espace Isolé : Proposition Rédactionnelle IA
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-400">
+                        {draft ? `~${draft.split(/\s+/).filter(Boolean).length} mots` : ''}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-350 leading-relaxed">
+                      Ce texte n'est pas injecté dans votre article. Utilisez-le comme ébauche de travail. Vérifiez chaque affirmation auprès des sources citées et adaptez-le de votre propre plume.
+                    </p>
+                  </div>
+
+                  {draft ? (
+                    <div className="space-y-3">
+                      {/* Barre d'action : Copier l'ébauche + Régénérer */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(draft, 'drawer_draft_full')}
+                          className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition flex items-center gap-1.5 cursor-pointer shadow"
+                        >
+                          {copiedId === 'drawer_draft_full' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 stroke-[3]" />
+                              ✓ Ébauche copiée !
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              Copier toute l'ébauche
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={handleGenerateDraft}
+                          disabled={isGeneratingDraft}
+                          className="px-3 py-1.5 rounded-lg text-[11px] font-bold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 transition flex items-center gap-1 cursor-pointer"
+                        >
+                          {isGeneratingDraft ? (
+                            <Loader2 className="w-3 h-3 animate-spin text-amber-400" />
+                          ) : (
+                            <RotateCcw className="w-3 h-3 text-amber-400" />
+                          )}
+                          Régénérer une autre proposition
+                        </button>
+                      </div>
+
+                      {/* Zone d'affichage du texte rédigé */}
+                      <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/90 text-xs text-slate-200 leading-relaxed whitespace-pre-wrap font-sans selection:bg-amber-500/30 select-text max-h-[500px] overflow-y-auto">
+                        {draft}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center space-y-3 bg-slate-950/60 rounded-xl border border-slate-800/80 p-6">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-400">
+                        <Sparkles className="w-5 h-5" />
+                      </div>
+                      <h4 className="text-xs font-bold text-white">Aucune ébauche générée pour l'instant</h4>
+                      <p className="text-[11px] text-slate-400 max-w-xs mx-auto leading-relaxed">
+                        Cliquez sur le bouton ci-dessous pour demander une première proposition d'article structuré basé sur votre carnet documentaire.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleGenerateDraft}
+                        disabled={isGeneratingDraft || !query.trim()}
+                        className="mt-2 px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition inline-flex items-center gap-1.5 cursor-pointer shadow-md shadow-amber-950/30"
+                      >
+                        {isGeneratingDraft ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            Rédaction en cours...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Générer la proposition de rédaction
+                          </>
+                        )}
+                      </button>
+                    </div>
                   )}
                 </div>
               )}
