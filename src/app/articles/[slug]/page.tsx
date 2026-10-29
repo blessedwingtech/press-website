@@ -22,6 +22,7 @@ import SupportBox from '@/components/SupportBox';
 import ArticleVipToolbar from '@/components/ArticleVipToolbar';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { NewsArticleJsonLd, BreadcrumbJsonLd } from '@/components/JsonLd';
 
 import { Metadata, ResolvingMetadata } from 'next';
 
@@ -57,30 +58,42 @@ export async function generateMetadata(
       imagePrincipale: true,
       datePublication: true,
       isVip: true,
+      menu: { select: { nom: true } },
+      auteur: { select: { name: true } },
     },
   });
 
   if (!article) {
     return {
-      title: 'Article introuvable | PressTonik',
+      title: 'Article introuvable',
     };
   }
 
   const plainTextDescription = article.contenu.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...';
 
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
   const imageUrl = article.imagePrincipale.startsWith('http')
     ? article.imagePrincipale
-    : `https://press.bittonik.com${article.imagePrincipale}`;
+    : `${baseUrl}${article.imagePrincipale}`;
+
+  const canonicalUrl = `${baseUrl}/articles/${params.slug}`;
 
   return {
-    title: `${article.isVip ? '🔒 [VIP] ' : ''}${article.titre} | PressTonik`,
+    title: `${article.isVip ? '🔒 [VIP] ' : ''}${article.titre}`,
     description: plainTextDescription,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    authors: [{ name: article.auteur?.name || 'PressTonik' }],
     openGraph: {
       title: article.titre,
       description: plainTextDescription,
-      url: `/articles/${params.slug}`,
+      url: canonicalUrl,
       type: 'article',
       publishedTime: article.datePublication.toISOString(),
+      modifiedTime: article.datePublication.toISOString(),
+      section: article.menu?.nom || 'Actualités',
+      authors: [article.auteur?.name || 'PressTonik'],
       images: [
         {
           url: imageUrl,
@@ -191,8 +204,33 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
     }
   }
 
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
+  const articleUrl = `${baseUrl}/articles/${article.slug}`;
+  const fullImageUrl = article.imagePrincipale.startsWith('http')
+    ? article.imagePrincipale
+    : `${baseUrl}${article.imagePrincipale}`;
+
+  const breadcrumbs = [
+    { name: 'Accueil', url: baseUrl },
+    { name: article.menu.nom, url: `${baseUrl}/category/${article.menu.slug}` },
+    ...(article.submenu ? [{ name: article.submenu.nom, url: `${baseUrl}/category/${article.menu.slug}/${article.submenu.slug}` }] : []),
+    { name: article.titre, url: articleUrl },
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+      <NewsArticleJsonLd
+        url={articleUrl}
+        title={article.titre}
+        description={article.contenu.replace(/<[^>]*>?/gm, '').substring(0, 200)}
+        images={[fullImageUrl]}
+        datePublished={article.datePublication.toISOString()}
+        authorName={article.auteur?.name || 'PressTonik'}
+        authorUrl={article.auteur?.id ? `${baseUrl}/auteurs/${article.auteur.id}` : undefined}
+        sectionName={article.menu.nom}
+        isVip={Boolean(article.isVip)}
+      />
+      <BreadcrumbJsonLd items={breadcrumbs} />
       <ViewsTrigger articleId={article.id} />
       {/* Publicité haute */}
       <AdSlot position="header" />

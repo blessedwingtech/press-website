@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Calendar, ChevronRight, BookOpen } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import ArticleMedia from '@/components/ArticleMedia';
+import { Metadata } from 'next';
+import { BreadcrumbJsonLd } from '@/components/JsonLd';
 
 export const revalidate = 60; // Cache 60s avec revalidation ISR
 
@@ -14,6 +16,41 @@ interface MenuPageProps {
   };
   searchParams: {
     page?: string;
+  };
+}
+
+export async function generateMetadata({ params }: MenuPageProps): Promise<Metadata> {
+  const menu = await db.menu.findUnique({
+    where: { slug: params.menuSlug },
+    select: { nom: true, slug: true },
+  });
+
+  if (!menu) {
+    return { title: 'Rubrique introuvable' };
+  }
+
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
+  const canonicalUrl = `${baseUrl}/category/${menu.slug}`;
+  const description = `Suivez toute l'actualité de la rubrique ${menu.nom} en continu sur PressTonik : enquêtes exclusives, reportages de terrain et analyses de nos journalistes.`;
+
+  return {
+    title: `${menu.nom} : Actualités et analyses en direct`,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${menu.nom} - Actualités en direct | PressTonik`,
+      description,
+      url: canonicalUrl,
+      type: 'website',
+      siteName: 'PressTonik',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${menu.nom} - Actualités | PressTonik`,
+      description,
+    },
   };
 }
 
@@ -70,9 +107,16 @@ export default async function MenuCategoryPage({ params, searchParams }: MenuPag
   ]);
 
   const totalPages = Math.ceil(totalCount / limit);
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
+
+  const breadcrumbs = [
+    { name: 'Accueil', url: baseUrl },
+    { name: menu.nom, url: `${baseUrl}/category/${menu.slug}` },
+  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+      <BreadcrumbJsonLd items={breadcrumbs} />
       {/* Pub haute */}
       <AdSlot position="header" />
 

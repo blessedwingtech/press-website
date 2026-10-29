@@ -8,12 +8,46 @@ import ReviewCTA from "@/components/ReviewCTA";
 import NavigationProgressBar from "@/components/NavigationProgressBar";
 import { Suspense } from "react";
 import Link from "next/link";
+import { WebsiteAndOrgJsonLd } from "@/components/JsonLd";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const siteUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
+
 export const metadata: Metadata = {
-  title: "PressTonik | Actualités & Presse Rédactionnelle",
-  description: "Plateforme indépendante de journalisme et de rédaction sportive et généraliste en temps réel.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "PressTonik | Actualités, Enquêtes & Presse Rédactionnelle en Continu",
+    template: "%s | PressTonik",
+  },
+  description: "Plateforme indépendante de journalisme et de rédaction en temps réel. Enquêtes exclusives, actualités politiques, économiques, technologiques et sportives.",
+  keywords: [
+    "actualités",
+    "presse en ligne",
+    "journalisme indépendant",
+    "enquêtes exclusives",
+    "politique",
+    "économie",
+    "technologie",
+    "sports",
+    "PressTonik",
+    "Haïti actualités",
+    "international",
+  ],
+  authors: [{ name: "La Rédaction PressTonik", url: siteUrl }],
+  creator: "Blessed Wing Technology & PressTonik",
+  publisher: "PressTonik",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '16x16 32x32', type: 'image/x-icon' },
@@ -22,7 +56,30 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/icon.svg',
   },
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    url: siteUrl,
+    siteName: 'PressTonik',
+    title: 'PressTonik | Actualités, Enquêtes & Presse Rédactionnelle en Continu',
+    description: 'Plateforme indépendante de journalisme et de rédaction en temps réel. Enquêtes exclusives, actualités politiques, économiques, technologiques et sportives.',
+    images: [
+      {
+        url: '/icon.svg',
+        width: 1200,
+        height: 630,
+        alt: 'PressTonik Presse Rédactionnelle',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'PressTonik | Actualités, Enquêtes & Presse Rédactionnelle en Continu',
+    description: 'Plateforme indépendante de journalisme et de rédaction en temps réel.',
+    images: ['/icon.svg'],
+  },
   alternates: {
+    canonical: siteUrl,
     types: {
       'application/rss+xml': '/feed.xml',
     },
@@ -39,6 +96,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased overflow-x-hidden`}
       >
+        <WebsiteAndOrgJsonLd baseUrl={siteUrl} />
         <Suspense fallback={null}>
           <NavigationProgressBar />
         </Suspense>

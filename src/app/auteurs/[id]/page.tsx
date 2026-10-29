@@ -27,16 +27,36 @@ interface AuthorPageProps {
 export async function generateMetadata({ params }: AuthorPageProps): Promise<Metadata> {
   const author = await db.user.findUnique({
     where: { id: params.id },
-    select: { name: true, bio: true },
+    select: { name: true, bio: true, profilePhoto: true },
   });
 
   if (!author) {
     return { title: 'Auteur introuvable | PressTonik' };
   }
 
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
+  const canonicalUrl = `${baseUrl}/auteurs/${params.id}`;
+  const description = author.bio || `Découvrez tous les articles, enquêtes et analyses de ${author.name} sur PressTonik.`;
+
   return {
-    title: `${author.name} - Journaliste Rédacteur | PressTonik`,
-    description: author.bio || `Découvrez tous les articles et enquêtes de ${author.name} sur PressTonik Ayiti.`,
+    title: `${author.name} - Journaliste Rédacteur`,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${author.name} | PressTonik`,
+      description,
+      url: canonicalUrl,
+      type: 'profile',
+      images: author.profilePhoto ? [{ url: author.profilePhoto, alt: author.name }] : undefined,
+    },
+    twitter: {
+      card: 'summary',
+      title: `${author.name} | PressTonik`,
+      description,
+      images: author.profilePhoto ? [author.profilePhoto] : undefined,
+    },
   };
 }
 

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Calendar, ChevronRight, BookOpen } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import ArticleMedia from '@/components/ArticleMedia';
+import { Metadata } from 'next';
+import { BreadcrumbJsonLd } from '@/components/JsonLd';
 
 export const revalidate = 60; // Cache 60s avec revalidation ISR
 
@@ -15,6 +17,50 @@ interface SubMenuPageProps {
   };
   searchParams: {
     page?: string;
+  };
+}
+
+export async function generateMetadata({ params }: SubMenuPageProps): Promise<Metadata> {
+  const menu = await db.menu.findUnique({
+    where: { slug: params.menuSlug },
+    select: { nom: true, slug: true },
+  });
+
+  if (!menu) {
+    return { title: 'Rubrique introuvable' };
+  }
+
+  const submenu = await db.subMenu.findUnique({
+    where: { slug: params.subMenuSlug },
+    select: { nom: true, slug: true },
+  });
+
+  if (!submenu) {
+    return { title: `${menu.nom} | PressTonik` };
+  }
+
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
+  const canonicalUrl = `${baseUrl}/category/${menu.slug}/${submenu.slug}`;
+  const description = `Articles, reportages et analyses consacrés à ${submenu.nom} dans la rubrique ${menu.nom} sur PressTonik.`;
+
+  return {
+    title: `${submenu.nom} - ${menu.nom} : Actualités et analyses`,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${submenu.nom} (${menu.nom}) | PressTonik`,
+      description,
+      url: canonicalUrl,
+      type: 'website',
+      siteName: 'PressTonik',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${submenu.nom} - ${menu.nom} | PressTonik`,
+      description,
+    },
   };
 }
 
@@ -75,9 +121,17 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
   ]);
 
   const totalPages = Math.ceil(totalCount / limit);
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://press.bittonik.com';
+
+  const breadcrumbs = [
+    { name: 'Accueil', url: baseUrl },
+    { name: menu.nom, url: `${baseUrl}/category/${menu.slug}` },
+    { name: submenu.nom, url: `${baseUrl}/category/${menu.slug}/${submenu.slug}` },
+  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+      <BreadcrumbJsonLd items={breadcrumbs} />
       {/* Pub haute */}
       <AdSlot position="header" />
 

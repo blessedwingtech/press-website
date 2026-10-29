@@ -4,8 +4,23 @@ import Link from 'next/link';
 import { Calendar, User, ArrowRight, BookOpen, Clock } from 'lucide-react';
 import SafeImage from '@/components/SafeImage';
 import ArticleMedia from '@/components/ArticleMedia';
+import { Metadata } from 'next';
 
 export const revalidate = 60; // Cache 60s avec revalidation ISR
+
+export const metadata: Metadata = {
+  title: 'Dernières Actualités & Enquêtes en Continu',
+  description: 'Consultez le fil des toutes dernières actualités publiées en temps réel par les journalistes de PressTonik.',
+  alternates: {
+    canonical: 'https://press.bittonik.com/latest',
+  },
+  openGraph: {
+    title: 'Dernières Actualités en Direct | PressTonik',
+    description: 'Consultez le fil des toutes dernières actualités publiées en temps réel par les journalistes de PressTonik.',
+    url: 'https://press.bittonik.com/latest',
+    type: 'website',
+  },
+};
 
 export default async function LatestArticlesPage() {
   // Récupérer le paramètre de démonstration
