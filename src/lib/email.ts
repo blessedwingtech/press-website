@@ -287,3 +287,67 @@ export async function sendNewsletterArticleAlertEmail(params: ArticleAlertParams
     unsubscribeUrl: params.unsubscribeUrl,
   });
 }
+
+interface NewSubscriberNotificationParams {
+  journalistEmail: string;
+  journalistName: string;
+  subscriberEmail: string;
+  frequency: string;
+  totalSubscribersCount: number;
+}
+
+/**
+ * Notifie le journaliste lorsqu'un nouveau lecteur s'abonne à sa newsletter.
+ */
+export async function sendNewSubscriberAlertToJournalist(params: NewSubscriberNotificationParams) {
+  const frequencyLabel = params.frequency === 'INSTANT' ? 'Alertes instantanées à chaque publication' : 'Récapitulatif hebdomadaire';
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 28px; background: #020617; color: #e2e8f0; border-radius: 16px; max-width: 580px; margin: 0 auto; border: 1px solid #1e293b;">
+      <div style="border-bottom: 1px solid #1e293b; padding-bottom: 16px; margin-bottom: 20px;">
+        <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #10b981;">PressTonik &bull; Espace Journaliste</span>
+        <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin: 6px 0 0 0;">
+          Nouveau lecteur abonné à votre plume ! ✍️
+        </h1>
+      </div>
+
+      <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1;">
+        Bonjour <strong>${params.journalistName}</strong>,
+      </p>
+      <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1;">
+        Un nouveau lecteur vient de s'abonner pour suivre vos enquêtes et parutions exclusives sur PressTonik.
+      </p>
+
+      <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 18px; margin: 22px 0;">
+        <div style="margin-bottom: 10px;">
+          <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block;">Abonné :</span>
+          <span style="font-size: 15px; font-weight: bold; color: #38bdf8;">${params.subscriberEmail}</span>
+        </div>
+        <div>
+          <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block;">Préférence choisie :</span>
+          <span style="font-size: 13px; font-weight: 600; color: #f59e0b;">${frequencyLabel}</span>
+        </div>
+      </div>
+
+      <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+        📊 Vous comptez désormais un total de <strong>${params.totalSubscribersCount}</strong> abonné(s) direct(s).
+      </p>
+
+      <div style="margin: 26px 0;">
+        <a href="https://press.bittonik.com/journalist/articles" style="background-color: #10b981; color: #020617; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-block;">
+          Accéder à mon espace rédaction &rarr;
+        </a>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid #1e293b; margin: 28px 0 16px 0;" />
+      <p style="font-size: 11px; color: #475569; text-align: center;">PressTonik &bull; Portail et Réseau de Presse Indépendante.</p>
+    </div>
+  `;
+
+  return sendMailWithFailover({
+    to: params.journalistEmail,
+    subject: `[PressTonik] Nouvel abonné à vos parutions ! (${params.subscriberEmail})`,
+    html,
+    fromName: 'PressTonik Notifications',
+  });
+}

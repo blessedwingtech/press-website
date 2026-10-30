@@ -32,6 +32,7 @@ model User {
   payouts          Payout[]
   promoUsages      PromoCodeUsage[]
   newsletterSubscribers NewsletterSubscription[] @relation("JournalistNewsletters")
+  pushSubscriptions     PushSubscription[]       @relation("JournalistPushSubscriptions")
 }
 
 model Menu {
@@ -235,5 +236,20 @@ model NewsletterSubscription {
   @@index([authorId])
   @@index([email])
 }
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  authorId  String?  // null = Abonne general a la redaction, sinon abonne a ce journaliste
+  author    User?    @relation("JournalistPushSubscriptions", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
+  @@index([endpoint])
+}
+
 
 

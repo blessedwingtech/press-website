@@ -1,7 +1,12 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { sendNewsletterWelcomeEmail, sendNewsletterArticleAlertEmail } from '@/lib/email';
+import {
+  sendNewsletterWelcomeEmail,
+  sendNewsletterArticleAlertEmail,
+  sendNewSubscriberAlertToJournalist,
+} from '@/lib/email';
+import { sendWebPushNotification } from '@/lib/push';
 
 export interface SubscribeParams {
   email: string;
@@ -72,6 +77,26 @@ export async function subscribeToNewsletterAction(params: SubscribeParams) {
     }).catch((err) => {
       console.error('[Newsletter] Erreur lors de l\'envoi de l\'email de bienvenue :', err);
     });
+
+    // Notifier le journaliste s'il s'agit d'un abonnement direct à sa plume
+    if (author && author.email) {
+      db.newsletterSubscription
+        .count({
+          where: { authorId: author.id, active: true },
+        })
+        .then((totalCount) => {
+          return sendNewSubscriberAlertToJournalist({
+            journalistEmail: author.email,
+            journalistName: author.name,
+            subscriberEmail: rawEmail,
+            frequency,
+            totalSubscribersCount: totalCount,
+          });
+        })
+        .catch((err) => {
+          console.error('[Newsletter] Erreur notification journaliste :', err);
+        });
+    }
 
     const targetName = author ? `de ${author.name}` : 'PressTonik';
     return {
@@ -181,6 +206,16 @@ export async function dispatchArticlePublicationAlerts(params: ArticleAlertDispa
         console.error(`[Newsletter Alert] Échec d'envoi à ${sub.email} :`, subErr);
       }
     }
+
+    // Diffusion de la notification Push Web
+    const articleFullUrl = `${baseUrl}/articles/${params.articleSlug}`;
+    sendWebPushNotification(params.authorId, {
+      title: `${params.authorName} vient de publier`,
+      body: params.articleTitle,
+      url: articleFullUrl,
+    }).catch((pushErr) => {
+      console.error('[Newsletter] Erreur diffusion Push Web :', pushErr);
+    });
   } catch (dispatchErr) {
     console.error('[Newsletter Alert] Erreur générale lors de la diffusion des alertes :', dispatchErr);
   }

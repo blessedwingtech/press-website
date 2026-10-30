@@ -4,6 +4,7 @@ import React, { useState, useTransition } from 'react';
 import Image from 'next/image';
 import { Mail, Check, Bell, Sparkles, MessageCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { subscribeToNewsletterAction } from '@/app/actions/newsletter';
+import PushNotificationToggle from '@/components/PushNotificationToggle';
 
 interface JournalistNewsletterCardProps {
   authorId?: string | null;
@@ -188,6 +189,14 @@ export default function JournalistNewsletterCard({
           </p>
         </form>
       )}
+
+      {/* Push Notification Toggle */}
+      <div className="mt-3 relative z-10">
+        <PushNotificationToggle
+          authorId={authorId}
+          authorName={isAuthor ? displayName : undefined}
+        />
+      </div>
 
       {/* WhatsApp Community button if journalist provided one */}
       {whatsappChannel && (
