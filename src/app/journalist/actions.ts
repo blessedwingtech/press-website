@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { slugify } from '@/lib/utils';
 import { z } from 'zod';
 import { logAction } from '@/lib/audit';
+import { dispatchArticlePublicationAlerts } from '@/app/actions/newsletter';
 
 const articleSchema = z.object({
   titre: z.string().min(5, 'Le titre doit contenir au moins 5 caractères.'),
@@ -52,6 +53,7 @@ export async function saveArticle(
   });
 
   const finalSlug = existing ? `${slug}-${Math.floor(1000 + Math.random() * 9000)}` : slug;
+  let isNewlyPublished = false;
 
   if (id) {
     // Vérification de la propriété
@@ -61,6 +63,8 @@ export async function saveArticle(
     if (article.auteurId !== (session.user as any).id && (session.user as any).role !== 'admin') {
       throw new Error('Vous n’avez pas l’autorisation de modifier cet article.');
     }
+
+    isNewlyPublished = Boolean(validatedData.published && !article.published);
 
     await db.article.update({
       where: { id },
@@ -80,6 +84,8 @@ export async function saveArticle(
 
     await logAction('ARTICLE_UPDATE', `Article mis à jour : "${validatedData.titre}" (slug: ${finalSlug}, VIP: ${validatedData.isVip})`);
   } else {
+    isNewlyPublished = Boolean(validatedData.published);
+
     // Création d'un nouvel article
     await db.article.create({
       data: {
@@ -98,6 +104,21 @@ export async function saveArticle(
     });
 
     await logAction('ARTICLE_CREATE', `Nouvel article rédigé : "${validatedData.titre}" (slug: ${finalSlug}, VIP: ${validatedData.isVip})`);
+  }
+
+  // Déclencher les alertes d'abonnés instantanés si l'article est nouvellement publié
+  if (isNewlyPublished) {
+    dispatchArticlePublicationAlerts({
+      authorId: (session.user as any).id,
+      authorName: (session.user as any).name || 'PressTonik',
+      authorEmail: (session.user as any).email || undefined,
+      articleTitle: validatedData.titre,
+      articleSlug: finalSlug,
+      articleContent: validatedData.contenu,
+      articleImage: validatedData.imagePrincipale,
+    }).catch((err) => {
+      console.error('[Newsletter Alert Dispatch Error]', err);
+    });
   }
 
   // Mettre à jour le cache de rendu Next.js

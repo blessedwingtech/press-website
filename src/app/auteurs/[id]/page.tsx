@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import SupportBox from '@/components/SupportBox';
+import JournalistNewsletterCard from '@/components/JournalistNewsletterCard';
 import { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -173,6 +174,15 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
       <SupportBox
         authorId={author.id}
         authorName={author.name}
+      />
+
+      {/* Carte d'Abonnement Newsletter de l'Auteur */}
+      <JournalistNewsletterCard
+        authorId={author.id}
+        authorName={author.name}
+        authorAvatar={author.profilePhoto}
+        authorBio={author.bio}
+        whatsappChannel={author.whatsappChannel}
       />
 
       {/* Liste des Articles Publiés par ce Journaliste */}

@@ -23,6 +23,7 @@ import ArticleVipToolbar from '@/components/ArticleVipToolbar';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { NewsArticleJsonLd, BreadcrumbJsonLd } from '@/components/JsonLd';
+import JournalistNewsletterCard from '@/components/JournalistNewsletterCard';
 
 import { Metadata, ResolvingMetadata } from 'next';
 
@@ -444,6 +445,17 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
             authorName={article.auteur.name}
             authorId={article.auteurId}
           />
+
+          {/* Carte d'Abonnement Newsletter de l'Auteur / Journaliste */}
+          <div className="mt-8">
+            <JournalistNewsletterCard
+              authorId={article.auteurId}
+              authorName={article.auteur.name}
+              authorAvatar={article.auteur.profilePhoto}
+              authorBio={article.auteur.bio}
+              whatsappChannel={article.auteur.whatsappChannel}
+            />
+          </div>
 
           {/* Mention de responsabilité légale de la presse indépendante */}
           <div className="mt-6 pt-4 border-t border-slate-800/60 text-[10px] text-slate-500 flex items-start gap-2 leading-relaxed">
