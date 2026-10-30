@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { PenTool } from 'lucide-react';
 
 interface LogoProps {
   showSlogan?: boolean;
@@ -11,23 +10,26 @@ interface LogoProps {
 export default function Logo({ showSlogan = true, size = 'md', hideHaitiImage = false }: LogoProps) {
   const sizeClasses = {
     sm: {
-      quill: 'w-4 h-4',
+      emblemW: 30,
+      emblemH: 30,
       img: 13,
       title: 'text-base sm:text-lg',
       slogan: 'text-[8px]',
-      gap: 'gap-1.5 sm:gap-2',
+      gap: 'gap-2 sm:gap-2.5',
       badgeText: 'text-[7px]',
     },
     md: {
-      quill: 'w-5 h-5 sm:w-6 sm:h-6',
+      emblemW: 38,
+      emblemH: 38,
       img: 16,
       title: 'text-xl sm:text-2xl',
       slogan: 'text-[9px]',
-      gap: 'gap-2 sm:gap-3',
+      gap: 'gap-2.5 sm:gap-3',
       badgeText: 'text-[7px] sm:text-[8px]',
     },
     lg: {
-      quill: 'w-7 h-7 sm:w-9 sm:h-9',
+      emblemW: 52,
+      emblemH: 52,
       img: 20,
       title: 'text-2xl sm:text-3xl',
       slogan: 'text-[10px] sm:text-[11px]',
@@ -40,19 +42,30 @@ export default function Logo({ showSlogan = true, size = 'md', hideHaitiImage = 
 
   return (
     <Link href="/" className={`flex items-center ${selectedSize.gap} group select-none max-w-full`}>
-      {/* Crayon de rédaction PenTool incliné comme s'il écrivait */}
-      <div className="shrink-0 relative bg-slate-900/60 p-2 sm:p-2.5 rounded-xl border border-slate-800 shadow-md group-hover:border-teal-500/50 transition-all duration-300">
-        <PenTool
-          className={`${selectedSize.quill} text-teal-400 -rotate-45 group-hover:-rotate-30 transition-transform duration-300 shrink-0`}
+      {/* Plume d'investigation PressTonik (Bleu Marine & Rouge Écarlate) */}
+      <div className="shrink-0 relative transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3">
+        <Image
+          src="/logo-emblem.png"
+          alt="Emblème Plume PressTonik"
+          width={selectedSize.emblemW}
+          height={selectedSize.emblemH}
+          className="object-contain filter drop-shadow-[0_2px_8px_rgba(206,17,38,0.25)] dark:drop-shadow-[0_2px_8px_rgba(56,189,248,0.2)]"
+          priority
         />
       </div>
 
-      {/* Identité textuelle */}
+      {/* Identité textuelle PressTonik */}
       <div className="flex flex-col min-w-0">
         <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
-          <span className={`${selectedSize.title} font-black tracking-wider whitespace-nowrap`}>
-            <span className="text-teal-400 group-hover:text-teal-300 transition-colors">Press</span>
-            <span className="text-amber-400 group-hover:text-amber-300 transition-colors">Tonik</span>
+          <span className={`${selectedSize.title} font-serif tracking-tight whitespace-nowrap font-black`}>
+            {/* Press en Bleu Marine / Cyan lumineux en Dark Mode */}
+            <span className="text-[#0f2038] dark:text-sky-400 group-hover:text-[#1e3a66] dark:group-hover:text-sky-300 transition-colors">
+              Press
+            </span>
+            {/* Tonik en Rouge Écarlate Vif */}
+            <span className="text-[#ce1126] dark:text-rose-500 group-hover:text-[#e0142c] dark:group-hover:text-rose-400 transition-colors">
+              Tonik
+            </span>
           </span>
 
           {/* Badge Ayiti regroupé avec le blason national à côté du titre */}
@@ -72,9 +85,11 @@ export default function Logo({ showSlogan = true, size = 'md', hideHaitiImage = 
             </span>
           )}
         </div>
+
+        {/* Slogan officiel du logo : L'Actualité Avec Dynamisme */}
         {showSlogan && (
-          <span className={`${selectedSize.slogan} text-slate-400 mt-1 sm:mt-1.5 font-medium tracking-wide leading-none hidden md:block`}>
-            Le portail haïtien d'information libre et d'accès numérique.
+          <span className={`${selectedSize.slogan} text-slate-500 dark:text-slate-400 mt-1 font-semibold tracking-wide leading-none hidden md:block`}>
+            L'Actualité Avec Dynamisme
           </span>
         )}
       </div>

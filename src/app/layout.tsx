@@ -108,7 +108,15 @@ export default function RootLayout({
           </main>
           <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500 w-full">
             <div className="max-w-7xl mx-auto px-4 space-y-3">
-              <p className="font-semibold text-slate-400"><strong>PressTonik</strong> Presse Rédactionnelle © {new Date().getFullYear()}</p>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <img src="/logo-emblem.png" alt="PressTonik" className="w-5 h-5 object-contain" />
+                <span className="font-serif font-black tracking-tight text-sm">
+                  <span className="text-white">Press</span>
+                  <span className="text-[#ce1126]">Tonik</span>
+                </span>
+                <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">&bull; L'Actualité Avec Dynamisme</span>
+              </div>
+              <p className="font-semibold text-slate-400">Presse Rédactionnelle © {new Date().getFullYear()}</p>
               <p>Powered by <a href="https://bwt.bittonik.com" className="hover:text-blue-400">Blessed Wing Technology</a></p>
               <div className="pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-2 text-[10px] uppercase font-bold tracking-wider">
                 <Link href="/request-account" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Demander un compte</Link>
