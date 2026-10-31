@@ -87,6 +87,9 @@ export const metadata: Metadata = {
       'application/rss+xml': '/feed.xml',
     },
   },
+  other: {
+    'google-adsense-account': 'ca-pub-7700349313493923',
+  },
   manifest: '/manifest.json',
 };
 
@@ -98,6 +101,12 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning className="dark scroll-smooth">
       <head>
+        {/* Google AdSense Script officiel */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7700349313493923"
+          crossOrigin="anonymous"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

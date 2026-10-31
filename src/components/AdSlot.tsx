@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import AdRotator from './AdRotator';
+import GoogleAdBanner from './GoogleAdBanner';
 
 interface AdSlotProps {
   position: 'header' | 'sidebar' | 'footer' | 'left-sidebar';
@@ -14,6 +15,12 @@ export default async function AdSlot({ position }: AdSlotProps) {
     return null;
   }
 
+  // Emplacement HAUT : Réservé et confié à Google AdSense
+  if (position === 'header') {
+    return <GoogleAdBanner client="ca-pub-7700349313493923" />;
+  }
+
+  // Emplacements LATÉRAL et BAS : Réservés à la régie interne et partenaires
   // 1. Récupérer la configuration de rotation
   const setting = await db.adSetting.findUnique({
     where: { position },
