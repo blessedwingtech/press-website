@@ -108,15 +108,12 @@ export default function RatingSystem({
         </div>
       </div>
 
-      {/* Rangée interactive des étoiles */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          {/* Étoiles interactives avec distinction de couleur stricte */}
-          <div className="flex items-center gap-1">
+      {/* Rangée interactive des étoiles & informations de vote */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Étoiles interactives */}
+          <div className="flex items-center gap-0.5 sm:gap-1">
             {[1, 2, 3, 4, 5].map((star) => {
-              // Si survol : affiche le niveau survolé
-              // Si déjà évalué par l'utilisateur : étoiles dorées jusqu'à myVote
-              // Si NON évalué par l'utilisateur : étoiles éteintes (slate) pour bien indiquer qu'il n'a pas voté
               const isFilled = hoverRating !== null
                 ? star <= hoverRating
                 : isUserEvaluated
@@ -133,13 +130,13 @@ export default function RatingSystem({
                   disabled={isPending}
                   aria-label={`Attribuer ${star} étoile${star > 1 ? 's' : ''}`}
                   className={`p-1 rounded-lg transition-all duration-150 focus:outline-none cursor-pointer ${
-                    isPending ? 'opacity-50 cursor-not-allowed' : 'hover:scale-125 active:scale-95'
+                    isPending ? 'opacity-50 cursor-not-allowed' : 'hover:scale-120 active:scale-95'
                   }`}
                 >
                   <Star
-                    className={`w-7 h-7 transition-all duration-200 ${
+                    className={`w-6 h-6 sm:w-7 sm:h-7 transition-all duration-200 ${
                       isFilled
-                        ? 'fill-amber-400 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.7)]'
+                        ? 'fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
                         : isUserEvaluated
                         ? 'fill-transparent text-slate-700 stroke-slate-700 hover:text-amber-400'
                         : 'fill-transparent text-slate-600 stroke-[1.5] stroke-slate-500 hover:text-amber-400 hover:stroke-amber-400'
@@ -150,42 +147,42 @@ export default function RatingSystem({
             })}
           </div>
 
-          {/* Infobulle de sélection au survol */}
+          {/* Statut ou note attribuée */}
           {hoverRating !== null ? (
-            <span className="text-xs font-bold text-amber-300 animate-in fade-in duration-150">
-              Attribuer {hoverRating} étoile{hoverRating > 1 ? 's' : ''} à cet écrit
+            <span className="text-xs font-bold text-amber-300 animate-in fade-in duration-150 whitespace-nowrap">
+              Attribuer {hoverRating} ★
             </span>
           ) : isUserEvaluated ? (
-            <span className="text-xs font-bold text-amber-300 flex items-center gap-1">
-              Votre note : <strong>{myVote} / 5 ★</strong>
-              <span className="text-[10px] text-slate-500 font-normal">(cliquez pour modifier)</span>
-            </span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-bold whitespace-nowrap">
+              <span>Votre note : <strong>{myVote}/5 ★</strong></span>
+              <span className="text-[10px] text-amber-400/70 font-normal hidden sm:inline">(modifier)</span>
+            </div>
           ) : (
             <span className="text-xs text-slate-400 italic">
-              Cliquez sur une étoile pour évaluer
+              Cliquez pour évaluer
             </span>
           )}
         </div>
 
-        {/* Badge explicatif selon l'état de l'utilisateur vis-à-vis de ce journaliste */}
-        <div className="text-right">
+        {/* Message de confirmation ou d'incitation */}
+        <div className="flex items-center text-xs sm:text-right">
           {isUserEvaluated ? (
-            <span className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
+            <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
               Merci pour votre évaluation !
             </span>
           ) : count === 0 ? (
-            <span className="text-[11px] text-amber-300 font-bold bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-400" />
+            <span className="text-xs text-amber-300 font-bold bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               Soyez le premier à évaluer cet écrit !
             </span>
           ) : !hasUserRatedAuthor ? (
-            <span className="text-[11px] text-slate-350 font-medium">
-              Découvrez cet auteur : notez son travail journalistique
+            <span className="text-xs text-slate-400 font-medium">
+              Notez le travail journalistique de cet auteur
             </span>
           ) : (
-            <span className="text-[11px] text-slate-350 font-medium">
-              Cet écrit attend votre évaluation
+            <span className="text-xs text-slate-400 font-medium">
+              Cet écrit attend votre avis
             </span>
           )}
         </div>
