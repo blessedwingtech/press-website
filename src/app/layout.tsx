@@ -96,9 +96,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="dark scroll-smooth">
+    <html lang="fr" suppressHydrationWarning className="dark scroll-smooth">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('theme');
+                  if (stored === 'light') {
+                    document.documentElement.classList.remove('dark');
+                  } else {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${inter.className} bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased overflow-x-hidden`}
+        className={`${inter.className} bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col antialiased overflow-x-hidden`}
       >
         <WebsiteAndOrgJsonLd baseUrl={siteUrl} />
         <Suspense fallback={null}>

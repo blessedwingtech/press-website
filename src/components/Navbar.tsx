@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Menu as MenuIcon, X, ChevronDown, User, Shield, PenTool, LogOut, LogIn, Search, Crown } from 'lucide-react';
 import Logo from './Logo';
+import ThemeToggle from './ThemeToggle';
 import { useRouter } from 'next/navigation';
 
 interface SubMenuData {
@@ -137,6 +138,9 @@ export default function Navbar({ menus }: NavbarProps) {
               <span>VIP</span>
             </Link>
 
+            {/* Sélecteur de Thème Clair / Sombre */}
+            <ThemeToggle />
+
             {session ? (
               <div className="relative">
                 <button
@@ -220,7 +224,8 @@ export default function Navbar({ menus }: NavbarProps) {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden items-center">
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none"
@@ -306,6 +311,9 @@ export default function Navbar({ menus }: NavbarProps) {
           </div>
 
           <div className="pt-4 pb-3 border-t border-slate-800 px-4">
+            {/* Sélecteur de Thème Clair / Sombre */}
+            <ThemeToggle />
+
             {session ? (
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
