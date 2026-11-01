@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   creator: "Blessed Wing Technology & PressTonik",
   publisher: "PressTonik",
   verification: {
-    google: 'googledb161bb0134ce6ec',
+    google: ['googledb161bb0134ce6ec', 'google224dd1e6bfd589b0'],
   },
   robots: {
     index: true,
