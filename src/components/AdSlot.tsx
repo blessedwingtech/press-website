@@ -15,13 +15,7 @@ export default async function AdSlot({ position }: AdSlotProps) {
     return null;
   }
 
-  // Emplacement HAUT : Réservé et confié à Google AdSense
-  if (position === 'header') {
-    return <GoogleAdBanner client="ca-pub-7700349313493923" />;
-  }
-
-  // Emplacements LATÉRAL et BAS : Réservés à la régie interne et partenaires
-  // 1. Récupérer la configuration de rotation
+  // 1. Récupérer la configuration de rotation et de démonstration
   const setting = await db.adSetting.findUnique({
     where: { position },
   });
@@ -29,7 +23,6 @@ export default async function AdSlot({ position }: AdSlotProps) {
   const limit = setting?.limit ?? 5;
   const interval = setting?.interval ?? 10;
 
-  // 2. Récupérer le paramètre de démonstration
   const demoSetting = await db.systemSetting.findUnique({
     where: { key: 'showDemoData' },
   });
@@ -44,12 +37,25 @@ export default async function AdSlot({ position }: AdSlotProps) {
     where.isDemo = false;
   }
 
-  // 3. Récupérer les publicités actives pour cette position
+  // Récupérer les publicités actives pour cette position
   const ads = await db.ad.findMany({
     where,
     take: limit,
   });
 
+  // Emplacement HAUT : Confié à Google AdSense avec vos bannières partenaires en Fallback automatique
+  // Ainsi, tant que Google est en examen (24-48h), AUCUN rectangle blanc n'apparaît : vos bannières partenaires s'affichent !
+  if (position === 'header') {
+    return (
+      <GoogleAdBanner
+        client="ca-pub-7700349313493923"
+        fallbackAds={ads}
+        interval={interval}
+      />
+    );
+  }
+
+  // Emplacements LATÉRAL et BAS : Réservés à la régie interne et partenaires
   if (ads.length === 0) {
     return null; // Pas de publicité à afficher
   }
