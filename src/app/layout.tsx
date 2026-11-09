@@ -165,8 +165,6 @@ export default function RootLayout({
                 <span className="text-slate-700 hidden sm:inline">•</span>
                 <Link href="/avis" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Avis des lecteurs</Link>
                 <span className="text-slate-700 hidden sm:inline">•</span>
-                <Link href="/feed.xml" target="_blank" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Flux RSS</Link>
-                <span className="text-slate-700 hidden sm:inline">•</span>
                 <ReviewCTA />
               </div>
             </div>
