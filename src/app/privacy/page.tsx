@@ -1,114 +1,104 @@
 import Link from 'next/link';
-import { ArrowLeft, Shield } from 'lucide-react';
+import { ArrowLeft, Shield, Lock, Eye, Bell, Database } from 'lucide-react';
+import { Metadata } from 'next';
 
-export const revalidate = 3600; // Cache d'une heure pour cette page statique
+export const metadata: Metadata = {
+  title: "Politique de Confidentialité & Protection des Données | PressTonik",
+  description:
+    "Transparence sur le traitement de vos données personnelles, authentification Google, cookies AdSense, notifications Web Push et sécurité sur PressTonik.",
+};
+
+export const revalidate = 3600; // Cache d'une heure
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
       <Link
         href="/"
-        className="flex items-center gap-1 hover:text-blue-400 text-slate-400 transition-colors text-xs font-bold uppercase tracking-wider mb-6"
+        className="flex items-center gap-1 hover:text-emerald-400 text-slate-400 transition-colors text-xs font-bold uppercase tracking-wider mb-6"
       >
-        <ArrowLeft className="w-4 h-4" /> Retour à l'accueil
+        <ArrowLeft className="w-4 h-4" /> Retour à l&apos;accueil
       </Link>
 
-      <div className="bg-slate-900/30 border border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-2xl space-y-8">
+      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-2xl space-y-8 text-slate-300">
         <div className="flex items-center gap-3 pb-6 border-b border-slate-800">
-          <Shield className="w-8 h-8 text-blue-500" />
+          <Shield className="w-8 h-8 text-emerald-400" />
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-wider">
               Politique de Confidentialité
             </h1>
-            <p className="text-xs text-slate-450 mt-1">
-              Dernière mise à jour : 21 juillet 2026
+            <p className="text-xs text-slate-400 mt-1">
+              Dernière mise à jour : {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} • Conforme aux standards internationaux de protection de la vie privée.
             </p>
           </div>
         </div>
 
-        <div className="prose prose-invert prose-blue max-w-none text-slate-300 space-y-6 text-sm sm:text-base leading-relaxed">
+        <div className="space-y-6 text-sm leading-relaxed">
+          {/* 1. Introduction */}
           <section className="space-y-3">
-            <h2 className="text-lg font-black text-white uppercase tracking-wider border-l-3 border-blue-500 pl-2">
-              1. Introduction
+            <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
+              1. Engagement de Confidentialité
             </h2>
             <p>
-              Bienvenue sur **PressTonik**, le portail d'information libre en Haïti. Nous accordons une importance capitale à la confidentialité et à la sécurité de vos données personnelles. La présente politique décrit comment nous collectons, utilisons et protégeons vos données lorsque vous visitez notre site internet.
+              Propulsée par <strong>Blessed Wing Technology (BWT)</strong>, la plateforme <strong>PressTonik</strong> accorde la plus haute priorité à la protection de la vie privée de ses lecteurs, journalistes et abonnés. Cette charte détaille en toute transparence la collecte, l&apos;usage et la protection de vos informations personnelles.
             </p>
           </section>
 
+          {/* 2. Données Collectées */}
           <section className="space-y-3">
-            <h2 className="text-lg font-black text-white uppercase tracking-wider border-l-3 border-blue-500 pl-2">
-              2. Données Collectées
+            <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
+              2. Nature des Données Collectées
             </h2>
             <p>
-              Nous collectons des informations de différentes manières afin de vous fournir une expérience optimale et sécurisée :
+              Nous limitons rigoureusement la collecte aux seules données strictement nécessaires au bon fonctionnement de nos services :
             </p>
-            <ul className="list-disc pl-5 space-y-1.5">
+            <ul className="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-400">
               <li>
-                <strong>Données de navigation et Cookies :</strong> Nous utilisons des cookies techniques et des identifiants de session anonymes pour faire fonctionner des fonctionnalités interactives comme le système de vote (étoiles) et le compteur de vues uniques par article.
+                <strong>Authentification Google & Comptes :</strong> Lorsque vous vous inscrivez via Google ou par formulaire, nous collectons votre nom, votre adresse email certifiée et votre photo de profil. Les mots de passe sont hachés de manière irréversible via l&apos;algorithme <code>bcrypt</code>.
               </li>
               <li>
-                <strong>Données des comptes membres :</strong> Si vous disposez d'un compte (Journaliste, Administrateur ou Lecteur enregistré), nous stockons votre nom, votre adresse email, votre mot de passe (chiffré de façon sécurisée via bcrypt) et vos rôles système.
+                <strong>Cookies Techniques & Session :</strong> Utilisés pour mémoriser votre connexion, vos préférences de lecture en Mode Zen, et pour empêcher les votes multiples sur les articles.
               </li>
               <li>
-                <strong>Adresse IP :</strong> Pour prévenir les fraudes de vote et de partage d'articles, notre système de sécurité enregistre temporairement votre adresse IP lors de vos évaluations et partages. Ces adresses IP sont uniquement visibles par l'administrateur système dans le journal d'audit de sécurité.
+                <strong>Cookies Publicitaires (Google AdSense) :</strong> Des régies partenaires tierces, dont Google AdSense, peuvent déposer des cookies pour diffuser des annonces pertinentes et mesurer leur performance. Les abonnés VIP bénéficient d&apos;une désactivation totale de toute publicité.
+              </li>
+              <li>
+                <strong>Notifications Web Push (VAPID) :</strong> Si vous activez les alertes d&apos;actualité, un jeton cryptographique anonyme est conservé pour vous envoyer les dépêches urgentes. Vous pouvez vous désabonner à tout instant dans les paramètres de votre navigateur.
+              </li>
+              <li>
+                <strong>Adresses IP & Sécurité Anti-fraude :</strong> Une empreinte technique chiffrée de votre adresse IP est temporairement enregistrée lors des votes ou dons pour prévenir les manipulations et attaques malveillantes.
               </li>
             </ul>
           </section>
 
+          {/* 3. Hébergement Sécurisé Cloud & Médias */}
           <section className="space-y-3">
-            <h2 className="text-lg font-black text-white uppercase tracking-wider border-l-3 border-blue-500 pl-2">
-              3. Utilisation des Données
+            <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
+              3. Hébergement & Sécurité des Données
             </h2>
             <p>
-              Les données collectées sont utilisées pour :
-            </p>
-            <ul className="list-disc pl-5 space-y-1.5">
-              <li>Assurer l'affichage et le bon tri des flux éditoriaux à la une.</li>
-              <li>Limiter chaque session à un seul vote par publication pour garantir l'intégrité et la sincérité du score de popularité des journalistes.</li>
-              <li>Consigner les modifications système dans le journal d'audit réservé aux administrateurs de PressTonik afin de suivre et de bloquer les activités malveillantes ou frauduleuses.</li>
-            </ul>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="text-lg font-black text-white uppercase tracking-wider border-l-3 border-blue-500 pl-2">
-              4. Partage et Stockage des Données
-            </h2>
-            <p>
-              PressTonik ne vend, n'échange et ne transfère aucune donnée personnelle identifiable à des tiers. Toutes les données sont hébergées et stockées de manière confidentielle sur nos serveurs sécurisés.
+              Les ressources multimédias et images d&apos;articles sont stockées sur l&apos;infrastructure sécurisée <strong>Cloudflare R2</strong>, garantissant un chiffrement au repos et en transit. Toutes les communications sur PressTonik sont protégées par le protocole HTTPS/TLS 1.3 de pointe.
             </p>
           </section>
 
+          {/* 4. Non-commercialisation des données */}
           <section className="space-y-3">
-            <h2 className="text-lg font-black text-white uppercase tracking-wider border-l-3 border-blue-500 pl-2">
-              5. Droits des Utilisateurs
+            <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
+              4. Zéro Revente de Données
             </h2>
             <p>
-              Conformément aux réglementations relatives à la protection de la vie privée, vous disposez d'un droit d'accès, de rectification et de suppression des données vous concernant. Pour toute demande d'exercice de vos droits, vous pouvez contacter l'administration de PressTonik.
+              PressTonik ne vend, ne loue, ni ne transfère aucune donnée personnelle identifiable à des courtiers en données ou des tiers à des fins de prospection commerciale non consentie.
             </p>
           </section>
 
+          {/* 5. Vos Droits */}
           <section className="space-y-3">
-            <h2 className="text-lg font-black text-white uppercase tracking-wider border-l-3 border-blue-500 pl-2">
-              6. Consentement
+            <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
+              5. Exercice de vos Droits (Accès & Suppression)
             </h2>
             <p>
-              En utilisant notre site internet, vous consentez à notre politique de confidentialité.
+              Vous disposez à tout moment d&apos;un droit d&apos;accès, de rectification et de suppression définitive de votre compte et des données associées. Pour exercer ce droit, adressez un message à <a href="mailto:contact@bittonik.com" className="text-emerald-400 hover:underline">contact@bittonik.com</a>.
             </p>
-          </section>
-
-          <section className="space-y-4 pt-6 border-t border-slate-800/60">
-            <p className="text-center text-sm text-slate-400">
-              Vous souhaitez rejoindre notre équipe de rédacteurs ou avoir un espace de lecteur privilégié ?
-            </p>
-            <div className="flex justify-center">
-              <Link
-                href="/request-account"
-                className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md"
-              >
-                Demander un compte PressTonik
-              </Link>
-            </div>
           </section>
         </div>
       </div>
