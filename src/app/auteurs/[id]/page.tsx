@@ -16,6 +16,7 @@ import {
 import SupportBox from '@/components/SupportBox';
 import JournalistNewsletterCard from '@/components/JournalistNewsletterCard';
 import { Metadata } from 'next';
+import { formatArticleDate } from '@/lib/date';
 
 export const revalidate = 60;
 
@@ -233,11 +234,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
                 <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
-                    {new Date(art.datePublication).toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
+                    {formatArticleDate(art.datePublication, { short: true })}
                   </span>
                   <span className="text-emerald-400 font-bold group-hover:underline">
                     Lire l'article →

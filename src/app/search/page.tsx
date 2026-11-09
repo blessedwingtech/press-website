@@ -3,6 +3,7 @@ import AdSlot from '@/components/AdSlot';
 import Link from 'next/link';
 import { Calendar, Search, BookOpen } from 'lucide-react';
 import ArticleMedia from '@/components/ArticleMedia';
+import { formatArticleDate } from '@/lib/date';
 
 export const revalidate = 0; // Pas de cache
 
@@ -122,11 +123,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       <div>
                         <span className="text-[10px] text-slate-400 flex items-center gap-1 mb-2 font-semibold">
                           <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
-                          {new Date(article.datePublication).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
+                          {formatArticleDate(article.datePublication, { short: true })}
                         </span>
                         <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>

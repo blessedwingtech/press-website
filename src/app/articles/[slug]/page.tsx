@@ -24,6 +24,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { NewsArticleJsonLd, BreadcrumbJsonLd } from '@/components/JsonLd';
 import JournalistNewsletterCard from '@/components/JournalistNewsletterCard';
+import ProgressiveArticleContent from '@/components/ProgressiveArticleContent';
+import { formatArticleDate } from '@/lib/date';
 
 import { Metadata, ResolvingMetadata } from 'next';
 
@@ -323,13 +325,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
                 </span>
                 <span className="flex items-center gap-1.5 font-medium">
                   <Calendar className="w-4 h-4 text-emerald-400" />
-                  Le {new Date(article.datePublication).toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  <span>Le {formatArticleDate(article.datePublication, { includeTime: true })}</span>
                 </span>
                 <span className="flex items-center gap-1.5 font-medium">
                   <Eye className="w-4 h-4 text-cyan-400" />
@@ -365,11 +361,10 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
             isVip={isVipUser}
           />
 
-          {/* Contenu Rich Text (complet ou aperçu si paywall actif) */}
-          <div
-            id="article-prose-body"
-            className="prose prose-invert prose-emerald max-w-none text-slate-350 leading-relaxed text-sm sm:text-base space-y-4"
-            dangerouslySetInnerHTML={{ __html: displayedContent }}
+          {/* Contenu Rich Text avec affichage progressif (Lire plus) ou aperçu si paywall actif */}
+          <ProgressiveArticleContent
+            htmlContent={displayedContent}
+            isPaywalled={isPaywalled}
           />
 
           {/* LE PAYWALL SÉCURISÉ CÔTÉ SERVEUR */}

@@ -7,6 +7,7 @@ import SafeImage from '@/components/SafeImage';
 import ArticleMedia from '@/components/ArticleMedia';
 import { Metadata } from 'next';
 import { BreadcrumbJsonLd } from '@/components/JsonLd';
+import { formatArticleDate } from '@/lib/date';
 
 export const revalidate = 60; // Cache 60s avec revalidation ISR
 
@@ -186,11 +187,7 @@ export default async function MenuCategoryPage({ params, searchParams }: MenuPag
                       <div>
                         <span className="text-[10px] text-slate-450 flex items-center gap-1 mb-2 font-semibold">
                           <Calendar className="w-3 h-3 text-slate-500" />
-                          {new Date(article.datePublication).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
+                          {formatArticleDate(article.datePublication, { short: true })}
                         </span>
                         <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, User, ArrowRight, BookOpen, Eye } from 'lucide-react';
 import ArticleMedia from '@/components/ArticleMedia';
 import AdSlot from '@/components/AdSlot';
+import { formatArticleDate } from '@/lib/date';
 
 export const revalidate = 60; // Cache ISR 60s avec revalidation automatique lors des publications
 
@@ -202,11 +203,7 @@ export default async function Home({ searchParams }: HomeProps) {
                               <div className="text-xs text-slate-400 flex items-center justify-between gap-2 mb-2 sm:mb-3 font-medium">
                                 <span className="flex items-center gap-1.5">
                                   <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                                  {new Date(hero.datePublication).toLocaleDateString('fr-FR', {
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric',
-                                  })}
+                                  {formatArticleDate(hero.datePublication)}
                                 </span>
                                 <span className="flex items-center gap-1 text-slate-400 shrink-0">
                                   <Eye className="w-3.5 h-3.5 text-cyan-400" />
@@ -297,11 +294,7 @@ export default async function Home({ searchParams }: HomeProps) {
                           <span className="text-[9px] sm:text-[10px] text-slate-450 flex items-center justify-between gap-1 mb-1 sm:mb-2 font-medium">
                             <span className="flex items-center gap-1 truncate">
                               <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
-                              {new Date(article.datePublication).toLocaleDateString('fr-FR', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                              })}
+                              {formatArticleDate(article.datePublication, { short: true })}
                             </span>
                             <span className="flex items-center gap-1 text-slate-500 shrink-0">
                               <Eye className="w-3 h-3 text-cyan-500/80" />
@@ -410,7 +403,7 @@ export default async function Home({ searchParams }: HomeProps) {
                     <div className="flex-grow flex flex-col justify-between min-w-0 sm:p-4">
                       <div>
                         <span className="text-[9px] text-slate-550 block mb-1 font-semibold">
-                          {new Date(article.datePublication).toLocaleDateString('fr-FR')}
+                          {formatArticleDate(article.datePublication, { short: true })}
                         </span>
                         <h3 className="text-xs font-bold text-white hover:text-cyan-400 transition-colors line-clamp-2 leading-snug">
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>
