@@ -68,10 +68,18 @@ export const metadata: Metadata = {
     description: 'Plateforme indépendante de journalisme et de rédaction en temps réel. Enquêtes exclusives, actualités politiques, économiques, technologiques et sportives.',
     images: [
       {
-        url: '/icon.svg',
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'PressTonik Presse Rédactionnelle',
+        alt: 'PressTonik | Média d Actualités et d Investigations',
+        type: 'image/jpeg',
+      },
+      {
+        url: '/logo-share.jpg',
+        width: 800,
+        height: 800,
+        alt: 'Logo PressTonik',
+        type: 'image/jpeg',
       },
     ],
   },
@@ -79,7 +87,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'PressTonik | Actualités, Enquêtes & Presse Rédactionnelle en Continu',
     description: 'Plateforme indépendante de journalisme et de rédaction en temps réel.',
-    images: ['/icon.svg'],
+    images: ['/og-image.jpg'],
   },
   alternates: {
     canonical: siteUrl,

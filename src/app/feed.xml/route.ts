@@ -27,25 +27,24 @@ export async function GET() {
 
     const itemsXml = articles
       .map((article) => {
-        // Nettoyer les balises HTML pour la description courte RSS
-        const cleanDescription = article.contenu
-          .replace(/<[^>]*>?/gm, '')
-          .substring(0, 300)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-
-        const cleanTitle = article.titre
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-
         const articleUrl = `${baseUrl}/articles/${article.slug}`;
 
         let enclosure = '';
         if (article.imagePrincipale) {
-          enclosure = `<enclosure url="${article.imagePrincipale}" type="image/jpeg" />`;
+          const absoluteImgUrl = article.imagePrincipale.startsWith('http')
+            ? article.imagePrincipale
+            : `${baseUrl}${article.imagePrincipale.startsWith('/') ? '' : '/'}${article.imagePrincipale}`;
+          // Échapper les & dans les URLs d'attribut XML pour éviter l'erreur EntityRef
+          const safeEnclosureUrl = absoluteImgUrl.replace(/&/g, '&amp;');
+          enclosure = `\n      <enclosure url="${safeEnclosureUrl}" type="image/jpeg" />`;
         }
+
+        // Nettoyer les balises HTML et caractères spéciaux
+        const rawDescription = article.contenu
+          .replace(/<[^>]*>?/gm, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .substring(0, 300);
 
         return `
     <item>
@@ -53,10 +52,9 @@ export async function GET() {
       <link>${articleUrl}</link>
       <guid isPermaLink="true">${articleUrl}</guid>
       <pubDate>${new Date(article.datePublication).toUTCString()}</pubDate>
-      <description><![CDATA[${cleanDescription}...]]></description>
+      <description><![CDATA[${rawDescription}...]]></description>
       <category><![CDATA[${article.menu.nom}]]></category>
-      <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/"><![CDATA[${article.auteur.name}]]></dc:creator>
-      ${enclosure}
+      <dc:creator><![CDATA[${article.auteur.name}]]></dc:creator>${enclosure}
     </item>`;
       })
       .join('');
