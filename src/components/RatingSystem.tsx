@@ -71,19 +71,19 @@ export default function RatingSystem({
   const isUserEvaluated = myVote !== null;
 
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-lg">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+    <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-sm dark:shadow-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800/80 pb-2.5">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-black text-white uppercase tracking-wider">
+          <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
             Évaluation & Réputation Journalistique
           </span>
           {isUserEvaluated ? (
-            <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-              <CheckCircle2 className="w-3 h-3 text-amber-400" />
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/15 border border-amber-300 dark:border-amber-500/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+              <CheckCircle2 className="w-3 h-3 text-amber-500 dark:text-amber-400" />
               Déjà Évalué
             </span>
           ) : (
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1">
               ⚪ Non Évalué Par Vous
             </span>
           )}
@@ -91,18 +91,18 @@ export default function RatingSystem({
 
         {/* Moyenne de cet écrit & réputation globale */}
         <div className="flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5 font-bold text-white">
-            <span className="text-amber-400">★</span>
+          <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
+            <span className="text-amber-500 dark:text-amber-400">★</span>
             <span>{average > 0 ? average.toFixed(1) : '—'}</span>
-            <span className="text-slate-400 font-normal text-[11px]">
+            <span className="text-slate-500 dark:text-slate-400 font-normal text-[11px]">
               ({count} avis sur cet article)
             </span>
           </div>
 
           {authorAverage > 0 && (
-            <div className="hidden md:flex items-center gap-1 text-[11px] text-slate-400 border-l border-slate-800 pl-3">
+            <div className="hidden md:flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 border-l border-slate-200 dark:border-slate-800 pl-3">
               <span>Plume de l'auteur :</span>
-              <strong className="text-emerald-400 font-bold">{authorAverage.toFixed(1)} ★</strong>
+              <strong className="text-emerald-600 dark:text-emerald-400 font-bold">{authorAverage.toFixed(1)} ★</strong>
             </div>
           )}
         </div>

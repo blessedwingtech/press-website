@@ -75,10 +75,24 @@ function LoginForm() {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    setGoogleLoading(true);
-    setError(null);
-    signIn('google', { callbackUrl: '/' });
+  const handleGoogleSignIn = async () => {
+    try {
+      setGoogleLoading(true);
+      setError(null);
+      console.log('[Auth] Initialisation de la connexion Google...');
+      const res = await signIn('google', {
+        callbackUrl: '/',
+      });
+      console.log('[Auth] Réponse NextAuth Google:', res);
+      if (res?.error) {
+        setError(`Erreur Google: ${res.error}`);
+        setGoogleLoading(false);
+      }
+    } catch (err: any) {
+      console.error('[Auth] Erreur inattendue Google Sign-In:', err);
+      setError("Impossible d'initialiser l'authentification Google. Veuillez vérifier votre connexion.");
+      setGoogleLoading(false);
+    }
   };
 
   return (

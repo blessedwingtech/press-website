@@ -212,10 +212,24 @@ export default function RequestAccountPage() {
           <div className="mb-6">
             <button
               type="button"
-              onClick={() => {
-                setGoogleLoading(true);
-                setError(null);
-                signIn('google', { callbackUrl: '/login?google_pending=true' });
+              onClick={async () => {
+                try {
+                  setGoogleLoading(true);
+                  setError(null);
+                  console.log('[Auth Request] Initialisation demande Google...');
+                  const res = await signIn('google', {
+                    callbackUrl: '/login?google_pending=true',
+                  });
+                  console.log('[Auth Request] Réponse NextAuth:', res);
+                  if (res?.error) {
+                    setError(`Erreur Google: ${res.error}`);
+                    setGoogleLoading(false);
+                  }
+                } catch (err: any) {
+                  console.error('[Auth Request] Erreur inscription Google:', err);
+                  setError("Impossible d'initialiser Google. Veuillez utiliser le formulaire ci-dessous.");
+                  setGoogleLoading(false);
+                }
               }}
               disabled={googleLoading || loading}
               className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-slate-600 transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm active:scale-[0.99]"

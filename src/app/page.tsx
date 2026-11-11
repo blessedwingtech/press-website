@@ -174,7 +174,7 @@ export default async function Home({ searchParams }: HomeProps) {
                   (() => {
                     const hero = paginatedArticles[0];
                     return (
-                      <article className="mb-8 bg-gradient-to-b from-slate-900/80 to-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/90 hover:border-emerald-500/40 hover:shadow-2xl transition-all duration-300 group shadow-xl">
+                      <article className="mb-8 bg-white dark:bg-gradient-to-b dark:from-slate-900/80 dark:to-slate-900/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/90 hover:border-emerald-500/40 hover:shadow-2xl transition-all duration-300 group shadow-lg dark:shadow-xl">
                         <div className="grid grid-cols-1 md:grid-cols-12">
                           {/* Image Hero : format 16/9 sur mobile, pleine hauteur sur desktop */}
                           <Link
@@ -200,37 +200,37 @@ export default async function Home({ searchParams }: HomeProps) {
                           {/* Contenu Hero */}
                           <div className="p-4 sm:p-6 md:p-8 md:col-span-5 flex flex-col justify-between space-y-4">
                             <div>
-                              <div className="text-xs text-slate-400 flex items-center justify-between gap-2 mb-2 sm:mb-3 font-medium">
+                              <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between gap-2 mb-2 sm:mb-3 font-medium">
                                 <span className="flex items-center gap-1.5">
                                   <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                                   {formatArticleDate(hero.datePublication)}
                                 </span>
-                                <span className="flex items-center gap-1 text-slate-400 shrink-0">
-                                  <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                                <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400 shrink-0">
+                                  <Eye className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                                   {hero.views} vues
                                 </span>
                               </div>
 
-                              <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white hover:text-emerald-400 transition-colors leading-tight line-clamp-2 sm:line-clamp-3">
+                              <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors leading-tight line-clamp-2 sm:line-clamp-3">
                                 <Link href={`/articles/${hero.slug}`}>
                                   {hero.titre}
                                 </Link>
                               </h2>
 
                               <div
-                                className="mt-2.5 sm:mt-3.5 text-xs sm:text-sm text-slate-300 line-clamp-2 sm:line-clamp-4 leading-relaxed"
+                                className="mt-2.5 sm:mt-3.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 line-clamp-2 sm:line-clamp-4 leading-relaxed"
                                 dangerouslySetInnerHTML={{
                                   __html: hero.contenu.replace(/<[^>]*>/g, '').substring(0, 240) + '...',
                                 }}
                               />
                             </div>
 
-                            <div className="pt-3.5 sm:pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs">
-                              <span className="text-slate-300 flex items-center gap-2 font-medium truncate pr-1">
-                                <User className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <div className="pt-3.5 sm:pt-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+                              <span className="text-slate-700 dark:text-slate-300 flex items-center gap-2 font-medium truncate pr-1">
+                                <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                                 <span className="truncate font-semibold text-xs">{hero.auteur.name}</span>
                                 {hero.authorAverageRating > 0 && (
-                                  <span className="text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-500/20 shrink-0 text-[10px]">
+                                  <span className="text-amber-500 dark:text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-500/20 shrink-0 text-[10px]">
                                     ★ {hero.authorAverageRating.toFixed(1)}
                                   </span>
                                 )}
@@ -238,7 +238,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
                               <Link
                                 href={`/articles/${hero.slug}`}
-                                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3.5 sm:px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md shadow-emerald-950/40 hover:translate-x-0.5 shrink-0 text-xs"
+                                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3.5 sm:px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-md shadow-emerald-500/20 hover:translate-x-0.5 shrink-0 text-xs cursor-pointer"
                               >
                                 Lire l'article <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
                               </Link>
@@ -268,7 +268,7 @@ export default async function Home({ searchParams }: HomeProps) {
                   {(page === 1 ? paginatedArticles.slice(1) : paginatedArticles).map((article) => (
                     <article
                       key={article.id}
-                      className="flex flex-row sm:flex-col bg-slate-900/40 hover:bg-slate-900/70 rounded-2xl overflow-hidden border border-slate-800/90 hover:border-slate-700/80 hover:shadow-xl transition-all duration-300 group p-2.5 sm:p-0 gap-3 sm:gap-0 justify-between"
+                      className="flex flex-row sm:flex-col bg-white dark:bg-slate-900/40 hover:bg-slate-50 dark:hover:bg-slate-900/70 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/90 hover:border-slate-300 dark:hover:border-slate-700/80 hover:shadow-xl transition-all duration-300 group p-2.5 sm:p-0 gap-3 sm:gap-0 justify-between shadow-sm dark:shadow-md"
                     >
                       {/* Vignette : compacte (w-28 h-24) sur mobile, grand format sur grand écran */}
                       <Link
@@ -281,7 +281,7 @@ export default async function Home({ searchParams }: HomeProps) {
                             {article.menu.nom}
                           </span>
                           {article.submenu && (
-                            <span className="hidden sm:inline-block bg-slate-950/80 backdrop-blur-sm text-slate-200 border border-slate-800 font-bold text-[8px] uppercase px-1.5 py-0.5 rounded shadow-md tracking-wider">
+                            <span className="hidden sm:inline-block bg-slate-950/85 backdrop-blur-sm text-slate-200 border border-slate-800 font-bold text-[8px] uppercase px-1.5 py-0.5 rounded shadow-md tracking-wider">
                               {article.submenu.nom}
                             </span>
                           )}
@@ -291,41 +291,41 @@ export default async function Home({ searchParams }: HomeProps) {
                       {/* Contenu textuel : concis et ultra-lisible sur mobile */}
                       <div className="flex-grow flex flex-col justify-between min-w-0 sm:p-4">
                         <div>
-                          <span className="text-[9px] sm:text-[10px] text-slate-450 flex items-center justify-between gap-1 mb-1 sm:mb-2 font-medium">
+                          <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-450 flex items-center justify-between gap-1 mb-1 sm:mb-2 font-medium">
                             <span className="flex items-center gap-1 truncate">
                               <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
                               {formatArticleDate(article.datePublication, { short: true })}
                             </span>
                             <span className="flex items-center gap-1 text-slate-500 shrink-0">
-                              <Eye className="w-3 h-3 text-cyan-500/80" />
+                              <Eye className="w-3 h-3 text-cyan-600 dark:text-cyan-500/80" />
                               {article.views}
                             </span>
                           </span>
-                          <h2 className="text-xs sm:text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+                          <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                             <Link href={`/articles/${article.slug}`}>
                               {article.titre}
                             </Link>
                           </h2>
                           <div
-                            className="hidden sm:block mt-2 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
+                            className="hidden sm:block mt-2 text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed"
                             dangerouslySetInnerHTML={{
                               __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                             }}
                           />
                         </div>
-                        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px]">
-                          <span className="text-slate-400 flex items-center gap-1 font-medium truncate pr-1">
+                        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-slate-200 dark:border-slate-800/80 flex justify-between items-center text-[10px]">
+                          <span className="text-slate-700 dark:text-slate-400 flex items-center gap-1 font-medium truncate pr-1">
                             <User className="w-3 h-3 text-slate-500 shrink-0" />
                             <span className="truncate">{article.auteur.name}</span>
                             {article.authorAverageRating > 0 && (
-                              <span className="text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-950/25 px-1 py-0.5 rounded border border-amber-500/10 shrink-0">
+                              <span className="text-amber-500 dark:text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/25 px-1 py-0.5 rounded border border-amber-300 dark:border-amber-500/10 shrink-0">
                                 ★ {article.authorAverageRating.toFixed(1)}
                               </span>
                             )}
                           </span>
                           <Link
                             href={`/articles/${article.slug}`}
-                            className="text-emerald-400 hover:text-emerald-300 font-extrabold flex items-center gap-0.5 hover:translate-x-0.5 transition-all shrink-0"
+                            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 font-extrabold flex items-center gap-0.5 hover:translate-x-0.5 transition-all shrink-0 cursor-pointer"
                           >
                             Lire <ArrowRight className="w-3 h-3" />
                           </Link>

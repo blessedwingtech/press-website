@@ -78,17 +78,20 @@ html:not(.dark) article,
 html:not(.dark) .bg-slate-900,
 html:not(.dark) [class*="bg-slate-900/"] {
   background-color: #ffffff !important;
+  background-image: none !important;
   border-color: #e2e8f0 !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
 }
 
 html:not(.dark) .bg-slate-950 {
   background-color: #f1f5f9 !important;
+  background-image: none !important;
 }
 
 html:not(.dark) .bg-slate-800,
 html:not(.dark) [class*="bg-slate-800/"] {
   background-color: #f8fafc !important;
+  background-image: none !important;
   border-color: #e2e8f0 !important;
 }
 
@@ -105,17 +108,46 @@ html:not(.dark) .text-slate-200 {
   color: #1e293b !important;
 }
 
-html:not(.dark) .text-slate-300 {
+html:not(.dark) .text-slate-300,
+html:not(.dark) .text-slate-350 {
   color: #334155 !important;
 }
 
-html:not(.dark) .text-slate-400 {
-  color: #64748b !important;
+html:not(.dark) .text-slate-400,
+html:not(.dark) .text-slate-450 {
+  color: #475569 !important;
 }
 
 html:not(.dark) .border-slate-800,
 html:not(.dark) .border-slate-700 {
   border-color: #e2e8f0 !important;
+}
+
+/* Corps éditorial des articles en Mode Clair (Prose) */
+html:not(.dark) .prose,
+html:not(.dark) #article-prose-body {
+  color: #1e293b !important;
+}
+
+html:not(.dark) .prose p,
+html:not(.dark) .prose li,
+html:not(.dark) .prose blockquote,
+html:not(.dark) #article-prose-body p {
+  color: #334155 !important;
+  line-height: 1.8 !important;
+}
+
+html:not(.dark) .prose strong,
+html:not(.dark) .prose b,
+html:not(.dark) .prose h1,
+html:not(.dark) .prose h2,
+html:not(.dark) .prose h3,
+html:not(.dark) .prose h4 {
+  color: #0f172a !important;
+}
+
+html:not(.dark) .prose a {
+  color: #059669 !important;
 }
 
 /* Champs de formulaires et recherche */
@@ -138,6 +170,13 @@ html:not(.dark) a[class*="bg-emerald"],
 html:not(.dark) button[class*="bg-rose"],
 html:not(.dark) a[class*="bg-rose"] {
   color: #ffffff !important;
+}
+
+/* Boutons neutres en Mode Clair (éviter le blanc sur blanc) */
+html:not(.dark) button.bg-slate-800,
+html:not(.dark) .bg-slate-800 button:not([class*="bg-emerald"]) {
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
 }
 
 @layer utilities {

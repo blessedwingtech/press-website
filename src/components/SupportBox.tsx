@@ -70,21 +70,21 @@ export default function SupportBox({
   };
 
   return (
-    <div className="my-8 bg-gradient-to-br from-slate-900/90 via-slate-900/50 to-emerald-950/20 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+    <div className="my-8 bg-white dark:bg-gradient-to-br dark:from-slate-900/90 dark:via-slate-900/50 dark:to-emerald-950/20 border border-slate-200 dark:border-emerald-500/30 rounded-2xl p-6 sm:p-8 shadow-lg shadow-slate-200/50 dark:shadow-xl relative overflow-hidden">
       {/* Glow décoratif */}
       <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800/80 pb-4">
           <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
-              <Heart className="w-5 h-5 fill-emerald-500/20 text-emerald-400" />
+            <span className="p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+              <Heart className="w-5 h-5 fill-emerald-500/20 text-emerald-600 dark:text-emerald-400" />
             </span>
             <div>
-              <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
                 Soutenir ce journalisme indépendant
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
                 {authorName
                   ? `Encouragez ${authorName} et l'équipe de rédaction dans leurs enquêtes.`
                   : "Votre contribution garantit notre indépendance éditoriale."}
@@ -93,7 +93,7 @@ export default function SupportBox({
           </div>
 
           {/* Sélecteur de Devise */}
-          <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-1 shrink-0 self-start sm:self-auto">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-1 shrink-0 self-start sm:self-auto">
             <button
               type="button"
               onClick={() => {
@@ -103,8 +103,8 @@ export default function SupportBox({
               }}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                 currency === 'USD'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/50'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/20'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               $ USD
@@ -118,8 +118,8 @@ export default function SupportBox({
               }}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                 currency === 'HTG'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/50'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/20'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Gourdes (HTG)
@@ -129,8 +129,8 @@ export default function SupportBox({
 
         {/* Boutons Montants Prédéfinis */}
         <div className="space-y-3">
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-            <Coffee className="w-3.5 h-3.5 text-amber-400" /> Choisissez votre contribution :
+          <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+            <Coffee className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" /> Choisissez votre contribution :
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -144,8 +144,8 @@ export default function SupportBox({
                 }}
                 className={`py-2.5 px-3 rounded-xl text-xs font-extrabold border transition-all ${
                   selectedAmount === val && !customAmount
-                    ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow-md shadow-emerald-950/30 ring-1 ring-emerald-400/50'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                    ? 'bg-emerald-50 dark:bg-emerald-500/20 border-emerald-500 dark:border-emerald-400 text-emerald-800 dark:text-emerald-300 shadow-sm ring-1 ring-emerald-500/50'
+                    : 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 {val} {currency === 'USD' ? '$' : 'HTG'}
@@ -161,13 +161,13 @@ export default function SupportBox({
               placeholder={`Autre montant (${currency})...`}
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
-              className="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors"
+              className="flex-grow bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors"
             />
             <button
               type="button"
               onClick={handleSupport}
               disabled={loading}
-              className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg shadow-emerald-950/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 shrink-0 flex items-center gap-1.5 cursor-pointer"
+              className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20 dark:shadow-emerald-950/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 shrink-0 flex items-center gap-1.5 cursor-pointer"
             >
               <Sparkles className="w-4 h-4 fill-slate-950" />
               {loading ? 'Redirection...' : 'Soutenir'}
@@ -176,11 +176,11 @@ export default function SupportBox({
         </div>
 
         {/* Moyens de paiement acceptés (MonCash, CB, PayPal) */}
-        <div className="pt-3 border-t border-slate-800/60 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400">
+        <div className="pt-3 border-t border-slate-200 dark:border-slate-800/60 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-500 dark:text-slate-400">
           <span className="flex items-center gap-1.5 font-medium">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Paiement sécurisé via BitTonik Pay-Hub
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Paiement sécurisé via BitTonik Pay-Hub
           </span>
-          <div className="flex items-center gap-2 font-bold text-slate-400 uppercase tracking-widest text-[9px]">
+          <div className="flex items-center gap-2 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-[9px]">
             <span>MonCash (HTG)</span>
             <span>•</span>
             <span>Visa / Mastercard</span>
