@@ -174,7 +174,7 @@ export default async function Home({ searchParams }: HomeProps) {
                   (() => {
                     const hero = paginatedArticles[0];
                     return (
-                      <article className="mb-8 bg-white dark:bg-gradient-to-b dark:from-slate-900/80 dark:to-slate-900/40 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/90 hover:border-emerald-500/40 hover:shadow-2xl transition-all duration-300 group shadow-lg dark:shadow-xl">
+                      <article className="mb-8 bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 hover:shadow-2xl transition-all duration-300 group shadow-lg dark:shadow-2xl">
                         <div className="grid grid-cols-1 md:grid-cols-12">
                           {/* Image Hero : format 16/9 sur mobile, pleine hauteur sur desktop */}
                           <Link
@@ -198,7 +198,7 @@ export default async function Home({ searchParams }: HomeProps) {
                           </Link>
 
                           {/* Contenu Hero */}
-                          <div className="p-4 sm:p-6 md:p-8 md:col-span-5 flex flex-col justify-between space-y-4">
+                          <div className="p-4 sm:p-6 md:p-8 md:col-span-5 flex flex-col justify-between space-y-4 bg-white dark:bg-slate-900">
                             <div>
                               <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between gap-2 mb-2 sm:mb-3 font-medium">
                                 <span className="flex items-center gap-1.5">
@@ -225,7 +225,7 @@ export default async function Home({ searchParams }: HomeProps) {
                               />
                             </div>
 
-                            <div className="pt-3.5 sm:pt-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+                            <div className="pt-3.5 sm:pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2.5 text-xs">
                               <span className="text-slate-700 dark:text-slate-300 flex items-center gap-2 font-medium truncate pr-1">
                                 <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                                 <span className="truncate font-semibold text-xs">{hero.auteur.name}</span>

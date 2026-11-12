@@ -187,16 +187,16 @@ export default function RequestAccountPage() {
       </div>
 
       <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-md px-4">
-        <div className="bg-slate-900 border border-slate-800 py-8 px-6 sm:px-10 rounded-2xl shadow-2xl relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 py-8 px-6 sm:px-10 rounded-2xl shadow-xl dark:shadow-2xl relative overflow-hidden">
           {/* Decorative glow */}
           <div className="absolute -top-10 -left-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="text-center mb-6 relative">
-            <h2 className="text-xl font-extrabold text-white">
+            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
               Demander un Compte
             </h2>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
               Rejoignez PressTonik en tant que rédacteur ou lecteur officiel
             </p>
           </div>
@@ -232,7 +232,7 @@ export default function RequestAccountPage() {
                 }
               }}
               disabled={googleLoading || loading}
-              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-slate-600 transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm active:scale-[0.99]"
+              className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl font-bold text-sm text-slate-800 dark:text-white bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 border border-slate-300 dark:border-slate-700 transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm active:scale-[0.99]"
             >
               {googleLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-slate-400" />

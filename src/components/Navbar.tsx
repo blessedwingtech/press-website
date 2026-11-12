@@ -153,11 +153,11 @@ export default function Navbar({ menus }: NavbarProps) {
                 </button>
 
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-md shadow-xl bg-slate-800 border border-slate-700 ring-1 ring-black ring-opacity-5 z-50">
-                    <div className="px-4 py-2.5 border-b border-slate-700">
-                      <p className="text-xs text-slate-400">Connecté en tant que</p>
-                      <p className="text-sm font-medium text-white truncate">{session.user?.email}</p>
-                      <span className="inline-block mt-1 text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <div className="absolute right-0 mt-2 w-56 rounded-xl shadow-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-700 ring-1 ring-black/5 z-50 overflow-hidden py-1">
+                    <div className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-700">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Connecté en tant que</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{session.user?.email}</p>
+                      <span className="inline-block mt-1 text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
                         {userRole}
                       </span>
                     </div>
@@ -166,9 +166,9 @@ export default function Navbar({ menus }: NavbarProps) {
                         <Link
                           href="/admin"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors font-medium"
                         >
-                          <Shield className="w-4 h-4 text-rose-400" />
+                          <Shield className="w-4 h-4 text-rose-500" />
                           Espace Admin
                         </Link>
                       )}
@@ -176,26 +176,26 @@ export default function Navbar({ menus }: NavbarProps) {
                         <Link
                           href="/journalist"
                           onClick={() => setUserDropdownOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors font-medium"
                         >
-                          <PenTool className="w-4 h-4 text-cyan-400" />
+                          <PenTool className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                           Espace Rédacteur
                         </Link>
                       )}
                       <Link
                         href="/abonnement"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-amber-300 hover:bg-slate-700 transition-colors font-semibold"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors font-bold"
                       >
-                        <Crown className="w-4 h-4 text-amber-400 fill-amber-400" />
+                        <Crown className="w-4 h-4 text-amber-500 fill-amber-500" />
                         Abonnement VIP
                       </Link>
                       <Link
                         href="/profile"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors font-medium"
                       >
-                        <User className="w-4 h-4 text-teal-400" />
+                        <User className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                         Mon Profil
                       </Link>
                       <button
@@ -203,7 +203,7 @@ export default function Navbar({ menus }: NavbarProps) {
                           setUserDropdownOpen(false);
                           signOut({ callbackUrl: '/' });
                         }}
-                        className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-rose-400 hover:bg-slate-700/50 hover:text-rose-350 transition-colors"
+                        className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors font-medium cursor-pointer"
                       >
                         <LogOut className="w-4 h-4" />
                         Déconnexion

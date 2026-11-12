@@ -96,8 +96,8 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-950">
-      <div className="max-w-md w-full space-y-6 bg-slate-900 border border-slate-800 p-8 sm:p-10 rounded-2xl shadow-2xl relative overflow-hidden">
+    <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950">
+      <div className="max-w-md w-full space-y-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-10 rounded-2xl shadow-xl dark:shadow-2xl relative overflow-hidden">
 
         <div className="absolute -top-10 -left-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -106,10 +106,10 @@ function LoginForm() {
           <div className="flex justify-center mb-6">
             <Logo size="lg" hideHaitiImage />
           </div>
-          <h2 className="text-xl font-extrabold text-white">
+          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
             Connexion à l'espace membre
           </h2>
-          <p className="mt-1.5 text-xs text-slate-400">
+          <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400">
             Accédez à la rédaction et aux fonctionnalités exclusives
           </p>
         </div>
@@ -143,7 +143,7 @@ function LoginForm() {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={googleLoading || loading}
-            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl font-medium text-sm text-white bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm active:scale-[0.99]"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl font-bold text-sm text-slate-800 dark:text-white bg-white hover:bg-slate-50 dark:bg-slate-800/90 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 transition duration-150 disabled:opacity-50 cursor-pointer shadow-sm active:scale-[0.99]"
           >
             {googleLoading ? (
               <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
@@ -157,10 +157,10 @@ function LoginForm() {
         {/* Séparateur */}
         <div className="relative my-2">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-800" />
+            <div className="w-full border-t border-slate-200 dark:border-slate-800" />
           </div>
           <div className="relative flex justify-center text-[11px] uppercase">
-            <span className="bg-slate-900 px-3 text-slate-500 font-semibold tracking-wider">
+            <span className="bg-white dark:bg-slate-900 px-3 text-slate-500 font-semibold tracking-wider">
               ou avec email
             </span>
           </div>
@@ -169,7 +169,7 @@ function LoginForm() {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              <label htmlFor="email" className="block text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider mb-2">
                 Adresse Email
               </label>
               <div className="relative">
@@ -190,7 +190,7 @@ function LoginForm() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              <label htmlFor="password" className="block text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider mb-2">
                 Mot de passe
               </label>
               <div className="relative">
