@@ -49,12 +49,12 @@ export default function ThemeToggle() {
       type="button"
       aria-label={theme === 'dark' ? 'Activer le mode clair' : 'Activer le mode sombre'}
       title={theme === 'dark' ? 'Passer en mode clair (☀️)' : 'Passer en mode sombre (🌙)'}
-      className="relative p-2 rounded-full bg-slate-800/80 hover:bg-slate-700/80 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-amber-400 dark:text-amber-300 border border-slate-700 dark:border-slate-700/80 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm flex items-center justify-center shrink-0 cursor-pointer"
+      className="relative p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-amber-400 dark:border-slate-700 border transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm flex items-center justify-center shrink-0 cursor-pointer"
     >
       {theme === 'dark' ? (
         <Sun className="w-4 h-4 transition-transform duration-300 hover:rotate-45" />
       ) : (
-        <Moon className="w-4 h-4 text-slate-700 dark:text-slate-300 transition-transform duration-300 hover:-rotate-12" />
+        <Moon className="w-4 h-4 text-slate-700 transition-transform duration-300 hover:-rotate-12" />
       )}
     </button>
   );
