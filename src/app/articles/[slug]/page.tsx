@@ -268,10 +268,10 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         
         {/* Corps de l'article (3/4 de la largeur) */}
-        <div id="article-content-container" className="lg:col-span-3 bg-slate-900/30 border border-slate-800/80 rounded-xl p-5 sm:p-8 shadow-2xl transition-all duration-300">
+        <div id="article-content-container" className="lg:col-span-3 bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-5 sm:p-8 shadow-sm dark:shadow-2xl transition-all duration-300">
           
           {/* Média d'illustration */}
-          <div className="mb-6 rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+          <div className="mb-6 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950">
             <ArticleMedia
               src={article.imagePrincipale}
               alt={article.titre}
@@ -280,55 +280,55 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
           </div>
 
           {/* En-tête de l'article */}
-          <div className="mb-8 border-b border-slate-800 pb-6 space-y-4">
+          <div className="mb-8 border-b border-slate-200 dark:border-slate-800 pb-6 space-y-4">
             
             {/* Badge de catégorie et Badge VIP */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full">
+              <span className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full">
                 {article.menu.nom}
               </span>
 
               {article.submenu && (
-                <span className="bg-slate-800 text-slate-300 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-slate-700">
+                <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
                   {article.submenu.nom}
                 </span>
               )}
 
               {article.isVip && (
-                <span className="bg-gradient-to-r from-amber-500/20 to-emerald-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-black uppercase tracking-widest px-3 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                  <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                <span className="bg-amber-50 dark:bg-gradient-to-r dark:from-amber-500/20 dark:to-emerald-500/20 border border-amber-300 dark:border-amber-500/40 text-amber-800 dark:text-amber-300 text-[10px] font-black uppercase tracking-widest px-3 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                  <Crown className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
                   Enquête Exclusive VIP
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white leading-tight">
               {article.titre}
             </h1>
             
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap gap-4 text-xs text-slate-400">
+              <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <User className="w-4 h-4 text-emerald-400" />
+                  <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   Par{' '}
                   <Link
                     href={`/auteurs/${article.auteurId}`}
-                    className="font-bold text-slate-200 hover:text-emerald-400 hover:underline transition-colors inline-flex items-center gap-1.5"
+                    className="font-bold text-slate-900 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline transition-colors inline-flex items-center gap-1.5"
                   >
                     <span>{article.auteur.name}</span>
                     {article.auteur.isPro && (
-                      <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.2 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center gap-0.5 shadow-sm" title="Journaliste Indépendant Certifié PRO">
+                      <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.2 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 flex items-center gap-0.5 shadow-sm" title="Journaliste Indépendant Certifié PRO">
                         ⭐ PRO
                       </span>
                     )}
                   </Link>
                 </span>
                 <span className="flex items-center gap-1.5 font-medium">
-                  <Calendar className="w-4 h-4 text-emerald-400" />
+                  <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Le {formatArticleDate(article.datePublication, { includeTime: true })}</span>
                 </span>
                 <span className="flex items-center gap-1.5 font-medium">
-                  <Eye className="w-4 h-4 text-cyan-400" />
+                  <Eye className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                   <span>{viewsCount} vue{viewsCount > 1 ? 's' : ''}</span>
                 </span>
               </div>
@@ -369,19 +369,19 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
 
           {/* LE PAYWALL SÉCURISÉ CÔTÉ SERVEUR */}
           {isPaywalled && (
-            <div className="relative mt-2 pt-14 pb-12 px-6 sm:px-10 rounded-2xl bg-gradient-to-t from-slate-950 via-slate-900 to-transparent border border-amber-550/30 text-center space-y-4 shadow-2xl">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 to-emerald-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mx-auto shadow-lg shadow-amber-950/40">
+            <div className="relative mt-2 pt-14 pb-12 px-6 sm:px-10 rounded-2xl bg-gradient-to-t from-slate-100 via-white to-transparent dark:from-slate-950 dark:via-slate-900 dark:to-transparent border border-amber-400/40 dark:border-amber-500/30 text-center space-y-4 shadow-xl dark:shadow-2xl">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 to-emerald-500/20 border border-amber-500/40 text-amber-500 dark:text-amber-400 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/10 dark:shadow-amber-950/40">
                 <Lock className="w-6 h-6" />
               </div>
 
               <div className="space-y-2 max-w-lg mx-auto">
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+                <span className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 inline-block px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/20">
                   Enquête d'Investigation Réservée
                 </span>
-                <h3 className="text-xl sm:text-2xl font-black text-white">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                   Débloquez l'intégralité de cette enquête
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                   Ce travail approfondi de terrain est financé par nos abonnés. Rejoignez le cercle PressTonik VIP pour lire ce dossier complet, sans aucune publicité, et soutenir directement nos journalistes.
                 </p>
               </div>
@@ -389,7 +389,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link
                   href="/abonnement"
-                  className="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-emerald-950/50 flex items-center justify-center gap-2 transition-transform hover:scale-105"
+                  className="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-black rounded-xl text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-emerald-500/20 dark:shadow-emerald-950/50 flex items-center justify-center gap-2 transition-transform hover:scale-105 cursor-pointer"
                 >
                   <Crown className="w-4 h-4 fill-slate-950" />
                   S'abonner dès 4.99 $ / 650 HTG
@@ -397,7 +397,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
                 {!session && (
                   <Link
                     href={`/login?callbackUrl=/articles/${article.slug}`}
-                    className="w-full sm:w-auto px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs uppercase tracking-wider border border-slate-700 transition"
+                    className="w-full sm:w-auto px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 dark:border-slate-700 font-bold rounded-xl text-xs uppercase tracking-wider border transition cursor-pointer"
                   >
                     Déjà membre VIP ? Se connecter
                   </Link>
@@ -408,16 +408,16 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
 
           {/* CANAL WHATSAPP PERSONNEL DU JOURNALISTE INDÉPENDANT */}
           {article.auteur.whatsappChannel && (
-            <div className="mt-8 p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-950 to-slate-900 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="mt-8 p-5 rounded-2xl bg-emerald-50/60 dark:bg-gradient-to-r dark:from-emerald-950/40 dark:via-slate-950 dark:to-slate-900 border border-emerald-300/60 dark:border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
                   <MessageCircle className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
+                  <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
                     Canal WhatsApp de {article.auteur.name}
                   </p>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
                     Suivez les scoops et alertes de terrain de ce journaliste indépendant en direct.
                   </p>
                 </div>
@@ -426,7 +426,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
                 href={article.auteur.whatsappChannel}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shrink-0 text-center flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/40 transition-all hover:scale-105"
+                className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shrink-0 text-center flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20 dark:shadow-emerald-950/40 transition-all hover:scale-105 cursor-pointer"
               >
                 Rejoindre son canal <ExternalLink className="w-3.5 h-3.5" />
               </a>
@@ -453,8 +453,8 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
           </div>
 
           {/* Mention de responsabilité légale de la presse indépendante */}
-          <div className="mt-6 pt-4 border-t border-slate-800/60 text-[10px] text-slate-500 flex items-start gap-2 leading-relaxed">
-            <ShieldAlert className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
+          <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800/60 text-[10px] text-slate-500 flex items-start gap-2 leading-relaxed">
+            <ShieldAlert className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
             <span>
               Cet article d'investigation est publié sous la responsabilité éditoriale de son auteur indépendant dans le cadre de la charte de qualité et de déontologie de la plateforme <strong>PressTonik Ayiti</strong>.
             </span>

@@ -149,16 +149,16 @@ export default function RatingSystem({
 
           {/* Statut ou note attribuée */}
           {hoverRating !== null ? (
-            <span className="text-xs font-bold text-amber-300 animate-in fade-in duration-150 whitespace-nowrap">
+            <span className="text-xs font-bold text-amber-600 dark:text-amber-300 animate-in fade-in duration-150 whitespace-nowrap">
               Attribuer {hoverRating} ★
             </span>
           ) : isUserEvaluated ? (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs font-bold whitespace-nowrap">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/25 text-amber-800 dark:text-amber-300 text-xs font-bold whitespace-nowrap">
               <span>Votre note : <strong>{myVote}/5 ★</strong></span>
-              <span className="text-[10px] text-amber-400/70 font-normal hidden sm:inline">(modifier)</span>
+              <span className="text-[10px] text-amber-600 dark:text-amber-400/70 font-normal hidden sm:inline">(modifier)</span>
             </div>
           ) : (
-            <span className="text-xs text-slate-400 italic">
+            <span className="text-xs text-slate-500 dark:text-slate-400 italic">
               Cliquez pour évaluer
             </span>
           )}
@@ -167,21 +167,21 @@ export default function RatingSystem({
         {/* Message de confirmation ou d'incitation */}
         <div className="flex items-center text-xs sm:text-right">
           {isUserEvaluated ? (
-            <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               Merci pour votre évaluation !
             </span>
           ) : count === 0 ? (
-            <span className="text-xs text-amber-300 font-bold bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span className="text-xs text-amber-800 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
               Soyez le premier à évaluer cet écrit !
             </span>
           ) : !hasUserRatedAuthor ? (
-            <span className="text-xs text-slate-400 font-medium">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               Notez le travail journalistique de cet auteur
             </span>
           ) : (
-            <span className="text-xs text-slate-400 font-medium">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               Cet écrit attend votre avis
             </span>
           )}
