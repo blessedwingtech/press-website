@@ -53,7 +53,7 @@ export default function Navbar({ menus }: NavbarProps) {
   const userRole = (session?.user as any)?.role;
 
   return (
-    <nav className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-50 shadow-md">
+    <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white sticky top-0 z-50 shadow-sm dark:shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo */} 
@@ -65,7 +65,7 @@ export default function Navbar({ menus }: NavbarProps) {
           <div className="hidden md:flex items-center space-x-1">
             <Link
               href="/"
-              className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-850 hover:text-emerald-400 transition-colors"
+              className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
             >
               Accueil
             </Link>
@@ -75,7 +75,7 @@ export default function Navbar({ menus }: NavbarProps) {
                 {menu.submenus.length > 0 ? (
                   <button
                     onClick={() => toggleDropdown(menu.id)}
-                    className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-850 hover:text-emerald-400 transition-colors focus:outline-none"
+                    className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus:outline-none"
                   >
                     {menu.nom}
                     <ChevronDown className="w-4 h-4 opacity-70 group-hover:rotate-180 transition-transform duration-200" />
@@ -83,7 +83,7 @@ export default function Navbar({ menus }: NavbarProps) {
                 ) : (
                   <Link
                     href={`/category/${menu.slug}`}
-                    className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-850 hover:text-emerald-400 transition-colors"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                   >
                     {menu.nom}
                   </Link>
@@ -91,11 +91,11 @@ export default function Navbar({ menus }: NavbarProps) {
 
                 {/* Submenus Dropdown */}
                 {menu.submenus.length > 0 && (
-                  <div className="absolute left-0 mt-1 w-48 rounded-md shadow-xl bg-slate-800 border border-slate-700 ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="absolute left-0 mt-1 w-52 rounded-xl shadow-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 ring-1 ring-black/5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden py-1">
                     <div className="py-1">
                       <Link
                         href={`/category/${menu.slug}`}
-                        className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700 hover:text-emerald-400 transition-colors"
+                        className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
                       >
                         Tout voir
                       </Link>
@@ -103,7 +103,7 @@ export default function Navbar({ menus }: NavbarProps) {
                         <Link
                           key={sub.id}
                           href={`/category/${menu.slug}/${sub.slug}`}
-                          className="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-emerald-400 transition-colors"
+                          className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
                         >
                           {sub.nom}
                         </Link>
@@ -228,7 +228,7 @@ export default function Navbar({ menus }: NavbarProps) {
             <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none"
+              className="inline-flex items-center justify-center p-2 rounded-md text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
             </button>
@@ -238,7 +238,7 @@ export default function Navbar({ menus }: NavbarProps) {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-900 border-t border-slate-800">
+        <div className="md:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
           <div className="px-4 pt-4 pb-2">
             <form onSubmit={handleSearch} className="relative">
               <input
@@ -246,7 +246,7 @@ export default function Navbar({ menus }: NavbarProps) {
                 placeholder="Rechercher..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-800/80 border border-slate-700 text-sm text-white rounded-md pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all placeholder:text-slate-500"
+                className="w-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white rounded-md pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </form>
@@ -255,7 +255,7 @@ export default function Navbar({ menus }: NavbarProps) {
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-slate-855 hover:text-emerald-400 transition-colors"
+              className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
             >
               Accueil
             </Link>
@@ -266,7 +266,7 @@ export default function Navbar({ menus }: NavbarProps) {
                   <>
                     <button
                       onClick={() => toggleDropdown(menu.id)}
-                      className="w-full text-left flex justify-between items-center px-3 py-2 rounded-md text-base font-medium hover:bg-slate-855 hover:text-emerald-400"
+                      className="w-full text-left flex justify-between items-center px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400"
                     >
                       {menu.nom}
                       <ChevronDown
@@ -276,11 +276,11 @@ export default function Navbar({ menus }: NavbarProps) {
                       />
                     </button>
                     {activeDropdown === menu.id && (
-                      <div className="pl-4 space-y-1 bg-slate-950/40 rounded-md py-1">
+                      <div className="pl-4 space-y-1 bg-slate-50 dark:bg-slate-950/40 rounded-lg py-1.5 border border-slate-100 dark:border-slate-800/60 my-1">
                         <Link
                           href={`/category/${menu.slug}`}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="block px-3 py-1.5 rounded-md text-sm text-slate-400 hover:text-emerald-400"
+                          className="block px-3 py-1.5 rounded-md text-sm text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium"
                         >
                           Tout voir
                         </Link>
@@ -301,7 +301,7 @@ export default function Navbar({ menus }: NavbarProps) {
                   <Link
                     href={`/category/${menu.slug}`}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-slate-855 hover:text-emerald-400"
+                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-400"
                   >
                     {menu.nom}
                   </Link>
@@ -310,7 +310,7 @@ export default function Navbar({ menus }: NavbarProps) {
             ))}
           </div>
 
-          <div className="pt-4 pb-3 border-t border-slate-800 px-4">
+          <div className="pt-4 pb-3 border-t border-slate-200 dark:border-slate-800 px-4">
             {/* Sélecteur de Thème Clair / Sombre */}
             <ThemeToggle />
 

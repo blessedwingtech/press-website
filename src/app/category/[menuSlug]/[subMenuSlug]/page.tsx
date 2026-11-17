@@ -147,7 +147,7 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
 
       {/* En-tête de section */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight text-white border-l-4 border-emerald-500 pl-3 uppercase">
+        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white border-l-4 border-emerald-500 pl-3 uppercase">
           {menu.nom} &mdash; <span className="text-emerald-400">{submenu.nom}</span>
         </h1>
         <span className="text-xs text-slate-500 font-semibold">{totalCount} article(s) trouvé(s)</span>
@@ -159,7 +159,7 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
         {/* Liste des articles */}
         <div className="lg:col-span-3">
           {articles.length === 0 ? (
-            <div className="text-center py-16 bg-slate-900/30 rounded-xl border border-slate-800/80">
+            <div className="text-center py-16 bg-white dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800">
               <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-4" />
               <p className="text-slate-400 font-medium">Aucun article n'est encore disponible dans cette sous-rubrique.</p>
             </div>
@@ -169,7 +169,7 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
                 {articles.map((article) => (
                   <div
                     key={article.id}
-                    className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 group"
+                    className="flex flex-col bg-white dark:bg-slate-900/60 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 group shadow-sm dark:shadow-md"
                   >
                     <Link href={`/articles/${article.slug}`} className="block relative h-40 overflow-hidden bg-slate-950">
                       <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
@@ -180,17 +180,17 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
                           <Calendar className="w-3 h-3 text-slate-500" />
                           {formatArticleDate(article.datePublication, { short: true })}
                         </span>
-                        <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+                        <h2 className="text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>
                         </h2>
                         <div
-                          className="mt-2.5 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
+                          className="mt-2.5 text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed"
                           dangerouslySetInnerHTML={{
                             __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                           }}
                         />
                       </div>
-                      <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px] font-semibold text-slate-400">
+                      <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-[10px] font-semibold text-slate-600 dark:text-slate-400">
                         <span className="truncate pr-2">Par {article.auteur.name}</span>
                         <Link
                           href={`/articles/${article.slug}`}
@@ -206,11 +206,11 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-slate-800/80">
+                <div className="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-slate-200 dark:border-slate-800/80">
                   {page > 1 ? (
                     <Link
                       href={`/category/${menu.slug}/${submenu.slug}?page=${page - 1}`}
-                      className="px-3.5 py-1.5 bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-lg text-xs font-bold text-slate-350 hover:text-white transition"
+                      className="px-3.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-white transition"
                     >
                       Précédent
                     </Link>
@@ -225,7 +225,7 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
                   {page < totalPages ? (
                     <Link
                       href={`/category/${menu.slug}/${submenu.slug}?page=${page + 1}`}
-                      className="px-3.5 py-1.5 bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-lg text-xs font-bold text-slate-355 hover:text-white transition"
+                      className="px-3.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-white transition"
                     >
                       Suivant
                     </Link>

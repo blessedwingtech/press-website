@@ -104,7 +104,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
       </div>
 
       {/* En-tête Fiche Journaliste */}
-      <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden space-y-6">
+      <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-10 shadow-xl dark:shadow-2xl relative overflow-hidden space-y-6">
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative z-10">
@@ -120,7 +120,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
           {/* Informations & Bio */}
           <div className="text-center sm:text-left flex-grow space-y-2.5">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-center sm:justify-start">
-              <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-wider">
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
                 {author.name}
               </h1>
               <span className="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 w-max mx-auto sm:mx-0">
@@ -128,7 +128,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-350 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
               {author.bio || "Journaliste indépendant contribuant à l'information libre et vérifiée sur PressTonik Ayiti."}
             </p>
 
@@ -140,11 +140,11 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
 
             {/* Statistiques Auteur */}
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 pt-2 text-xs">
-              <span className="flex items-center gap-1.5 text-slate-300 bg-slate-950/60 px-3 py-1.5 rounded-xl border border-slate-800">
+              <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950/60 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
                 <BookOpen className="w-4 h-4 text-emerald-400" />
                 <strong>{author.articles.length}</strong> article{author.articles.length > 1 ? 's' : ''}
               </span>
-              <span className="flex items-center gap-1.5 text-slate-300 bg-slate-950/60 px-3 py-1.5 rounded-xl border border-slate-800">
+              <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950/60 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
                 <Star className="w-4 h-4 text-amber-400 fill-amber-400/20" />
                 <strong>{avgRating}</strong> / 5 ({totalVotes} avis)
               </span>
@@ -154,8 +154,8 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
 
         {/* Bouton Canal WhatsApp Personnel */}
         {author.whatsappChannel && (
-          <div className="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
-            <div className="flex items-center gap-2.5 text-xs text-slate-300">
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+            <div className="flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
               <MessageCircle className="w-5 h-5 text-emerald-400" />
               <span>Recevez les scoops et alertes de <strong>{author.name}</strong> directement sur WhatsApp :</span>
             </div>
@@ -188,7 +188,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
 
       {/* Liste des Articles Publiés par ce Journaliste */}
       <div className="space-y-6">
-        <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+        <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-emerald-400" />
           Articles & Enquêtes Rédigés ({author.articles.length})
         </h2>
@@ -203,7 +203,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
               <Link
                 key={art.id}
                 href={`/articles/${art.slug}`}
-                className="group bg-slate-900/30 border border-slate-800/80 hover:border-emerald-500/40 rounded-2xl p-4 flex flex-col justify-between space-y-4 transition-all shadow-lg hover:shadow-emerald-950/20"
+                className="group bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-emerald-500/40 rounded-2xl p-4 flex flex-col justify-between space-y-4 transition-all shadow-sm dark:shadow-lg"
               >
                 <div className="space-y-3">
                   <div className="w-full h-44 rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative">
@@ -225,13 +225,13 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
                     <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
                       {art.menu.nom} {art.submenu ? `• ${art.submenu.nom}` : ''}
                     </span>
-                    <h3 className="font-extrabold text-white text-sm sm:text-base group-hover:text-emerald-350 transition-colors line-clamp-2">
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base group-hover:text-emerald-600 dark:group-hover:text-emerald-350 transition-colors line-clamp-2">
                       {art.titre}
                     </h3>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500">
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-500">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
                     {formatArticleDate(art.datePublication, { short: true })}

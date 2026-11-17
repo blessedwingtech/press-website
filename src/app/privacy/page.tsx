@@ -20,14 +20,14 @@ export default function PrivacyPolicyPage() {
         <ArrowLeft className="w-4 h-4" /> Retour à l&apos;accueil
       </Link>
 
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-2xl space-y-8 text-slate-300">
-        <div className="flex items-center gap-3 pb-6 border-b border-slate-800">
+      <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-xl dark:shadow-2xl space-y-8 text-slate-700 dark:text-slate-300">
+        <div className="flex items-center gap-3 pb-6 border-b border-slate-200 dark:border-slate-800">
           <Shield className="w-8 h-8 text-emerald-400" />
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-wider">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
               Politique de Confidentialité
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Dernière mise à jour : {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} • Conforme aux standards internationaux de protection de la vie privée.
             </p>
           </div>
@@ -36,7 +36,7 @@ export default function PrivacyPolicyPage() {
         <div className="space-y-6 text-sm leading-relaxed">
           {/* 1. Introduction */}
           <section className="space-y-3">
-            <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
+            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
               1. Engagement de Confidentialité
             </h2>
             <p>
@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
 
           {/* 2. Données Collectées */}
           <section className="space-y-3">
-            <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
+            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider border-l-2 border-emerald-500 pl-3">
               2. Nature des Données Collectées
             </h2>
             <p>

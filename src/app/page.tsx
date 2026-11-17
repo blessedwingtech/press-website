@@ -251,10 +251,10 @@ export default async function Home({ searchParams }: HomeProps) {
                 )}
 
                 {/* Séparateur clair pour délimiter la Une du reste des actualités sur mobile et desktop */}
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-6 mt-8 sm:mt-10">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 mb-6 mt-8 sm:mt-10">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <h2 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
+                    <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
                       Autres Reportages &amp; Publications Récentes
                     </h2>
                   </div>
@@ -337,11 +337,11 @@ export default async function Home({ searchParams }: HomeProps) {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                  <div className="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-slate-800/80">
+                  <div className="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-slate-200 dark:border-slate-800/80">
                     {page > 1 ? (
                       <Link
                         href={`/?page=${page - 1}`}
-                        className="px-3.5 py-1.5 bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-lg text-xs font-bold text-slate-350 hover:text-white transition"
+                        className="px-3.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-white transition"
                       >
                         Précédent
                       </Link>
@@ -356,7 +356,7 @@ export default async function Home({ searchParams }: HomeProps) {
                     {page < totalPages ? (
                       <Link
                         href={`/?page=${page + 1}`}
-                        className="px-3.5 py-1.5 bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-lg text-xs font-bold text-slate-350 hover:text-white transition"
+                        className="px-3.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-white transition"
                       >
                         Suivant
                       </Link>
@@ -374,8 +374,8 @@ export default async function Home({ searchParams }: HomeProps) {
           {/* Section: Flux par catégories */}
           {activeCategories.map((cat) => (
             <section key={cat.id} className="pt-2">
-              <div className="flex justify-between items-center mb-6 border-b border-slate-800/80 pb-3">
-                <h2 className="text-lg font-black tracking-wider text-white border-l-4 border-cyan-500 pl-3 uppercase">
+              <div className="flex justify-between items-center mb-6 border-b border-slate-200 dark:border-slate-800/80 pb-3">
+                <h2 className="text-lg font-black tracking-wider text-slate-900 dark:text-white border-l-4 border-cyan-500 pl-3 uppercase">
                   {cat.nom}
                 </h2>
                 <Link
@@ -390,7 +390,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 {cat.articles.map((article) => (
                   <div
                     key={article.id}
-                    className="bg-slate-900/20 hover:bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-750/60 hover:shadow-xl transition-all duration-300 flex flex-row sm:flex-col group p-2.5 sm:p-0 gap-3 sm:gap-0 justify-between"
+                    className="bg-white dark:bg-slate-900/40 hover:bg-slate-50 dark:hover:bg-slate-900/70 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 flex flex-row sm:flex-col group p-2.5 sm:p-0 gap-3 sm:gap-0 justify-between shadow-sm dark:shadow-md"
                   >
                     <Link href={`/articles/${article.slug}`} className="block relative w-24 h-20 sm:w-full sm:h-36 shrink-0 rounded-lg sm:rounded-none overflow-hidden bg-slate-955">
                       <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
@@ -405,11 +405,11 @@ export default async function Home({ searchParams }: HomeProps) {
                         <span className="text-[9px] text-slate-550 block mb-1 font-semibold">
                           {formatArticleDate(article.datePublication, { short: true })}
                         </span>
-                        <h3 className="text-xs font-bold text-white hover:text-cyan-400 transition-colors line-clamp-2 leading-snug">
+                        <h3 className="text-xs font-bold text-slate-900 dark:text-white hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors line-clamp-2 leading-snug">
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>
                         </h3>
                       </div>
-                      <p className="text-[10px] text-slate-500 mt-2 sm:mt-3 pt-1.5 sm:pt-2 border-t border-slate-800/50 truncate font-medium">
+                      <p className="text-[10px] text-slate-600 dark:text-slate-400 mt-2 sm:mt-3 pt-1.5 sm:pt-2 border-t border-slate-100 dark:border-slate-800/50 truncate font-medium">
                         Par {article.auteur.name}
                       </p>
                     </div>
@@ -423,8 +423,8 @@ export default async function Home({ searchParams }: HomeProps) {
 
         {/* Colonne publicitaire latérale droite */}
         <div className="lg:col-span-1 space-y-8">
-          <div className="bg-slate-900/30 border border-slate-800/80 rounded-xl p-5 shadow-xl">
-            <h3 className="text-xs font-black tracking-widest text-slate-400 uppercase mb-4 pb-2 border-b border-slate-800">
+          <div className="bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-xl">
+            <h3 className="text-xs font-black tracking-widest text-slate-600 dark:text-slate-400 uppercase mb-4 pb-2 border-b border-slate-200 dark:border-slate-800">
               Espace Publicitaire
             </h3>
             <AdSlot position="left-sidebar" />

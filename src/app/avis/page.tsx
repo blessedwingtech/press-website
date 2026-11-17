@@ -13,11 +13,11 @@ export default function AvisPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full">
       <div className="text-center mb-10">
-        <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight flex items-center justify-center gap-3">
+        <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight flex items-center justify-center gap-3">
           <MessageSquare className="w-8 h-8 text-emerald-500" />
           Avis <span className="text-emerald-500">PressTonik</span>
         </h1>
-        <p className="mt-3 text-slate-400 text-lg font-medium max-w-xl mx-auto">
+        <p className="mt-3 text-slate-600 dark:text-slate-400 text-lg font-medium max-w-xl mx-auto">
           Découvrez les retours de notre communauté de lecteurs ou partagez votre propre expérience avec notre plateforme d'actualités.
         </p>
       </div>

@@ -20,22 +20,22 @@ export default function TermsPage() {
         </Link>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-10 shadow-2xl text-slate-300 space-y-8">
-        <div className="border-b border-slate-800 pb-6 space-y-2">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-10 shadow-xl dark:shadow-2xl text-slate-700 dark:text-slate-300 space-y-8">
+        <div className="border-b border-slate-200 dark:border-slate-800 pb-6 space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-widest">
             <Scale className="w-3.5 h-3.5" /> Cadre Juridique & Déontologique
           </div>
-          <h1 className="text-2xl sm:text-4xl font-black text-white">
+          <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white">
             Conditions Générales d&apos;Utilisation & Charte Écosystème
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Dernière mise à jour : {new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} • Applicable à l&apos;ensemble des lecteurs, abonnés et journalistes indépendants.
           </p>
         </div>
 
         {/* 1. Présentation & Écosystème BWT */}
         <section className="space-y-3">
-          <h2 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
+          <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
             <Globe className="w-4 h-4 text-emerald-400" /> 1. Présentation & Intégration Écosystème (BWT)
           </h2>
           <p className="text-xs sm:text-sm text-slate-350 leading-relaxed">

@@ -69,22 +69,22 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <AdSlot position="header" />
 
       {/* En-tête de recherche */}
-      <div className="flex flex-col mb-8 mt-4 bg-slate-900/30 p-6 rounded-xl border border-slate-800/80 shadow-sm">
-        <h1 className="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 mb-2">
+      <div className="flex flex-col mb-8 mt-4 bg-white dark:bg-slate-900/30 p-6 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-sm dark:shadow-md">
+        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2 mb-2">
           <Search className="w-6 h-6 text-teal-400" />
           Recherche
         </h1>
         {query ? (
-          <p className="text-slate-400">
-            Résultats pour la recherche : <span className="text-white font-bold">"{query}"</span>
+          <p className="text-slate-600 dark:text-slate-400">
+            Résultats pour la recherche : <span className="text-slate-900 dark:text-white font-bold">"{query}"</span>
           </p>
         ) : (
-          <p className="text-slate-400">Veuillez entrer un terme de recherche dans la barre de navigation.</p>
+          <p className="text-slate-600 dark:text-slate-400">Veuillez entrer un terme de recherche dans la barre de navigation.</p>
         )}
       </div>
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-bold text-white border-l-4 border-teal-500 pl-3 uppercase">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white border-l-4 border-teal-500 pl-3 uppercase">
           Articles correspondants
         </h2>
         <span className="text-xs text-slate-500 font-semibold">{totalCount} résultat(s)</span>
@@ -96,12 +96,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {/* Liste des articles */}
         <div className="lg:col-span-3">
           {articles.length === 0 && query ? (
-            <div className="text-center py-16 bg-slate-900/30 rounded-xl border border-slate-800/80">
+            <div className="text-center py-16 bg-white dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800">
               <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-4" />
               <p className="text-slate-405 font-medium">Aucun article ne correspond à votre recherche.</p>
             </div>
           ) : articles.length === 0 ? (
-            <div className="text-center py-16 bg-slate-900/30 rounded-xl border border-slate-800/80">
+            <div className="text-center py-16 bg-white dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800">
               <Search className="w-12 h-12 text-slate-600 mx-auto mb-4" />
               <p className="text-slate-405 font-medium">Utilisez la barre de recherche pour trouver des articles.</p>
             </div>
@@ -111,7 +111,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 {articles.map((article) => (
                   <div
                     key={article.id}
-                    className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 group"
+                    className="flex flex-col bg-white dark:bg-slate-900/40 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 group shadow-sm dark:shadow-md"
                   >
                     <Link href={`/articles/${article.slug}`} className="block relative h-40 overflow-hidden bg-slate-950">
                       <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
@@ -125,17 +125,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                           <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
                           {formatArticleDate(article.datePublication, { short: true })}
                         </span>
-                        <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+                        <h2 className="text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                           <Link href={`/articles/${article.slug}`}>{article.titre}</Link>
                         </h2>
                         <div
-                          className="mt-2.5 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
+                          className="mt-2.5 text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed"
                           dangerouslySetInnerHTML={{
                             __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                           }}
                         />
                       </div>
-                      <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px] font-semibold text-slate-400">
+                      <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-[10px] font-semibold text-slate-600 dark:text-slate-400">
                         <span className="truncate pr-2">Par {article.auteur.name}</span>
                         <Link
                           href={`/articles/${article.slug}`}
@@ -151,7 +151,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-slate-800/80">
+                <div className="flex justify-center items-center gap-4 mt-8 pt-6 border-t border-slate-200 dark:border-slate-800/80">
                   {page > 1 ? (
                     <Link
                       href={`/search?q=${encodeURIComponent(query)}&page=${page - 1}`}

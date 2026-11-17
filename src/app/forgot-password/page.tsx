@@ -36,15 +36,15 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-950">
-      <div className="max-w-md w-full space-y-8 bg-slate-900 border border-slate-800 p-8 sm:p-10 rounded-2xl shadow-2xl">
+    <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950">
+      <div className="max-w-md w-full space-y-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-10 rounded-2xl shadow-xl dark:shadow-2xl">
         <div>
           <Link href="/login" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 transition">
             <ArrowLeft className="w-4 h-4" />
             Retour à la connexion
           </Link>
-          <h2 className="mt-4 text-2xl font-extrabold text-white">Mot de passe oublié ?</h2>
-          <p className="mt-1.5 text-sm text-slate-400">
+          <h2 className="mt-4 text-2xl font-extrabold text-slate-900 dark:text-white">Mot de passe oublié ?</h2>
+          <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">
             Entrez votre adresse email et nous vous enverrons un lien pour le réinitialiser.
           </p>
         </div>

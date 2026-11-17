@@ -53,18 +53,18 @@ export default async function LatestArticlesPage() {
       <AdSlot position="header" />
 
       {/* En-tête */}
-      <div className="my-6 border-b border-slate-800 pb-5">
-        <h1 className="text-2xl sm:text-3xl font-black tracking-wider text-white border-l-4 border-emerald-500 pl-3 flex items-center gap-2 uppercase">
+      <div className="my-6 border-b border-slate-200 dark:border-slate-800 pb-5">
+        <h1 className="text-2xl sm:text-3xl font-black tracking-wider text-slate-900 dark:text-white border-l-4 border-emerald-500 pl-3 flex items-center gap-2 uppercase">
           <Clock className="w-7 h-7 text-emerald-400 shrink-0" />
           Les 24 Dernières Actualités
         </h1>
-        <p className="text-xs text-slate-400 mt-2">
+        <p className="text-xs text-slate-600 dark:text-slate-400 mt-2">
           Retrouvez les toutes dernières publications de notre équipe de journalistes en temps réel.
         </p>
       </div>
 
       {articles.length === 0 ? (
-        <div className="text-center py-20 bg-slate-900/40 rounded-2xl border border-slate-800/80 max-w-4xl mx-auto">
+        <div className="text-center py-20 bg-white dark:bg-slate-900/40 rounded-2xl border border-slate-200 dark:border-slate-800/80 max-w-4xl mx-auto">
           <BookOpen className="w-16 h-16 text-slate-700 mx-auto mb-4" />
           <p className="text-slate-300 text-base font-semibold">Aucun article récent n'a été publié pour le moment.</p>
           <p className="text-xs text-slate-500 mt-1">Revenez plus tard pour de nouvelles actualités.</p>
@@ -77,7 +77,7 @@ export default async function LatestArticlesPage() {
               {articles.map((article) => (
                 <article
                   key={article.id}
-                  className="flex flex-col bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800 hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 group"
+                  className="flex flex-col bg-white dark:bg-slate-900/40 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700/60 hover:shadow-xl transition-all duration-300 group shadow-sm dark:shadow-md"
                 >
                   <Link href={`/articles/${article.slug}`} className="block relative h-40 overflow-hidden bg-slate-950">
                     <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
@@ -98,20 +98,20 @@ export default async function LatestArticlesPage() {
                         <Calendar className="w-3 h-3 text-slate-500 shrink-0" />
                         {formatArticleDate(article.datePublication, { short: true })}
                       </span>
-                      <h2 className="text-sm font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+                      <h2 className="text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
                         <Link href={`/articles/${article.slug}`}>
                           {article.titre}
                         </Link>
                       </h2>
                       <div
-                        className="mt-2.5 text-[11px] text-slate-400 line-clamp-2 leading-relaxed"
+                        className="mt-2.5 text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed"
                         dangerouslySetInnerHTML={{
                           __html: article.contenu.replace(/<[^>]*>/g, '').substring(0, 130) + '...',
                         }}
                       />
                     </div>
-                    <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px]">
-                      <span className="text-slate-400 flex items-center gap-1 font-medium truncate pr-2">
+                    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-[10px]">
+                      <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1 font-medium truncate pr-2">
                         <User className="w-3 h-3 text-slate-500 shrink-0" />
                         <span className="truncate">{article.auteur.name}</span>
                       </span>

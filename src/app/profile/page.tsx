@@ -120,13 +120,13 @@ export default async function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full space-y-8">
       {/* Profil Global */}
-      <div className="bg-slate-900/30 border border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden space-y-8">
+      <div className="bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-xl dark:shadow-2xl relative overflow-hidden space-y-8">
         {/* Glow effects */}
         <div className="absolute -top-10 -left-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* En-tête du profil */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-800 relative z-10">
+        <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-200 dark:border-slate-800 relative z-10">
           <div className="w-24 h-24 rounded-2xl border-2 border-slate-800 bg-slate-950 overflow-hidden flex items-center justify-center relative shrink-0">
             {user.profilePhoto ? (
               <img src={user.profilePhoto} alt={user.name} className="w-full h-full object-cover" />
@@ -137,12 +137,12 @@ export default async function ProfilePage() {
 
           <div className="text-center sm:text-left flex-grow space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 justify-center sm:justify-start">
-              <h1 className="text-2xl font-black text-white uppercase tracking-wider">{user.name}</h1>
+              <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-wider">{user.name}</h1>
               <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${currentRole.bg} ${currentRole.color} ${currentRole.border} w-max mx-auto sm:mx-0`}>
                 {currentRole.label}
               </span>
             </div>
-            <p className="text-sm text-slate-400 flex items-center gap-1.5 justify-center sm:justify-start">
+            <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1.5 justify-center sm:justify-start">
               <Mail className="w-4 h-4 text-teal-400" /> {user.email}
             </p>
           </div>
@@ -151,23 +151,23 @@ export default async function ProfilePage() {
         {/* Section Statistiques Journaliste */}
         {user.role === 'journalist' && (
           <div className="space-y-4 relative z-10">
-            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+            <h2 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
               <PenTool className="w-4 h-4 text-amber-400" /> Vos Performances Rédactionnelles
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-slate-950/60 border border-slate-800/80 p-5 rounded-xl text-center space-y-1">
+              <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 p-5 rounded-xl text-center space-y-1">
                 <BookOpen className="w-6 h-6 text-teal-400 mx-auto" />
-                <p className="text-2xl font-black text-white">{stats.articles}</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white">{stats.articles}</p>
                 <p className="text-[10px] text-slate-500 uppercase font-extrabold tracking-wider">Articles Écrits</p>
               </div>
-              <div className="bg-slate-950/60 border border-slate-800/80 p-5 rounded-xl text-center space-y-1">
+              <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 p-5 rounded-xl text-center space-y-1">
                 <Eye className="w-6 h-6 text-blue-400 mx-auto" />
-                <p className="text-2xl font-black text-white">{stats.views}</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white">{stats.views}</p>
                 <p className="text-[10px] text-slate-500 uppercase font-extrabold tracking-wider">Lectures uniques</p>
               </div>
-              <div className="bg-slate-950/60 border border-slate-800/80 p-5 rounded-xl text-center space-y-1">
+              <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 p-5 rounded-xl text-center space-y-1">
                 <Star className="w-6 h-6 text-amber-400 fill-amber-400/25 mx-auto" />
-                <p className="text-2xl font-black text-white">{stats.rating} <span className="text-xs text-slate-500">/ 5</span></p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white">{stats.rating} <span className="text-xs text-slate-500">/ 5</span></p>
                 <p className="text-[10px] text-slate-500 uppercase font-extrabold tracking-wider">Note Moyenne ({stats.ratingsCount} votes)</p>
               </div>
             </div>

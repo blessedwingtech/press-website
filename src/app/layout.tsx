@@ -8,6 +8,7 @@ import ReviewCTA from "@/components/ReviewCTA";
 import NavigationProgressBar from "@/components/NavigationProgressBar";
 import { Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { WebsiteAndOrgJsonLd } from "@/components/JsonLd";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -149,27 +150,40 @@ export default function RootLayout({
           <main className="flex-grow flex flex-col min-w-0">
             {children}
           </main>
-          <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500 w-full">
+          <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 text-center text-xs text-slate-500 dark:text-slate-400 w-full">
             <div className="max-w-7xl mx-auto px-4 space-y-3">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <img src="/logo-emblem.png" alt="PressTonik" className="w-5 h-5 object-contain" />
+                <Image
+                  src="/logo-presstonik.svg"
+                  alt="PressTonik"
+                  width={20}
+                  height={20}
+                  className="object-contain filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)] dark:hidden"
+                />
+                <Image
+                  src="/logo-presstonik-dark.svg"
+                  alt="PressTonik"
+                  width={20}
+                  height={20}
+                  className="object-contain filter drop-shadow-[0_0_6px_rgba(56,189,248,0.45)] hidden dark:block"
+                />
                 <span className="font-serif font-black tracking-tight text-sm">
-                  <span className="text-white">Press</span>
-                  <span className="text-[#ce1126]">Tonik</span>
+                  <span className="text-[#0f2038] dark:text-sky-400">Press</span>
+                  <span className="text-[#ce1126] dark:text-rose-500">Tonik</span>
                 </span>
-                <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">&bull; L'Actualité Avec Dynamisme</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium hidden sm:inline">&bull; L'Actualité Avec Dynamisme</span>
               </div>
-              <p className="font-semibold text-slate-400">Presse Rédactionnelle © {new Date().getFullYear()}</p>
-              <p>Powered by <a href="https://bwt.bittonik.com" className="hover:text-blue-400">Blessed Wing Technology</a></p>
+              <p className="font-semibold text-slate-500 dark:text-slate-400">Presse Rédactionnelle © {new Date().getFullYear()}</p>
+              <p>Powered by <a href="https://bwt.bittonik.com" target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 font-medium transition-colors">Blessed Wing Technology</a></p>
               <div className="pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-2 text-[10px] uppercase font-bold tracking-wider">
-                <Link href="/request-account" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Demander un compte</Link>
-                <span className="text-slate-700 hidden sm:inline">•</span>
-                <Link href="/terms" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Conditions d'utilisation</Link>
-                <span className="text-slate-700 hidden sm:inline">•</span>
-                <Link href="/privacy" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Politique de confidentialité</Link>
-                <span className="text-slate-700 hidden sm:inline">•</span>
-                <Link href="/avis" className="hover:text-emerald-400 transition-colors whitespace-nowrap">Avis des lecteurs</Link>
-                <span className="text-slate-700 hidden sm:inline">•</span>
+                <Link href="/request-account" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Demander un compte</Link>
+                <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+                <Link href="/terms" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Conditions d'utilisation</Link>
+                <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+                <Link href="/privacy" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Politique de confidentialité</Link>
+                <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+                <Link href="/avis" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Avis des lecteurs</Link>
+                <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
                 <ReviewCTA />
               </div>
             </div>
