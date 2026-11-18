@@ -6,6 +6,7 @@ import NavbarWrapper from "@/components/NavbarWrapper";
 import ReviewToast from "@/components/ReviewToast";
 import ReviewCTA from "@/components/ReviewCTA";
 import NavigationProgressBar from "@/components/NavigationProgressBar";
+import ChunkErrorHandler from "@/components/ChunkErrorHandler";
 import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -145,6 +146,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <NavigationProgressBar />
         </Suspense>
+        <ChunkErrorHandler />
         <SessionProvider>
           <NavbarWrapper />
           <main className="flex-grow flex flex-col min-w-0">

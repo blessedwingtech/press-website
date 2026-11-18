@@ -58,7 +58,7 @@ export default function GoogleAdBanner({
       }
     }, 1000);
 
-    // Timeout de sécurité : si après 4s aucune pub Google n'est affichée (examen en cours), on bascule sur la régie partenaire
+    // Timeout de sécurité : si après 3.5s aucune pub Google n'est affichée (examen en cours), on bascule sur la régie partenaire
     const safetyTimer = setTimeout(() => {
       if (adStatus === 'loading') {
         const status = adRef.current?.getAttribute('data-ad-status');
@@ -74,19 +74,23 @@ export default function GoogleAdBanner({
     };
   }, [adStatus]);
 
-  // Si AdSense n'est pas encore prêt (ou en cours d'examen), afficher la publicité partenaire interne pour éviter le rectangle blanc
-  if (adStatus === 'unfilled' && fallbackAds.length > 0) {
-    return <AdRotator ads={fallbackAds} interval={interval} position="header" />;
-  }
-
   return (
     <div
       className={`w-full overflow-hidden flex flex-col items-center justify-center my-3 relative rounded-xl transition-all ${
         adStatus === 'filled' ? 'min-h-[90px]' : 'min-h-[90px]'
       } ${className}`}
     >
-      {/* Conteneur ins AdSense avec fond sombre pour éviter tout flash blanc */}
-      <div className={`w-full flex justify-center ${adStatus === 'unfilled' ? 'hidden' : 'block'}`}>
+      {/*
+        IMPORTANT pour la stabilité React :
+        Ne JAMAIS démonter la balise <ins> du DOM une fois touchée par Google AdSense.
+        Google y injecte des iframes ; démonter l'élément provoque une exception React fatale
+        "NotFoundError: Failed to execute 'removeChild' on 'Node'" qui fait crasher la page entière.
+        On contrôle l'affichage par CSS (display: none / flex).
+      */}
+      <div
+        className="w-full justify-center"
+        style={{ display: adStatus === 'filled' ? 'flex' : 'none' }}
+      >
         <ins
           ref={adRef}
           className="adsbygoogle"
@@ -104,8 +108,8 @@ export default function GoogleAdBanner({
         />
       </div>
 
-      {/* Affichage de secours partenaire pendant le chargement ou l'attente */}
-      {adStatus === 'loading' && fallbackAds.length > 0 && (
+      {/* Affichage de secours partenaire pendant le chargement ou si Google n'a pas servi d'annonce */}
+      {adStatus !== 'filled' && fallbackAds.length > 0 && (
         <div className="w-full">
           <AdRotator ads={fallbackAds} interval={interval} position="header" />
         </div>
