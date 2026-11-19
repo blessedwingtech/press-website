@@ -63,10 +63,10 @@ export default function Navbar({ menus }: NavbarProps) {
           </div>
 
           {/* Desktop Nav Menus */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1">
             <Link
               href="/"
-              className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              className="px-2 xl:px-3 py-2 rounded-md text-xs xl:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
             >
               Accueil
             </Link>
@@ -76,7 +76,7 @@ export default function Navbar({ menus }: NavbarProps) {
                 {menu.submenus.length > 0 ? (
                   <button
                     onClick={() => toggleDropdown(menu.id)}
-                    className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus:outline-none"
+                    className="flex items-center gap-1 px-2 xl:px-3 py-2 rounded-md text-xs xl:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus:outline-none"
                   >
                     {menu.nom}
                     <ChevronDown className="w-4 h-4 opacity-70 group-hover:rotate-180 transition-transform duration-200" />
@@ -84,7 +84,7 @@ export default function Navbar({ menus }: NavbarProps) {
                 ) : (
                   <Link
                     href={`/category/${menu.slug}`}
-                    className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                    className="px-2 xl:px-3 py-2 rounded-md text-xs xl:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                   >
                     {menu.nom}
                   </Link>
@@ -117,14 +117,14 @@ export default function Navbar({ menus }: NavbarProps) {
           </div>
 
           {/* User Profile / Dashboard links & Desktop Search */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden lg:flex items-center space-x-2 xl:space-x-3">
             <form onSubmit={handleSearch} className="relative group mr-2">
               <input
                 type="text"
                 placeholder="Rechercher..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-48 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                className="w-32 xl:w-48 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white rounded-full pl-9 pr-4 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </form>
@@ -228,7 +228,7 @@ export default function Navbar({ menus }: NavbarProps) {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
             <BwtEcosystemSwitcher />
             <ThemeToggle />
             <button
@@ -243,7 +243,7 @@ export default function Navbar({ menus }: NavbarProps) {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+        <div className="lg:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 max-h-[85vh] overflow-y-auto shadow-2xl">
           <div className="px-4 pt-4 pb-2">
             <form onSubmit={handleSearch} className="relative">
               <input
