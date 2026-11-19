@@ -99,10 +99,10 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
   return (
     <div className="space-y-6 w-full">
       <div>
-        <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
           Gestion de la Structure (Menus &amp; Rubriques)
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
           Créez de nouvelles catégories éditoriales de niveau supérieur ou des sous-rubriques imbriquées, et ajustez leur ordonnancement d'affichage.
         </p>
       </div>
@@ -117,8 +117,8 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
         
         {/* Partie gauche : Arborescence des menus */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-slate-900/20 border border-slate-800/80 rounded-xl p-5 shadow-2xl">
-            <h2 className="text-xs font-black uppercase tracking-wider text-white border-b border-slate-800/60 pb-3 mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-2xl">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800/60 pb-3 mb-4 flex items-center gap-2">
               <Layers className="w-4 h-4 text-emerald-450" />
               Configuration des rubriques
             </h2>
@@ -130,16 +130,16 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                 {menus.map((menu) => (
                   <div
                     key={menu.id}
-                    className="border border-slate-800/80 rounded-xl p-4 bg-slate-950/20 hover:border-slate-700/40 transition-colors"
+                    className="border border-slate-200 dark:border-slate-800/80 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-950/20 hover:border-slate-300 dark:hover:border-slate-700/40 transition-colors"
                   >
                     {/* Niveau 1 : Catégorie principale */}
-                    <div className="flex justify-between items-center gap-4 border-b border-slate-800/40 pb-3 mb-3">
+                    <div className="flex justify-between items-center gap-4 border-b border-slate-200 dark:border-slate-800/40 pb-3 mb-3">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-mono bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-emerald-400 font-extrabold flex items-center gap-1 select-none">
                           <ArrowUpDown className="w-3 h-3 text-slate-500" />
                           #{menu.order}
                         </span>
-                        <span className="text-sm font-bold text-white uppercase tracking-wider">{menu.nom}</span>
+                        <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">{menu.nom}</span>
                         <span className="text-[9px] text-slate-500 font-mono">({menu.slug})</span>
                       </div>
                       
@@ -173,7 +173,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                         menu.submenus.map((sub) => (
                           <div
                             key={sub.id}
-                            className="flex justify-between items-center bg-slate-900/30 hover:bg-slate-900/50 border border-slate-850 px-3 py-2 rounded-lg text-xs"
+                            className="flex justify-between items-center bg-white dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-900/50 border border-slate-200 dark:border-slate-850 px-3 py-2 rounded-lg text-xs"
                           >
                             <div className="flex items-center gap-2">
                               <ChevronRight className="w-3.5 h-3.5 text-slate-655" />
@@ -218,7 +218,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
         <div className="lg:col-span-1 space-y-6">
           
           {/* Formulaire Menu */}
-          <div className="bg-slate-900/20 border border-slate-800/80 rounded-xl p-5 shadow-2xl">
+          <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-2xl">
             <h3 className="text-xs font-black uppercase tracking-widest text-emerald-450 mb-4 border-b border-slate-800/60 pb-2">
               {menuId ? 'Éditer un Menu' : 'Nouveau Menu'}
             </h3>
@@ -233,7 +233,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                   required
                   value={menuNom}
                   onChange={(e) => setMenuNom(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
+                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
                   placeholder="Ex: Politique, Sport, Culture..."
                 />
               </div>
@@ -247,7 +247,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                   required
                   value={menuOrder}
                   onChange={(e) => setMenuOrder(parseInt(e.target.value) || 0)}
-                  className="block w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
+                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -278,7 +278,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
           </div>
 
           {/* Formulaire Sous-menu */}
-          <div className="bg-slate-900/20 border border-slate-800/80 rounded-xl p-5 shadow-2xl">
+          <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-2xl">
             <h3 className="text-xs font-black uppercase tracking-widest text-cyan-400 mb-4 border-b border-slate-800/60 pb-2">
               {subMenuId ? 'Éditer une Rubrique' : 'Nouvelle Rubrique'}
             </h3>
@@ -292,7 +292,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                   required
                   value={subMenuParentId}
                   onChange={(e) => setSubMenuParentId(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-350 text-xs focus:outline-none focus:border-cyan-400 cursor-pointer"
+                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-350 text-xs focus:outline-none focus:border-cyan-400 cursor-pointer"
                 >
                   <option value="">-- Choisir le menu parent --</option>
                   {menus.map((m) => (
@@ -312,7 +312,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                   required
                   value={subMenuNom}
                   onChange={(e) => setSubMenuNom(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400"
+                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400"
                   placeholder="Ex: Ligue 1, NBA, Europe, France..."
                 />
               </div>
@@ -326,7 +326,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                   required
                   value={subMenuOrder}
                   onChange={(e) => setSubMenuOrder(parseInt(e.target.value) || 0)}
-                  className="block w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400"
+                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400"
                 />
               </div>
 

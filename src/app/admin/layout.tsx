@@ -14,99 +14,99 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex-grow flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
       {/* Barre latérale Admin */}
-      <aside className="w-full md:w-64 bg-slate-900 border-b md:border-b-0 md:border-r border-slate-800 p-6 flex flex-col justify-between">
+      <aside className="w-full md:w-64 bg-white dark:bg-slate-900 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 p-6 flex flex-col justify-between">
         <div className="space-y-6">
           <div>
             <h2 className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1.5">
               <Shield className="w-4 h-4 text-rose-500" />
               Administration
             </h2>
-            <p className="text-xs text-slate-400 mt-1 truncate">
-              Admin : <span className="text-rose-455 font-bold">{session.user?.name}</span>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 truncate">
+              Admin : <span className="text-rose-500 font-bold">{session.user?.name}</span>
             </p>
           </div>
 
           <nav className="space-y-1.5">
             <Link
               href="/admin"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <LayoutDashboard className="w-4 h-4 text-rose-400" />
+              <LayoutDashboard className="w-4 h-4 text-rose-500 dark:text-rose-400" />
               Vue d'ensemble
             </Link>
             <Link
               href="/admin/menus"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <MenuIcon className="w-4 h-4 text-emerald-400" />
+              <MenuIcon className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
               Menus &amp; Rubriques
             </Link>
             <Link
               href="/admin/ads"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <Landmark className="w-4 h-4 text-amber-400" />
+              <Landmark className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               Publicités
             </Link>
             <Link
               href="/admin/users"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <Users className="w-4 h-4 text-cyan-400" />
+              <Users className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
               Utilisateurs
             </Link>
             <Link
               href="/admin/payouts"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <Wallet className="w-4 h-4 text-emerald-400" />
+              <Wallet className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
               Retraits (Payouts)
             </Link>
             <Link
               href="/admin/promos"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <Tag className="w-4 h-4 text-amber-400" />
+              <Tag className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               Codes Promo
             </Link>
             <Link
               href="/admin/gallery"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <ImageIcon className="w-4 h-4 text-purple-400" />
+              <ImageIcon className="w-4 h-4 text-purple-500 dark:text-purple-400" />
               Galerie
             </Link>
             <Link
               href="/admin/requests"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <UserPlus className="w-4 h-4 text-teal-400" />
+              <UserPlus className="w-4 h-4 text-teal-500 dark:text-teal-400" />
               Demandes d'inscription
             </Link>
             <Link
               href="/admin/audit"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-800 hover:text-white transition-all"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
             >
-              <History className="w-4 h-4 text-rose-400" />
+              <History className="w-4 h-4 text-rose-500 dark:text-rose-400" />
               Journal d'Audit
             </Link>
             <Link
               href="/"
-              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-350 hover:bg-slate-850 hover:text-white transition-all border-t border-slate-800/80 mt-4 pt-4"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all border-t border-slate-200 dark:border-slate-800/80 mt-4 pt-4"
             >
-              <Home className="w-4 h-4 text-slate-500" />
+              <Home className="w-4 h-4 text-slate-400" />
               Retour au site
             </Link>
           </nav>
         </div>
 
-        <div className="text-[10px] font-bold text-slate-550 border-t border-slate-800/50 pt-4 mt-6 hidden md:block">
+        <div className="text-[10px] font-bold text-slate-400 dark:text-slate-600 border-t border-slate-200 dark:border-slate-800/50 pt-4 mt-6 hidden md:block">
           PressTonik Admin v1.0
         </div>
       </aside>
 
-      {/* Zone de contenu de travail */}
-      <main className="flex-grow bg-slate-950 p-6 sm:p-8 overflow-y-auto w-full">
+      {/* Contenu principal */}
+      <main className="flex-grow bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 lg:p-8 overflow-y-auto w-full text-slate-900 dark:text-slate-100">
         {children}
       </main>
     </div>

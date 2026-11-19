@@ -40,16 +40,16 @@ export default async function AdminDashboardOverview() {
     <div className="space-y-8 w-full">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
             Tableau de bord Administration
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
             Surveillez les volumes éditoriaux, gérez les structures de rubriques, contrôlez la publicité et gérez les comptes.
           </p>
         </div>
 
         {/* Bouton Toggle Données Démo */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex items-center gap-3.5 shadow-md">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 flex items-center gap-3.5 shadow-sm dark:shadow-md">
           <div className="text-left shrink-0">
             <span className="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest block">
               Données de démo (Seed)
@@ -111,43 +111,43 @@ export default async function AdminDashboardOverview() {
 
       {/* Grille de cartes statistiques */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center gap-4 shadow-lg">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex items-center gap-4 shadow-sm dark:shadow-lg">
           <div className="p-3.5 bg-emerald-500/10 rounded-lg text-emerald-450">
             <BookOpen className="w-6 h-6" />
           </div>
           <div>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Articles</p>
-            <p className="text-xl font-black text-white">{articlesCount}</p>
+            <p className="text-xl font-black text-slate-900 dark:text-white">{articlesCount}</p>
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center gap-4 shadow-lg">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex items-center gap-4 shadow-sm dark:shadow-lg">
           <div className="p-3.5 bg-cyan-500/10 rounded-lg text-cyan-455">
             <Users className="w-6 h-6" />
           </div>
           <div>
             <p className="text-[10px] text-slate-550 font-bold uppercase tracking-wider">Membres</p>
-            <p className="text-xl font-black text-white">{usersCount}</p>
+            <p className="text-xl font-black text-slate-900 dark:text-white">{usersCount}</p>
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center gap-4 shadow-lg">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex items-center gap-4 shadow-sm dark:shadow-lg">
           <div className="p-3.5 bg-amber-500/10 rounded-lg text-amber-450">
             <Landmark className="w-6 h-6" />
           </div>
           <div>
             <p className="text-[10px] text-slate-550 font-bold uppercase tracking-wider">Pubs Actives</p>
-            <p className="text-xl font-black text-white">{adsCount}</p>
+            <p className="text-xl font-black text-slate-900 dark:text-white">{adsCount}</p>
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center gap-4 shadow-lg">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex items-center gap-4 shadow-sm dark:shadow-lg">
           <div className="p-3.5 bg-indigo-500/10 rounded-lg text-indigo-400">
             <ListCollapse className="w-6 h-6" />
           </div>
           <div>
             <p className="text-[10px] text-slate-550 font-bold uppercase tracking-wider">Menus</p>
-            <p className="text-xl font-black text-white">{menusCount}</p>
+            <p className="text-xl font-black text-slate-900 dark:text-white">{menusCount}</p>
           </div>
         </div>
       </div>
@@ -155,8 +155,8 @@ export default async function AdminDashboardOverview() {
       {/* Grille secondaire */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Liste des derniers articles rédigés */}
-        <div className="lg:col-span-2 bg-slate-900/20 border border-slate-800/80 rounded-xl p-5 shadow-2xl">
-          <h2 className="text-xs font-black uppercase tracking-wider text-white border-b border-slate-800/60 pb-3 mb-4">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-2xl">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800/60 pb-3 mb-4">
             Dernières publications de la rédaction
           </h2>
           {latestArticles.length === 0 ? (
@@ -164,9 +164,9 @@ export default async function AdminDashboardOverview() {
           ) : (
             <div className="space-y-4">
               {latestArticles.map((art: any) => (
-                <div key={art.id} className="flex justify-between items-center gap-4 text-xs border-b border-slate-900 pb-3 last:border-0 last:pb-0">
+                <div key={art.id} className="flex justify-between items-center gap-4 text-xs border-b border-slate-100 dark:border-slate-850 pb-3 last:border-0 last:pb-0">
                   <div className="truncate">
-                    <p className="font-bold text-slate-200 truncate hover:text-emerald-450">
+                    <p className="font-bold text-slate-800 dark:text-slate-200 truncate hover:text-emerald-600 dark:hover:text-emerald-400">
                       <Link href={`/articles/${art.slug}`} target="_blank">
                         {art.titre}
                       </Link>
@@ -185,7 +185,7 @@ export default async function AdminDashboardOverview() {
         </div>
 
         {/* Répartition des utilisateurs par rôles */}
-        <div className="lg:col-span-1 bg-slate-900/20 border border-slate-800/80 rounded-xl p-5 shadow-2xl flex flex-col justify-between">
+        <div className="lg:col-span-1 bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-2xl flex flex-col justify-between">
           <div>
             <h2 className="text-xs font-black uppercase tracking-wider text-white border-b border-slate-800/60 pb-3 mb-4">
               Répartition des profils
@@ -196,7 +196,7 @@ export default async function AdminDashboardOverview() {
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                   Administrateurs
                 </span>
-                <span className="font-mono font-bold text-white bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">
+                <span className="font-mono font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded">
                   {adminsCount}
                 </span>
               </div>
@@ -205,7 +205,7 @@ export default async function AdminDashboardOverview() {
                   <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
                   Journalistes
                 </span>
-                <span className="font-mono font-bold text-white bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">
+                <span className="font-mono font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded">
                   {journalistsCount}
                 </span>
               </div>
@@ -214,14 +214,14 @@ export default async function AdminDashboardOverview() {
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                   Lecteurs
                 </span>
-                <span className="font-mono font-bold text-white bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">
+                <span className="font-mono font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded">
                   {readersCount}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-slate-800/50 pt-4 mt-6 text-[10px] text-slate-500 font-semibold uppercase tracking-wider leading-relaxed">
+          <div className="border-t border-slate-200 dark:border-slate-800/50 pt-4 mt-6 text-[10px] text-slate-500 font-semibold uppercase tracking-wider leading-relaxed">
             Pour modifier les rôles, éditer les informations, supprimer ou bannir un utilisateur, accédez à l'onglet{' '}
             <Link href="/admin/users" className="text-cyan-400 hover:text-cyan-350 underline">
               Utilisateurs

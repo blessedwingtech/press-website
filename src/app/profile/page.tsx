@@ -127,11 +127,11 @@ export default async function ProfilePage() {
 
         {/* En-tête du profil */}
         <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-200 dark:border-slate-800 relative z-10">
-          <div className="w-24 h-24 rounded-2xl border-2 border-slate-800 bg-slate-950 overflow-hidden flex items-center justify-center relative shrink-0">
+          <div className="w-24 h-24 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 overflow-hidden flex items-center justify-center relative shrink-0">
             {user.profilePhoto ? (
               <img src={user.profilePhoto} alt={user.name} className="w-full h-full object-cover" />
             ) : (
-              <User className="w-12 h-12 text-slate-700" />
+              <User className="w-12 h-12 text-slate-400 dark:text-slate-600" />
             )}
           </div>
 
@@ -176,43 +176,43 @@ export default async function ProfilePage() {
 
         {/* Section VIP : Affichage des privilèges ou Bannière d'Upgrade */}
         {user.role === 'reader_vip' ? (
-          <div className="bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-slate-950 border border-amber-500/30 p-5 sm:p-6 rounded-2xl relative z-10 space-y-3">
+          <div className="bg-gradient-to-r from-amber-50 via-emerald-50/50 to-white dark:from-amber-500/15 dark:via-emerald-500/10 dark:to-slate-950 border border-amber-300 dark:border-amber-500/30 p-5 sm:p-6 rounded-2xl relative z-10 space-y-3 shadow-sm">
             <div className="flex items-center gap-2">
               <Crown className="w-5 h-5 text-amber-400 fill-amber-400" />
-              <h2 className="text-sm font-black text-white uppercase tracking-wider">
+              <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
                 Vos Privilèges PressTonik VIP Actifs
               </h2>
             </div>
-            <p className="text-xs text-slate-350">
+            <p className="text-xs text-slate-600 dark:text-slate-350">
               Merci pour votre soutien précieux à la rédaction indépendante. Vous bénéficiez des avantages suivants :
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 text-xs">
-              <div className="flex items-center gap-2 text-emerald-350 font-semibold bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+              <div className="flex items-center gap-2 text-slate-800 dark:text-emerald-350 font-semibold bg-white dark:bg-slate-950/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <span className="text-emerald-400 font-bold">✓</span>
                 <span>Lecture 100% Sans Publicité</span>
               </div>
-              <div className="flex items-center gap-2 text-emerald-350 font-semibold bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+              <div className="flex items-center gap-2 text-slate-800 dark:text-emerald-350 font-semibold bg-white dark:bg-slate-950/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <span className="text-emerald-400 font-bold">✓</span>
                 <span>Dossiers d'investigation exclusifs</span>
               </div>
-              <div className="flex items-center gap-2 text-emerald-350 font-semibold bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+              <div className="flex items-center gap-2 text-slate-800 dark:text-emerald-350 font-semibold bg-white dark:bg-slate-950/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <span className="text-emerald-400 font-bold">✓</span>
                 <span>Badge VIP Doré certifié</span>
               </div>
-              <div className="flex items-center gap-2 text-emerald-350 font-semibold bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+              <div className="flex items-center gap-2 text-slate-800 dark:text-emerald-350 font-semibold bg-white dark:bg-slate-950/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <span className="text-emerald-400 font-bold">✓</span>
                 <span>Support d'écoute et alertes flash</span>
               </div>
             </div>
           </div>
         ) : (
-          <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/30 border border-emerald-500/30 p-5 sm:p-6 rounded-2xl relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-gradient-to-r from-emerald-50/80 via-slate-50 to-amber-50/60 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30 border border-emerald-200 dark:border-emerald-500/30 p-5 sm:p-6 rounded-2xl relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
             <div className="space-y-1">
-              <div className="flex items-center gap-2 text-amber-400 font-black text-xs uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-black text-xs uppercase tracking-wider">
                 <Crown className="w-4 h-4" /> Passez à PressTonik VIP
               </div>
-              <p className="text-sm font-black text-white">Supprimez les pubs et débloquez les enquêtes exclusives</p>
-              <p className="text-xs text-slate-400">À partir de 4.99 $ / mois ou 650 HTG via MonCash, CB ou PayPal.</p>
+              <p className="text-sm font-black text-slate-900 dark:text-white">Supprimez les pubs et débloquez les enquêtes exclusives</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">À partir de 4.99 $ / mois ou 650 HTG via MonCash, CB ou PayPal.</p>
             </div>
             <Link
               href="/abonnement"
@@ -224,10 +224,10 @@ export default async function ProfilePage() {
         )}
 
         {/* Métadonnées du compte */}
-        <div className="bg-slate-950/40 border border-slate-800/80 p-5 rounded-xl text-xs sm:text-sm text-slate-300 space-y-3 relative z-10">
-          <div className="flex justify-between items-center py-1.5 border-b border-slate-800/40">
-            <span className="text-slate-400 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"><Calendar className="w-4 h-4 text-teal-400" /> Date d'inscription</span>
-            <span className="text-white font-semibold">
+        <div className="bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800/80 p-5 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-300 space-y-3 relative z-10 shadow-sm">
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-200 dark:border-slate-800/40">
+            <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"><Calendar className="w-4 h-4 text-teal-400" /> Date d'inscription</span>
+            <span className="text-slate-900 dark:text-white font-semibold">
               {new Date(user.createdAt).toLocaleDateString('fr-FR', {
                 day: '2-digit',
                 month: 'long',
@@ -236,8 +236,8 @@ export default async function ProfilePage() {
             </span>
           </div>
           <div className="flex justify-between items-center py-1.5">
-            <span className="text-slate-400 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"><UserCheck className="w-4 h-4 text-teal-400" /> Statut du compte</span>
-            <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+            <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"><UserCheck className="w-4 h-4 text-teal-400" /> Statut du compte</span>
+            <span className="px-2.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
               {user.status === 'active' ? 'Actif' : 'Banni / Restreint'}
             </span>
           </div>
@@ -263,7 +263,7 @@ export default async function ProfilePage() {
           )}
           <Link
             href="/"
-            className="flex-grow flex justify-center items-center gap-1.5 py-3 px-4 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white transition-all border border-slate-700"
+            className="flex-grow flex justify-center items-center gap-1.5 py-3 px-4 rounded-xl text-sm font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 hover:text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-300 dark:hover:text-white transition-all border border-slate-200 dark:border-slate-700 shadow-sm"
           >
             Retourner à l'accueil
           </Link>
@@ -272,20 +272,20 @@ export default async function ProfilePage() {
 
       {/* Section des Campagnes Publicitaires (si applicable) */}
       {userAds.length > 0 && (
-        <div className="bg-slate-900/30 border border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden space-y-6">
+        <div className="bg-white dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 sm:p-10 shadow-xl dark:shadow-2xl relative overflow-hidden space-y-6">
           <div>
-            <h2 className="text-xs font-black uppercase tracking-widest text-white border-b border-slate-800/60 pb-3 flex items-center gap-2">
+            <h2 className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800/60 pb-3 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-amber-500" />
               Vos Campagnes Sponsorisées & Publicités
             </h2>
-            <p className="text-[11px] text-slate-400 mt-1.5">
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1.5">
               Retrouvez ci-dessous l'affichage et les statistiques de clics de vos annonces sponsorisées diffusées sur PressTonik Ayiti.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {userAds.map((ad) => (
-              <div key={ad.id} className="border border-slate-800 bg-slate-950/40 rounded-xl overflow-hidden flex flex-col justify-between p-4 space-y-4">
+              <div key={ad.id} className="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 rounded-xl overflow-hidden flex flex-col justify-between p-4 space-y-4">
                 <div className="space-y-3">
                   <div className="w-full h-24 rounded-lg overflow-hidden border border-slate-800 bg-slate-950 relative">
                     <img src={ad.imageUrl} alt={ad.titre} className="w-full h-full object-cover" />
@@ -294,7 +294,7 @@ export default async function ProfilePage() {
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-white text-xs sm:text-sm">{ad.titre}</h3>
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm">{ad.titre}</h3>
                     <a
                       href={ad.lien}
                       target="_blank"

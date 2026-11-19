@@ -66,10 +66,10 @@ export default async function JournalistDashboard() {
       />
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
             Mes Articles Rédigés
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
             Gérez vos publications, modifiez vos contenus ou supprimez vos articles.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default async function JournalistDashboard() {
       </div>
 
       {articles.length === 0 ? (
-        <div className="text-center py-20 bg-slate-900/30 rounded-xl border border-slate-800/80">
+        <div className="text-center py-20 bg-white dark:bg-slate-900/30 rounded-xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
           <MessageSquarePlus className="w-12 h-12 text-slate-700 mx-auto mb-4 animate-pulse" />
           <h3 className="text-slate-300 font-bold mb-1">Aucun article rédigé</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -92,11 +92,11 @@ export default async function JournalistDashboard() {
           </p>
         </div>
       ) : (
-        <div className="bg-slate-900/20 border border-slate-800/60 rounded-xl overflow-hidden shadow-2xl">
+        <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/60 rounded-xl overflow-hidden shadow-sm dark:shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-900/60 border-b border-slate-800 text-slate-450 uppercase tracking-widest font-black text-[10px]">
+                <tr className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 uppercase tracking-widest font-black text-[10px]">
                   <th className="py-4 px-6">Illustration</th>
                   <th className="py-4 px-6">Titre de l'article</th>
                   <th className="py-4 px-6">Catégories</th>
@@ -104,11 +104,11 @@ export default async function JournalistDashboard() {
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/40 font-medium">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800/40 font-medium">
                 {articles.map((article) => (
-                  <tr key={article.id} className="hover:bg-slate-900/10 transition-colors">
+                  <tr key={article.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="py-4 px-6">
-                      <div className="w-14 h-10 rounded-md overflow-hidden border border-slate-800 bg-slate-950 relative">
+                      <div className="w-14 h-10 rounded-md overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 relative">
                         <SafeImage
                           src={article.imagePrincipale}
                           alt=""
@@ -121,7 +121,7 @@ export default async function JournalistDashboard() {
                     <td className="py-4 px-6 max-w-xs">
                       <Link
                         href={`/articles/${article.slug}`}
-                        className="text-xs sm:text-sm font-bold text-white hover:text-emerald-450 line-clamp-1 hover:underline transition-colors"
+                        className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 line-clamp-1 hover:underline transition-colors"
                         target="_blank"
                       >
                         {!article.published && <span className="inline-block bg-amber-500/20 text-amber-500 border border-amber-500/30 px-1.5 py-0.5 rounded text-[9px] uppercase font-black mr-2">Brouillon</span>}
@@ -131,17 +131,17 @@ export default async function JournalistDashboard() {
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex flex-wrap gap-1 items-center">
-                        <span className="bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded text-[10px] font-bold text-slate-300">
+                        <span className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60 px-2 py-0.5 rounded text-[10px] font-bold text-slate-700 dark:text-slate-300">
                           {article.menu.nom}
                         </span>
                         {article.submenu && (
-                          <span className="bg-slate-900 border border-slate-850 px-2 py-0.5 rounded text-[9px] font-semibold text-slate-450">
+                          <span className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-850 px-2 py-0.5 rounded text-[9px] font-semibold text-slate-600 dark:text-slate-400">
                             {article.submenu.nom}
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-slate-400">
+                    <td className="py-4 px-6 text-slate-600 dark:text-slate-400">
                       <span className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-slate-500" />
                         {new Date(article.datePublication).toLocaleDateString('fr-FR')}
@@ -151,7 +151,7 @@ export default async function JournalistDashboard() {
                       <div className="flex justify-end gap-2">
                         <Link
                           href={`/journalist/articles/edit/${article.id}`}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded font-bold transition-colors text-[11px]"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 rounded font-bold transition-colors text-[11px] border border-slate-200 dark:border-transparent shadow-sm"
                         >
                           <PenTool className="w-3.5 h-3.5 text-cyan-400" />
                           Modifier

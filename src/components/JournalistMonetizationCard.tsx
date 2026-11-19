@@ -225,8 +225,8 @@ export default function JournalistMonetizationCard({
         {/* 1. Carte Monétisation & Solde (95% PRO / 85% Standard) */}
         <div className={`lg:col-span-1 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-5 border ${
           isPro 
-            ? 'bg-gradient-to-br from-amber-950/30 via-slate-900 to-amber-950/10 border-amber-500/40 shadow-amber-950/20' 
-            : 'bg-gradient-to-br from-slate-900/90 to-emerald-950/20 border-emerald-500/30 shadow-emerald-950/20'
+            ? 'bg-gradient-to-br from-amber-50 via-white to-amber-50/50 dark:from-amber-950/30 dark:via-slate-900 dark:to-amber-950/10 border-amber-300 dark:border-amber-500/40 shadow-sm' 
+            : 'bg-gradient-to-br from-emerald-50/80 via-white to-slate-50 dark:from-slate-900/90 dark:to-emerald-950/20 border-emerald-300 dark:border-emerald-500/30 shadow-sm'
         }`}>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -249,21 +249,21 @@ export default function JournalistMonetizationCard({
             </div>
 
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+              <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">
                 Vos Gains & Pourboires Disponibles
               </p>
               <div className="mt-2 space-y-1">
-                <p className="text-2xl font-black text-white">
+                <p className="text-2xl font-black text-slate-900 dark:text-white">
                   {balanceHTG.toLocaleString('fr-FR')} <span className={`text-xs font-bold ${isPro ? 'text-amber-400' : 'text-emerald-400'}`}>HTG</span>
                 </p>
-                <p className="text-sm font-bold text-slate-350">
+                <p className="text-sm font-bold text-slate-600 dark:text-slate-350">
                   {balanceUSD.toFixed(2)} <span className="text-xs text-slate-500 font-semibold">$ USD</span>
                 </p>
               </div>
             </div>
 
-            <div className="text-[11px] text-slate-400 border-t border-slate-800/80 pt-3 flex items-center justify-between">
-              <span>Soutiens reçus : <strong className="text-white">{donationsCount}</strong></span>
+            <div className="text-[11px] text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3 flex items-center justify-between">
+              <span>Soutiens reçus : <strong className="text-slate-900 dark:text-white">{donationsCount}</strong></span>
               <span className="text-slate-500 text-[10px] flex items-center gap-1" title={isPro ? "Frais plateforme réduits à 5% pour les journalistes PRO" : "15% retenus pour la maintenance, passerelle Pay-Hub et sécurité"}>
                 <HelpCircle className="w-3 h-3" /> Frais {isPro ? '5%' : '15%'}
               </span>
@@ -278,7 +278,7 @@ export default function JournalistMonetizationCard({
                 </div>
               </div>
             ) : (
-              <div className="pt-2 border-t border-slate-800/80">
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800/80">
                 {proSuccessMsg ? (
                   <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -298,7 +298,7 @@ export default function JournalistMonetizationCard({
                           setProPromoError(null);
                         }}
                         placeholder="Ex: PRO100"
-                        className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-white uppercase placeholder-slate-600 focus:outline-none focus:border-amber-500/50 font-mono"
+                        className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-xs text-white uppercase placeholder-slate-600 focus:outline-none focus:border-amber-500/50 font-mono"
                       />
                       <button
                         type="submit"
@@ -331,19 +331,19 @@ export default function JournalistMonetizationCard({
         </div>
 
         {/* 2. Formulaire Payout Fluide (si ouvert) OU Configuration Canal WhatsApp & Bio */}
-        <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl space-y-5">
           {payoutOpen ? (
             <form onSubmit={handlePayoutSubmit} className="space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div>
-                  <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                  <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                     <ArrowUpRight className="w-4 h-4 text-emerald-400" /> Retrait de Fonds Multi-Méthodes
                   </h3>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
                     Choisissez votre méthode préférée : MonCash, PayPal, Carte ou Virement Bancaire.
                   </p>
                 </div>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-slate-600 dark:text-slate-400">
                   Solde max : <strong className="text-emerald-400">{maxBalance.toLocaleString()} {payoutCurrency}</strong>
                 </span>
               </div>
@@ -363,7 +363,7 @@ export default function JournalistMonetizationCard({
 
               {/* Sélection des méthodes de paiement */}
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
                   Sélectionnez le mode de réception
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -373,7 +373,7 @@ export default function JournalistMonetizationCard({
                     className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
                       payoutMethod === 'MONCASH'
                         ? 'bg-red-500/10 border-red-500 text-white shadow-lg shadow-red-950/40'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
+                        : 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
                     <Smartphone className={`w-4 h-4 mb-2 ${payoutMethod === 'MONCASH' ? 'text-red-400' : 'text-slate-500'}`} />
@@ -389,7 +389,7 @@ export default function JournalistMonetizationCard({
                     className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
                       payoutMethod === 'PAYPAL'
                         ? 'bg-blue-500/10 border-blue-500 text-white shadow-lg shadow-blue-950/40'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
+                        : 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
                     <TrendingUp className={`w-4 h-4 mb-2 ${payoutMethod === 'PAYPAL' ? 'text-blue-400' : 'text-slate-500'}`} />
@@ -405,7 +405,7 @@ export default function JournalistMonetizationCard({
                     className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
                       payoutMethod === 'CARD'
                         ? 'bg-purple-500/10 border-purple-500 text-white shadow-lg shadow-purple-950/40'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
+                        : 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
                     <CreditCard className={`w-4 h-4 mb-2 ${payoutMethod === 'CARD' ? 'text-purple-400' : 'text-slate-500'}`} />
@@ -421,7 +421,7 @@ export default function JournalistMonetizationCard({
                     className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
                       payoutMethod === 'BANK_TRANSFER'
                         ? 'bg-emerald-500/10 border-emerald-500 text-white shadow-lg shadow-emerald-950/40'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
+                        : 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
                     <Building className={`w-4 h-4 mb-2 ${payoutMethod === 'BANK_TRANSFER' ? 'text-emerald-400' : 'text-slate-500'}`} />
@@ -442,7 +442,7 @@ export default function JournalistMonetizationCard({
                   <select
                     value={payoutCurrency}
                     onChange={(e) => setPayoutCurrency(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
                   >
                     <option value="HTG">Gourdes (HTG)</option>
                     <option value="USD">Dollars ($ USD)</option>
@@ -462,7 +462,7 @@ export default function JournalistMonetizationCard({
                     placeholder={`Max disponible: ${maxBalance.toLocaleString()}`}
                     value={payoutAmount}
                     onChange={(e) => setPayoutAmount(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
                   />
                 </div>
               </div>
@@ -683,7 +683,7 @@ export default function JournalistMonetizationCard({
                   placeholder="https://chat.whatsapp.com/..."
                   value={whatsappChannel}
                   onChange={(e) => setWhatsappChannel(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition-colors"
                 />
                 <span className="block text-[10px] text-slate-500 mt-1">
                   Exemple : Lien d'invitation à votre chaîne WhatsApp publique ou groupe d'alertes.
@@ -700,7 +700,7 @@ export default function JournalistMonetizationCard({
                     placeholder="Journaliste d'investigation économique..."
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -713,7 +713,7 @@ export default function JournalistMonetizationCard({
                     placeholder="@mon_compte"
                     value={twitter}
                     onChange={(e) => setTwitter(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>

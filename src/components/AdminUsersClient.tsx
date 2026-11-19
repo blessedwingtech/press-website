@@ -157,10 +157,10 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
     <div className="space-y-6 w-full relative">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
             Gestion des Utilisateurs &amp; Rôles
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
             Ajoutez, modifiez ou supprimez des rédacteurs, ajustez les privilèges d’écriture des journalistes ou appliquez des bans d’accès.
           </p>
         </div>
@@ -188,11 +188,11 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
         </div>
       )}
 
-      <div className="bg-slate-900/20 border border-slate-800/60 rounded-xl overflow-hidden shadow-2xl">
+      <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/60 rounded-xl overflow-hidden shadow-sm dark:shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-900/60 border-b border-slate-800 text-slate-450 uppercase tracking-widest font-black text-[10px]">
+              <tr className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 uppercase tracking-widest font-black text-[10px]">
                 <th className="py-4 px-6">Identité</th>
                 <th className="py-4 px-6">Adresse Email</th>
                 <th className="py-4 px-6">Rôle affecté</th>
@@ -200,7 +200,7 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                 <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/40 font-medium">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/40 font-medium">
               {users.map((user) => {
                 const isSelf = user.id === currentUserId;
                 const isBanned = user.status === 'banned';
@@ -208,11 +208,11 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                 return (
                   <tr
                     key={user.id}
-                    className={`hover:bg-slate-900/10 transition-colors ${
-                      isSelf ? 'bg-slate-900/20' : ''
+                    className={`hover:bg-slate-50 dark:hover:bg-slate-900/10 transition-colors ${
+                      isSelf ? 'bg-slate-100/60 dark:bg-slate-900/20' : ''
                     }`}
                   >
-                    <td className="py-4 px-6 font-bold text-white flex items-center gap-1.5">
+                    <td className="py-4 px-6 font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                       {user.name}
                       {isSelf && (
                         <span className="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[8px] font-black uppercase px-1.5 py-0.5 rounded tracking-wider select-none">
@@ -220,7 +220,7 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                         </span>
                       )}
                     </td>
-                    <td className="py-4 px-6 text-slate-400 font-mono">{user.email}</td>
+                    <td className="py-4 px-6 text-slate-600 dark:text-slate-400 font-mono">{user.email}</td>
                     <td className="py-4 px-6">
                       <span className={`inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
                         user.role === 'admin' 
@@ -310,7 +310,7 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                   Nom complet
                 </label>
                 <input
@@ -318,13 +318,13 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="block w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400 transition-colors"
+                  className="block w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400 transition-colors"
                   placeholder="Ex: Jean Reporter"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                   Adresse Email
                 </label>
                 <input
@@ -332,13 +332,13 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400 transition-colors"
+                  className="block w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400 transition-colors"
                   placeholder="journalist@sports.com"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                   Mot de passe {editingUser && <span className="text-[8px] text-slate-500 lowercase">(laisser vide pour ne pas changer)</span>}
                 </label>
                 <input
@@ -346,14 +346,14 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                   required={!editingUser}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400 transition-colors"
+                  className="block w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400 transition-colors"
                   placeholder={editingUser ? "••••••••" : "Saisir un mot de passe"}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                     Rôle
                   </label>
                   <select
@@ -369,7 +369,7 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                     Statut
                   </label>
                   <select
