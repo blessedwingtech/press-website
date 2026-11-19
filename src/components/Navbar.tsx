@@ -6,6 +6,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { Menu as MenuIcon, X, ChevronDown, User, Shield, PenTool, LogOut, LogIn, Search, Crown } from 'lucide-react';
 import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
+import BwtEcosystemSwitcher from './BwtEcosystemSwitcher';
 import { useRouter } from 'next/navigation';
 
 interface SubMenuData {
@@ -141,6 +142,9 @@ export default function Navbar({ menus }: NavbarProps) {
             {/* Sélecteur de Thème Clair / Sombre */}
             <ThemeToggle />
 
+            {/* Sélecteur d'applications BWT */}
+            <BwtEcosystemSwitcher />
+
             {session ? (
               <div className="relative">
                 <button
@@ -225,6 +229,7 @@ export default function Navbar({ menus }: NavbarProps) {
 
           {/* Mobile menu button */}
           <div className="flex md:hidden items-center gap-2">
+            <BwtEcosystemSwitcher />
             <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -308,6 +313,46 @@ export default function Navbar({ menus }: NavbarProps) {
                 )}
               </div>
             ))}
+          </div>
+
+          <div className="pt-3 pb-3 border-t border-slate-200 dark:border-slate-800 px-4">
+            <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              Écosystème BWT
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <a
+                href="https://biblio.bittonik.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-800/40"
+              >
+                <span>📚</span> BiblioTonik
+              </a>
+              <a
+                href="https://bittonik.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 p-2 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 font-bold border border-cyan-200 dark:border-cyan-800/40"
+              >
+                <span>⚡</span> BitTonik
+              </a>
+              <a
+                href="https://shop.bittonik.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-bold border border-amber-200 dark:border-amber-800/40"
+              >
+                <span>🛍️</span> ShopTonik
+              </a>
+              <a
+                href="https://memo.bittonik.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 p-2 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800/40"
+              >
+                <span>☁️</span> MemoTonik
+              </a>
+            </div>
           </div>
 
           <div className="pt-4 pb-3 border-t border-slate-200 dark:border-slate-800 px-4">
