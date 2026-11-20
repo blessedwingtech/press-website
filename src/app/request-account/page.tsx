@@ -132,35 +132,44 @@ export default function RequestAccountPage() {
 
   if (success) {
     return (
-      <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
-        <div className="max-w-md w-full space-y-8 bg-slate-900 border border-slate-800 p-8 sm:p-10 rounded-2xl shadow-2xl relative overflow-hidden text-center">
+      <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-slate-50 dark:bg-slate-950">
+        <div className="max-w-md w-full space-y-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-10 rounded-2xl shadow-xl dark:shadow-2xl relative overflow-hidden text-center">
           <div className="absolute -top-10 -left-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex justify-center">
-            <div className="p-3 bg-teal-500/10 rounded-full text-teal-400 border border-teal-500/20">
+            <div className="p-3 bg-teal-500/10 rounded-full text-teal-600 dark:text-teal-400 border border-teal-500/20">
               <CheckCircle2 className="w-12 h-12" />
             </div>
           </div>
 
           <div className="space-y-3">
-            <h1 className="text-2xl font-black text-white uppercase tracking-wider">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
               Demande Envoyée !
             </h1>
-            <p className="text-sm text-slate-350 leading-relaxed">
-              Un e-mail de sécurité a été envoyé à l'adresse <strong>{email}</strong>.
+            <p className="text-sm text-slate-600 dark:text-slate-350 leading-relaxed">
+              Un e-mail de sécurité a été envoyé à l'adresse <strong className="text-slate-900 dark:text-white">{email}</strong>.
             </p>
           </div>
 
-          <div className="bg-slate-950/60 border border-slate-800 p-5 rounded-xl text-left space-y-3 text-xs sm:text-sm text-slate-300">
+          <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 p-5 rounded-xl text-left space-y-3.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
             <div className="flex gap-2.5 items-start">
-              <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
               <p>
                 <strong>Vérifiez votre boîte mail :</strong> Vous devez cliquer sur le lien dans l'e-mail pour soumettre officiellement votre dossier aux administrateurs.
               </p>
             </div>
+
+            {/* Avertissement Spams explicite */}
+            <div className="flex gap-2.5 items-start bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30 p-3.5 rounded-xl text-amber-900 dark:text-amber-300">
+              <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+              <p className="text-xs leading-relaxed">
+                <strong>Pensez à consulter vos Spams :</strong> Si vous ne voyez pas le message dans votre boîte de réception d'ici 1 à 2 minutes, vérifiez votre dossier <em>Courriers indésirables / Spams</em> (les filtres de Gmail, Yahoo ou Outlook y placent souvent les premiers e-mails reçus).
+              </p>
+            </div>
+
             <div className="flex gap-2.5 items-start">
-              <UserCheck className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+              <UserCheck className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" />
               <p>
                 Dès confirmation, votre compte sera révisé et vous recevrez un second e-mail de validation avec vos accès.
               </p>

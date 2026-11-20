@@ -122,7 +122,11 @@ export async function sendVerificationEmail(to: string, link: string) {
       </p>
       <p style="font-size: 12px; color: #64748b;">Si le bouton ne fonctionne pas, copiez-collez ce lien : <a href="${link}" style="color: #10b981;">${link}</a></p>
       <hr style="border: 0; border-top: 1px solid #1e293b; margin-top: 30px;" />
-      <p style="font-size: 11px; color: #475569;">PressTonik - Portail d'information libre.</p>
+      
+      <div style="background-color: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 12px 14px; margin-top: 24px; font-size: 11px; color: #fbbf24; line-height: 1.5;">
+        <strong>💡 Conseil messagerie :</strong> Si ce message est arrivé dans votre dossier <em>Spams / Courriers indésirables</em>, pensez à le déplacer dans votre boîte de réception ou à ajouter <code>press@bittonik.com</code> à votre carnet d'adresses afin de ne manquer aucune notification future.
+      </div>
+      <p style="font-size: 11px; color: #475569; margin-top: 16px;">PressTonik - Portail d'information libre.</p>
     </div>
   `;
   return sendMailWithFailover({ to, subject: 'Confirmation de votre demande d\'inscription - PressTonik', html });
