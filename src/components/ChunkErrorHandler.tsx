@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 /**
  * Gestionnaire de résilience après déploiement et protection DOM.
  * 1. Empêche Google AdSense et les extensions tierces de faire crasher React via "removeChild" / "insertBefore".
- * 2. Détecte les réelles erreurs de ChunkLoadError (après un git pull & build sur le VPS) et recharge proprement.
+ * 2. Détecte les réelles erreurs de ChunkLoadError (après un build serveur) et recharge automatiquement et silencieusement.
  */
 export default function ChunkErrorHandler() {
   useEffect(() => {
@@ -40,13 +40,13 @@ export default function ChunkErrorHandler() {
         msg.includes('Loading CSS chunk');
 
       if (isRealChunkError) {
-        const lastReload = sessionStorage.getItem('chunk_reload_ts');
+        const lastReload = sessionStorage.getItem('pt_chunk_ts');
         const now = Date.now();
 
         // Limite à un rechargement automatique toutes les 15 secondes pour éviter toute boucle
         if (!lastReload || now - parseInt(lastReload, 10) > 15000) {
-          sessionStorage.setItem('chunk_reload_ts', now.toString());
-          console.warn('[PressTonik] Nouvelle version déployée détectée. Rechargement des modules...');
+          sessionStorage.setItem('pt_chunk_ts', now.toString());
+          console.warn('[PressTonik] Nouvelle version déployée. Rechargement transparent...');
           window.location.reload();
         }
       }
