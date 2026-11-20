@@ -134,6 +134,26 @@ export default function RootLayout({
                     document.documentElement.classList.add('dark');
                   }
                 } catch(e) {}
+
+                // Protection anti-crash pour Google AdSense et scripts tiers (évite NotFoundError removeChild / insertBefore)
+                try {
+                  if (typeof Node !== 'undefined' && Node.prototype) {
+                    var origRemove = Node.prototype.removeChild;
+                    Node.prototype.removeChild = function(child) {
+                      if (child && child.parentNode !== this) {
+                        return child;
+                      }
+                      return origRemove.apply(this, arguments);
+                    };
+                    var origInsert = Node.prototype.insertBefore;
+                    Node.prototype.insertBefore = function(newNode, refNode) {
+                      if (refNode && refNode.parentNode !== this) {
+                        return newNode;
+                      }
+                      return origInsert.apply(this, arguments);
+                    };
+                  }
+                } catch(e) {}
               })();
             `,
           }}

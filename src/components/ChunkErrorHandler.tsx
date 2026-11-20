@@ -3,33 +3,50 @@
 import { useEffect } from 'react';
 
 /**
- * Gestionnaire d'auto-récupération des erreurs de chunks après déploiement.
- * Lorsqu'un nouveau build est déployé sur le serveur, les anciens chunks JS sont supprimés.
- * Les utilisateurs mobiles ayant gardé un onglet ouvert déclenchent un ChunkLoadError lors
- * de la navigation vers un article. Ce composant intercepte l'erreur avant le crash et recharge
- * automatiquement la page avec les nouveaux fichiers sans perturber l'expérience utilisateur.
+ * Gestionnaire de résilience après déploiement et protection DOM.
+ * 1. Empêche Google AdSense et les extensions tierces de faire crasher React via "removeChild" / "insertBefore".
+ * 2. Détecte les réelles erreurs de ChunkLoadError (après un git pull & build sur le VPS) et recharge proprement.
  */
 export default function ChunkErrorHandler() {
   useEffect(() => {
+    // 1. Protection anti-crash pour Google AdSense et scripts tiers
+    if (typeof window !== 'undefined' && typeof Node !== 'undefined') {
+      const origRemoveChild = Node.prototype.removeChild;
+      Node.prototype.removeChild = function <T extends Node>(child: T): T {
+        if (child && child.parentNode !== this) {
+          return child;
+        }
+        return origRemoveChild.apply(this, [child]) as T;
+      };
+
+      const origInsertBefore = Node.prototype.insertBefore;
+      Node.prototype.insertBefore = function <T extends Node>(newNode: T, refNode: Node | null): T {
+        if (refNode && refNode.parentNode !== this) {
+          return newNode;
+        }
+        return origInsertBefore.apply(this, [newNode, refNode]) as T;
+      };
+    }
+
+    // 2. Détection ciblée des vraies erreurs de chunks de déploiement
     const handleChunkError = (rawMessage: string) => {
       if (!rawMessage) return;
       const msg = String(rawMessage);
 
-      const isChunkError =
+      const isRealChunkError =
         msg.includes('Loading chunk') ||
         msg.includes('ChunkLoadError') ||
         msg.includes('Failed to fetch dynamically imported module') ||
-        msg.includes('Loading CSS chunk') ||
-        msg.includes('removeChild');
+        msg.includes('Loading CSS chunk');
 
-      if (isChunkError) {
+      if (isRealChunkError) {
         const lastReload = sessionStorage.getItem('chunk_reload_ts');
         const now = Date.now();
 
-        // Limite à un rechargement automatique toutes les 10 secondes pour éviter les boucles
-        if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        // Limite à un rechargement automatique toutes les 15 secondes pour éviter toute boucle
+        if (!lastReload || now - parseInt(lastReload, 10) > 15000) {
           sessionStorage.setItem('chunk_reload_ts', now.toString());
-          console.warn('[PressTonik] Mise à jour d’application détectée. Actualisation automatique de la page...');
+          console.warn('[PressTonik] Nouvelle version déployée détectée. Rechargement des modules...');
           window.location.reload();
         }
       }

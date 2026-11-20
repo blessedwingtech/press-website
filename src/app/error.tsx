@@ -15,17 +15,17 @@ export default function ErrorBoundary({ error, reset }: ErrorProps) {
     // Log de l'erreur dans la console pour le débogage
     console.error('[PressTonik ErrorBoundary]:', error);
 
-    // Détection automatique des erreurs de chunk (mise à jour serveur)
+    // Détection automatique des réelles erreurs de chunk (mise à jour serveur)
     const errorMsg = error?.message || '';
     if (
       errorMsg.includes('Loading chunk') ||
       errorMsg.includes('ChunkLoadError') ||
-      errorMsg.includes('Failed to fetch') ||
-      errorMsg.includes('removeChild')
+      errorMsg.includes('Failed to fetch dynamically imported module') ||
+      errorMsg.includes('Loading CSS chunk')
     ) {
       const lastReload = sessionStorage.getItem('chunk_reload_ts');
       const now = Date.now();
-      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+      if (!lastReload || now - parseInt(lastReload, 10) > 15000) {
         sessionStorage.setItem('chunk_reload_ts', now.toString());
         window.location.reload();
       }
@@ -33,7 +33,6 @@ export default function ErrorBoundary({ error, reset }: ErrorProps) {
   }, [error]);
 
   const handleReload = () => {
-    // Tenter reset() puis rechargement complet si nécessaire
     try {
       reset();
     } catch {
@@ -60,7 +59,7 @@ export default function ErrorBoundary({ error, reset }: ErrorProps) {
             Interruption momentanée
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            Une mise à jour récente de la rédaction ou une instabilité passagère du réseau a interrompu l'affichage. Vous pouvez réactualiser la page directement.
+            Une instabilité passagère ou une mise à jour récente a interrompu l'affichage. Vous pouvez réactualiser la page directement.
           </p>
         </div>
 
