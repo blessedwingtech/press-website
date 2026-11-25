@@ -7,6 +7,7 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  toggleUserVerification,
 } from '@/app/admin/users/actions';
 import {
   UserCheck,
@@ -18,6 +19,8 @@ import {
   X,
   Plus,
   Loader2,
+  Award,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface UserData {
@@ -26,6 +29,7 @@ interface UserData {
   email: string;
   role: string;
   status: string;
+  isVerified?: boolean;
 }
 
 interface AdminUsersProps {
@@ -153,6 +157,24 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
     }
   };
 
+  const handleToggleVerification = async (id: string, name: string, isCurrentlyVerified: boolean) => {
+    const actionLabel = isCurrentlyVerified ? 'retirer la certification de' : 'certifier';
+    if (!confirm(`Voulez-vous vraiment ${actionLabel} le rédacteur "${name}" ?`)) {
+      return;
+    }
+    setUpdatingId(id);
+    setError(null);
+    setSuccess(null);
+    try {
+      await toggleUserVerification(id);
+      setSuccess(`Statut de certification mis à jour avec succès pour "${name}".`);
+    } catch (err: any) {
+      setError(err.message || 'Erreur lors de la mise à jour de la certification.');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <div className="space-y-6 w-full relative">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
@@ -212,8 +234,13 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                       isSelf ? 'bg-slate-100/60 dark:bg-slate-900/20' : ''
                     }`}
                   >
-                    <td className="py-4 px-6 font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <td className="py-4 px-6 font-bold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
                       {user.name}
+                      {user.isVerified && (
+                        <span className="inline-flex items-center gap-0.5 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[9px] font-black uppercase px-1.5 py-0.5 rounded tracking-wider select-none">
+                          <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" /> Certifié
+                        </span>
+                      )}
                       {isSelf && (
                         <span className="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[8px] font-black uppercase px-1.5 py-0.5 rounded tracking-wider select-none">
                           Vous
@@ -245,6 +272,19 @@ export default function AdminUsersClient({ users, currentUserId }: AdminUsersPro
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex justify-end gap-2 items-center">
+                        <button
+                          disabled={updatingId === user.id}
+                          onClick={() => handleToggleVerification(user.id, user.name, !!user.isVerified)}
+                          className={`p-1.5 border rounded transition-colors disabled:opacity-40 cursor-pointer ${
+                            user.isVerified
+                              ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
+                              : 'border-slate-300 dark:border-slate-700 text-slate-400 hover:text-emerald-500 hover:border-emerald-500/40'
+                          }`}
+                          title={user.isVerified ? "Rédacteur certifié (Cliquer pour retirer la certification)" : "Non certifié (Cliquer pour certifier ce journaliste)"}
+                        >
+                          <Award className="w-4 h-4" />
+                        </button>
+
                         <button
                           disabled={updatingId === user.id}
                           onClick={() => handleOpenEdit(user)}

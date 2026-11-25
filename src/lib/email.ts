@@ -159,6 +159,22 @@ export async function sendApprovalEmail(to: string, name: string, tempPass: stri
   return sendMailWithFailover({ to, subject: 'Votre compte PressTonik a été approuvé ! 🎉', html });
 }
 
+export async function sendPromotionApprovalEmail(to: string, name: string, loginLink: string = '/journalist') {
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; background: #0f172a; color: #e2e8f0; border-radius: 12px; max-width: 560px; margin: 0 auto;">
+      <h2 style="color: #ffffff; margin-bottom: 12px;">Félicitations, ${name} ! ✍️</h2>
+      <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1;">Votre demande de promotion au statut de <strong>Rédacteur</strong> a été approuvée par l'équipe de <strong>PressTonik</strong>.</p>
+      <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1;">Votre compte a été mis à niveau avec succès. Vous pouvez désormais vous connecter avec votre mot de passe habituel et accéder directement à votre console de rédaction pour rédiger, soumettre et gérer vos articles.</p>
+      <p style="margin: 24px 0;">
+        <a href="${loginLink}" style="background-color: #10b981; color: #020617; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Accéder à mon Espace Rédacteur</a>
+      </p>
+      <hr style="border: 0; border-top: 1px solid #1e293b; margin-top: 30px;" />
+      <p style="font-size: 11px; color: #475569;">L'équipe d'administration PressTonik.</p>
+    </div>
+  `;
+  return sendMailWithFailover({ to, subject: 'Félicitations ! Votre compte a été promu Rédacteur - PressTonik ✍️', html });
+}
+
 export async function sendRejectionEmail(to: string, name: string) {
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; background: #0f172a; color: #e2e8f0; border-radius: 12px; max-width: 560px; margin: 0 auto;">

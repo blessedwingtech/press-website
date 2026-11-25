@@ -155,3 +155,25 @@ export async function deleteUser(id: string) {
   revalidatePath('/admin/users');
   revalidatePath('/admin');
 }
+
+export async function toggleUserVerification(id: string) {
+  await checkAdmin();
+  const user = await db.user.findUnique({ where: { id } });
+  if (!user) throw new Error('Utilisateur introuvable.');
+
+  const nextState = !(user as any).isVerified;
+  await db.user.update({
+    where: { id },
+    data: {
+      isVerified: nextState,
+      verifiedAt: nextState ? new Date() : null,
+    }
+  });
+
+  await logAction(
+    'USER_VERIFICATION_TOGGLE',
+    `Statut de certification pour ${user.name} (${user.email}) passé à : ${nextState ? 'Certifié / Vérifié' : 'Non certifié'}`
+  );
+
+  revalidatePath('/admin/users');
+}

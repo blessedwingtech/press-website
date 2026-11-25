@@ -24,6 +24,8 @@ model User {
   balanceUSD       Float    @default(0) // Solde disponible en USD (85% des dons standard / 95% PRO)
   isPro            Boolean  @default(false) // Statut Journaliste Certifié PRO
   proExpiresAt     DateTime? // Date d'expiration de l'abonnement PRO
+  isVerified       Boolean  @default(false) // Statut Journaliste / Enquêteur Vérifié
+  verifiedAt       DateTime? // Date d'obtention de la certification
   createdAt        DateTime @default(now())
   articles         Article[]
   galleryImages    GalleryImage[]
@@ -181,10 +183,13 @@ model AuditLog {
 model AccountRequest {
   id                String   @id @default(uuid())
   name              String
-  username          String   @unique
+  username          String
   email             String   @unique
   role              String   @default("reader")
   profilePhoto      String?
+  motivation        String?  // Motivations et domaines de prédilection
+  portfolioUrl      String?  // Liens vers travaux ou profil pro
+  isPromotion       Boolean  @default(false) // Vrai si utilisateur existant demande à devenir rédacteur
   status            String   @default("PENDING") // PENDING, CONFIRMED_EMAIL, APPROVED, REJECTED
   confirmationToken String   @unique
   createdAt         DateTime @default(now())

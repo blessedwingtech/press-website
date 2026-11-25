@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db';
 import { logAction } from '@/lib/audit';
-import { sendApprovalEmail, sendRejectionEmail } from '@/lib/email';
+import { sendApprovalEmail, sendPromotionApprovalEmail, sendRejectionEmail } from '@/lib/email';
 import * as bcrypt from 'bcryptjs';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -40,13 +40,47 @@ export async function approveAccountRequest(id: string) {
       return { success: false, error: 'Demande introuvable.' };
     }
 
+    // Cas particulier : Demande de PROMOTION d'un compte lecteur existant vers Rédacteur
+    if (request.isPromotion) {
+      const user = await db.user.findUnique({
+        where: { email: request.email }
+      });
+
+      if (!user) {
+        return { success: false, error: 'Utilisateur associé à la promotion introuvable.' };
+      }
+
+      // Mise à niveau du rôle
+      await db.user.update({
+        where: { id: user.id },
+        data: { role: 'journalist' }
+      });
+
+      // Supprimer la demande de promotion traitée
+      await db.accountRequest.delete({
+        where: { id }
+      });
+
+      // Envoyer un email de félicitations pour la promotion
+      await sendPromotionApprovalEmail(request.email, request.name);
+
+      // Audit log
+      await logAction(
+        'ACCOUNT_PROMOTION_APPROVE',
+        `Promotion au statut Rédacteur approuvée pour ${request.name} (${request.email}). Accès mis à niveau.`
+      );
+
+      return { success: true };
+    }
+
+    // Cas standard : Nouvelle inscription
     // 2. Générer un mot de passe temporaire solide
     const tempPass = Math.random().toString(36).substring(2, 10) + 'A1!';
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(tempPass, salt);
 
     // 3. Créer l'utilisateur officiel
-    const newUser = await db.user.create({
+    await db.user.create({
       data: {
         name: request.name,
         email: request.email,
@@ -57,14 +91,13 @@ export async function approveAccountRequest(id: string) {
       }
     });
 
-    // 4. Mettre à jour ou supprimer la demande
+    // 4. Supprimer la demande
     await db.accountRequest.delete({
       where: { id }
     });
 
     // 5. Envoyer l'email d'approbation avec les accès
-    // On assume que le site est hébergé localement ou en prod, on crée le lien de login
-    const loginLink = `/login`; // Le composant client gérera le lien absolu si besoin ou un simple href /login
+    const loginLink = `/login`;
     await sendApprovalEmail(request.email, request.name, tempPass, loginLink);
 
     // 6. Enregistrer l'audit log
@@ -98,7 +131,10 @@ export async function rejectAccountRequest(id: string) {
     });
 
     // 4. Enregistrer l'audit log
-    await logAction('ACCOUNT_REQUEST_REJECT', `Demande de compte rejetée et supprimée pour ${request.name} (${request.email}).`);
+    await logAction(
+      request.isPromotion ? 'ACCOUNT_PROMOTION_REJECT' : 'ACCOUNT_REQUEST_REJECT',
+      `Demande ${request.isPromotion ? 'de promotion' : 'de compte'} rejetée et supprimée pour ${request.name} (${request.email}).`
+    );
 
     return { success: true };
   } catch (error: any) {

@@ -18,8 +18,10 @@ import {
   TrendingUp,
   ExternalLink,
   MousePointerClick,
-  Crown
+  Crown,
+  CheckCircle2
 } from 'lucide-react';
+import BecomeJournalistModal from './BecomeJournalistModal';
 
 export const revalidate = 0; // Pas de cache pour afficher les statistiques à jour
 
@@ -117,6 +119,18 @@ export default async function ProfilePage() {
     orderBy: { titre: 'asc' }
   });
 
+  // 3. Vérifier si une demande de promotion Rédacteur est en cours
+  const existingPromotion = (user.role === 'reader' || user.role === 'reader_vip')
+    ? await db.accountRequest.findFirst({
+        where: {
+          email: user.email,
+          role: 'journalist',
+          isPromotion: true,
+          status: { in: ['PENDING', 'CONFIRMED_EMAIL'] }
+        }
+      })
+    : null;
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full space-y-8">
       {/* Profil Global */}
@@ -138,6 +152,11 @@ export default async function ProfilePage() {
           <div className="text-center sm:text-left flex-grow space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 justify-center sm:justify-start">
               <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-wider">{user.name}</h1>
+              {(user as any).isVerified && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 w-max mx-auto sm:mx-0">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500" /> Journaliste Certifié
+                </span>
+              )}
               <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${currentRole.bg} ${currentRole.color} ${currentRole.border} w-max mx-auto sm:mx-0`}>
                 {currentRole.label}
               </span>
@@ -221,6 +240,11 @@ export default async function ProfilePage() {
               Découvrir les offres <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
+        )}
+
+        {/* Section Évolution : Devenir Rédacteur pour les Lecteurs */}
+        {(user.role === 'reader' || user.role === 'reader_vip') && (
+          <BecomeJournalistModal hasPendingRequest={Boolean(existingPromotion)} />
         )}
 
         {/* Métadonnées du compte */}

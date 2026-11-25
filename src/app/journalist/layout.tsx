@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { PenTool, ListFilter, FilePlus, Home } from 'lucide-react';
+import { PenTool, ListFilter, FilePlus, Home, Award } from 'lucide-react';
 import { canAccessAiAssistant } from '@/lib/ai-access';
 
 export default async function JournalistLayout({ children }: { children: React.ReactNode }) {
@@ -50,6 +50,13 @@ export default async function JournalistLayout({ children }: { children: React.R
                 Carnet de Recherche IA
               </Link>
             )}
+            <Link
+              href="/journalist/verification"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all"
+            >
+              <Award className="w-4 h-4 text-amber-500" />
+              Certification & Crédibilité
+            </Link>
             <Link
               href="/"
               className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all border-t border-slate-200 dark:border-slate-800/80 mt-4 pt-4"
