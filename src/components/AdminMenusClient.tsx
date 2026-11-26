@@ -1,8 +1,21 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { saveMenu, deleteMenu, saveSubMenu, deleteSubMenu } from '@/app/admin/menus/actions';
-import { Plus, Trash2, Edit2, ChevronRight, Layers, ArrowUpDown, Loader2 } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Edit2,
+  ChevronRight,
+  Layers,
+  ArrowUpDown,
+  Loader2,
+  CheckCircle2,
+  FolderPlus,
+  AlertTriangle,
+  FolderTree
+} from 'lucide-react';
 
 interface SubMenuData {
   id: string;
@@ -25,6 +38,8 @@ interface AdminMenusProps {
 }
 
 export default function AdminMenusClient({ menus }: AdminMenusProps) {
+  const router = useRouter();
+
   // Formulaire Menu
   const [menuId, setMenuId] = useState<string | undefined>(undefined);
   const [menuNom, setMenuNom] = useState('');
@@ -39,18 +54,26 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
   const [subMenuLoading, setSubMenuLoading] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleMenuSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMenuLoading(true);
     setError(null);
+    setSuccess(null);
     try {
-      await saveMenu(menuId, { nom: menuNom, order: menuOrder });
+      const res = await saveMenu(menuId, { nom: menuNom, order: menuOrder });
+      if (res?.error) {
+        setError(res.error);
+        return;
+      }
+      setSuccess(menuId ? `Menu "${menuNom}" mis à jour avec succès.` : `Nouveau menu "${menuNom}" créé avec succès.`);
       setMenuId(undefined);
       setMenuNom('');
       setMenuOrder(0);
+      router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Erreur d’enregistrement de la catégorie.');
+      setError(err.message || 'Erreur d’enregistrement du menu.');
     } finally {
       setMenuLoading(false);
     }
@@ -59,21 +82,27 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
   const handleSubMenuSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!subMenuParentId) {
-      setError('Veuillez associer cette rubrique à un menu parent.');
+      setError('Veuillez sélectionner le menu parent pour cette rubrique.');
       return;
     }
     setSubMenuLoading(true);
     setError(null);
+    setSuccess(null);
     try {
-      await saveSubMenu(subMenuId, {
+      const res = await saveSubMenu(subMenuId, {
         nom: subMenuNom,
         order: subMenuOrder,
         menuId: subMenuParentId,
       });
+      if (res?.error) {
+        setError(res.error);
+        return;
+      }
+      setSuccess(subMenuId ? `Rubrique "${subMenuNom}" mise à jour.` : `Sous-rubrique "${subMenuNom}" ajoutée au menu.`);
       setSubMenuId(undefined);
       setSubMenuNom('');
       setSubMenuOrder(0);
-      setSubMenuParentId('');
+      router.refresh();
     } catch (err: any) {
       setError(err.message || 'Erreur d’enregistrement de la sous-rubrique.');
     } finally {
@@ -85,7 +114,9 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
     setMenuId(menu.id);
     setMenuNom(menu.nom);
     setMenuOrder(menu.order);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setError(null);
+    setSuccess(null);
+    document.getElementById('menu-form-card')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleEditSubMenu = (sub: SubMenuData) => {
@@ -93,23 +124,47 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
     setSubMenuNom(sub.nom);
     setSubMenuOrder(sub.order);
     setSubMenuParentId(sub.menuId);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setError(null);
+    setSuccess(null);
+    document.getElementById('submenu-form-card')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleAddSubMenuToMenu = (menu: MenuData) => {
+    setSubMenuId(undefined);
+    setSubMenuNom('');
+    setSubMenuParentId(menu.id);
+    // Calcul de l'index suivant
+    const nextOrder = menu.submenus.length > 0
+      ? Math.max(...menu.submenus.map((s) => s.order)) + 1
+      : 1;
+    setSubMenuOrder(nextOrder);
+    setError(null);
+    setSuccess(null);
+    document.getElementById('submenu-form-card')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <div className="space-y-6 w-full">
       <div>
         <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
-          Gestion de la Structure (Menus &amp; Rubriques)
+          Structure Éditoriale (Menus &amp; Rubriques)
         </h1>
         <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-          Créez de nouvelles catégories éditoriales de niveau supérieur ou des sous-rubriques imbriquées, et ajustez leur ordonnancement d'affichage.
+          Gérez l&apos;architecture de navigation : créez des menus principaux et rattachez-y dynamiquement autant de sous-rubriques que nécessaire.
         </p>
       </div>
 
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl text-xs font-semibold text-rose-400">
-          {error}
+        <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl text-xs font-semibold text-rose-500 dark:text-rose-400 flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>{success}</span>
         </div>
       )}
 
@@ -117,87 +172,132 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
         
         {/* Partie gauche : Arborescence des menus */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-2xl">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800/60 pb-3 mb-4 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-emerald-450" />
-              Configuration des rubriques
+          <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-5 sm:p-6 shadow-sm">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-3 mb-4 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <FolderTree className="w-4 h-4 text-emerald-500" />
+                Arborescence active ({menus.length} menu{menus.length > 1 ? 's' : ''})
+              </span>
+              <span className="text-[10px] text-slate-500 font-normal normal-case">
+                Ordre croissant d&apos;affichage
+              </span>
             </h2>
 
             {menus.length === 0 ? (
-              <p className="text-xs text-slate-550 text-center py-8">Aucun menu disponible. Remplissez le formulaire de droite pour commencer.</p>
+              <p className="text-xs text-slate-500 text-center py-8">
+                Aucun menu disponible. Remplissez le formulaire de droite pour créer votre premier menu.
+              </p>
             ) : (
               <div className="space-y-4">
                 {menus.map((menu) => (
                   <div
                     key={menu.id}
-                    className="border border-slate-200 dark:border-slate-800/80 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-950/20 hover:border-slate-300 dark:hover:border-slate-700/40 transition-colors"
+                    className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-slate-50/60 dark:bg-slate-950/40 hover:border-slate-300 dark:hover:border-slate-700 transition"
                   >
                     {/* Niveau 1 : Catégorie principale */}
-                    <div className="flex justify-between items-center gap-4 border-b border-slate-200 dark:border-slate-800/40 pb-3 mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-emerald-400 font-extrabold flex items-center gap-1 select-none">
-                          <ArrowUpDown className="w-3 h-3 text-slate-500" />
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800/60 pb-3 mb-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[10px] font-mono bg-slate-200 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 px-2 py-0.5 rounded text-emerald-600 dark:text-emerald-400 font-extrabold flex items-center gap-1 select-none">
+                          <ArrowUpDown className="w-3 h-3 text-slate-400" />
                           #{menu.order}
                         </span>
-                        <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">{menu.nom}</span>
-                        <span className="text-[9px] text-slate-500 font-mono">({menu.slug})</span>
+                        <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                          {menu.nom}
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          (/{menu.slug})
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
+                          {menu.submenus.length} rubrique{menu.submenus.length > 1 ? 's' : ''}
+                        </span>
                       </div>
                       
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-2">
+                        {/* Bouton d'ajout rapide de sous-rubrique */}
+                        <button
+                          onClick={() => handleAddSubMenuToMenu(menu)}
+                          className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 dark:text-teal-400 border border-teal-500/30 flex items-center gap-1 transition cursor-pointer"
+                          title={`Ajouter une rubrique à "${menu.nom}"`}
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ Rubrique</span>
+                        </button>
                         <button
                           onClick={() => handleEditMenu(menu)}
-                          className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 rounded transition-colors"
-                          title="Modifier le menu"
+                          className="p-1.5 text-slate-500 hover:text-cyan-500 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition"
+                          title="Modifier le nom ou l'ordre"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={async () => {
-                            if (confirm(`Voulez-vous supprimer le menu "${menu.nom}" ? Cette action effacera également toutes ses rubriques filles et ses articles.`)) {
-                              await deleteMenu(menu.id);
+                            if (confirm(`Voulez-vous supprimer le menu principal "${menu.nom}" ? Les articles liés seront détachés et ses sous-rubriques supprimées.`)) {
+                              setError(null);
+                              const res = await deleteMenu(menu.id);
+                              if (res?.error) {
+                                setError(res.error);
+                              } else {
+                                setSuccess(`Menu "${menu.nom}" supprimé.`);
+                                router.refresh();
+                              }
                             }
                           }}
-                          className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-500/15 rounded transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-500/15 rounded-lg transition cursor-pointer"
                           title="Supprimer le menu"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
 
                     {/* Niveau 2 : Sous-rubriques */}
-                    <div className="pl-6 space-y-2">
+                    <div className="pl-4 sm:pl-6 space-y-2">
                       {menu.submenus.length === 0 ? (
-                        <p className="text-[10px] text-slate-600 italic">Aucune rubrique enfant rattachée.</p>
+                        <p className="text-[11px] text-slate-400 italic flex items-center gap-1.5 py-1">
+                          <span>Aucune sous-rubrique rattachée.</span>
+                          <button
+                            onClick={() => handleAddSubMenuToMenu(menu)}
+                            className="text-teal-600 dark:text-teal-400 font-bold hover:underline"
+                          >
+                            + Ajouter une sous-rubrique
+                          </button>
+                        </p>
                       ) : (
                         menu.submenus.map((sub) => (
                           <div
                             key={sub.id}
-                            className="flex justify-between items-center bg-white dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-900/50 border border-slate-200 dark:border-slate-850 px-3 py-2 rounded-lg text-xs"
+                            className="flex justify-between items-center bg-white dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs transition"
                           >
                             <div className="flex items-center gap-2">
-                              <ChevronRight className="w-3.5 h-3.5 text-slate-655" />
-                              <span className="text-[8px] font-mono bg-slate-950 px-1.5 py-0.5 rounded text-slate-450 select-none">
-                                Position: {sub.order}
+                              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                              <span className="text-[9px] font-mono bg-slate-100 dark:bg-slate-950 px-1.5 py-0.5 rounded text-slate-500 border border-slate-200 dark:border-slate-800 select-none">
+                                Ordre {sub.order}
                               </span>
-                              <span className="font-bold text-slate-350">{sub.nom}</span>
-                              <span className="text-[9px] text-slate-550 font-mono">({sub.slug})</span>
+                              <span className="font-bold text-slate-800 dark:text-slate-200">{sub.nom}</span>
+                              <span className="text-[9px] text-slate-400 font-mono">({sub.slug})</span>
                             </div>
-                            <div className="flex gap-1.5">
+                            <div className="flex items-center gap-1">
                               <button
                                 onClick={() => handleEditSubMenu(sub)}
-                                className="p-1 text-slate-500 hover:text-cyan-455 transition-colors"
+                                className="p-1 text-slate-400 hover:text-cyan-500 transition"
                                 title="Modifier la rubrique"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={async () => {
-                                  if (confirm(`Voulez-vous supprimer la rubrique "${sub.nom}" ?`)) {
-                                    await deleteSubMenu(sub.id);
+                                  if (confirm(`Voulez-vous supprimer la sous-rubrique "${sub.nom}" ?`)) {
+                                    setError(null);
+                                    const res = await deleteSubMenu(sub.id);
+                                    if (res?.error) {
+                                      setError(res.error);
+                                    } else {
+                                      setSuccess(`Sous-rubrique "${sub.nom}" supprimée.`);
+                                      router.refresh();
+                                    }
                                   }
                                 }}
-                                className="p-1 text-slate-500 hover:text-rose-500 transition-colors cursor-pointer"
+                                className="p-1 text-slate-400 hover:text-rose-500 transition cursor-pointer"
                                 title="Supprimer la rubrique"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -218,14 +318,19 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
         <div className="lg:col-span-1 space-y-6">
           
           {/* Formulaire Menu */}
-          <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-2xl">
-            <h3 className="text-xs font-black uppercase tracking-widest text-emerald-450 mb-4 border-b border-slate-800/60 pb-2">
-              {menuId ? 'Éditer un Menu' : 'Nouveau Menu'}
+          <div id="menu-form-card" className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-5 sm:p-6 shadow-sm">
+            <h3 className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2 flex items-center justify-between">
+              <span>{menuId ? 'Éditer le Menu' : 'Nouveau Menu Principal'}</span>
+              {menuId && (
+                <span className="text-[9px] text-amber-500 uppercase font-black bg-amber-500/15 px-2 py-0.5 rounded-full">
+                  Mode Édition
+                </span>
+              )}
             </h3>
             
             <form onSubmit={handleMenuSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                   Nom du menu
                 </label>
                 <input
@@ -233,32 +338,32 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                   required
                   value={menuNom}
                   onChange={(e) => setMenuNom(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
-                  placeholder="Ex: Politique, Sport, Culture..."
+                  className="block w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white text-xs focus:outline-none focus:border-emerald-500"
+                  placeholder="Ex: Politique, Sport, Économie..."
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-                  Index de tri
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">
+                  Index d&apos;ordre (tri)
                 </label>
                 <input
                   type="number"
                   required
                   value={menuOrder}
                   onChange={(e) => setMenuOrder(parseInt(e.target.value) || 0)}
-                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
+                  className="block w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white text-xs focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 pt-1">
                 <button
                   type="submit"
                   disabled={menuLoading}
-                  className="flex-grow flex justify-center items-center gap-1.5 py-2.5 px-4 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 hover:bg-emerald-600 transition-colors disabled:opacity-50 cursor-pointer"
+                  className="flex-grow flex justify-center items-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition disabled:opacity-50 cursor-pointer shadow-sm"
                 >
-                  {menuLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-950" /> : <Plus className="w-3.5 h-3.5 text-slate-950" />}
-                  {menuId ? 'Sauvegarder' : 'Ajouter'}
+                  {menuLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                  {menuId ? 'Mettre à jour' : 'Ajouter le Menu'}
                 </button>
                 {menuId && (
                   <button
@@ -268,7 +373,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                       setMenuNom('');
                       setMenuOrder(0);
                     }}
-                    className="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-350 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                    className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl transition cursor-pointer"
                   >
                     Annuler
                   </button>
@@ -278,23 +383,28 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
           </div>
 
           {/* Formulaire Sous-menu */}
-          <div className="bg-white dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/80 rounded-xl p-5 shadow-sm dark:shadow-2xl">
-            <h3 className="text-xs font-black uppercase tracking-widest text-cyan-400 mb-4 border-b border-slate-800/60 pb-2">
-              {subMenuId ? 'Éditer une Rubrique' : 'Nouvelle Rubrique'}
+          <div id="submenu-form-card" className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-5 sm:p-6 shadow-sm">
+            <h3 className="text-xs font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2 flex items-center justify-between">
+              <span>{subMenuId ? 'Éditer la Rubrique' : 'Nouvelle Sous-Rubrique'}</span>
+              {subMenuId && (
+                <span className="text-[9px] text-amber-500 uppercase font-black bg-amber-500/15 px-2 py-0.5 rounded-full">
+                  Mode Édition
+                </span>
+              )}
             </h3>
 
             <form onSubmit={handleSubMenuSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-                  Menu Parent
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">
+                  Menu Principal Parent
                 </label>
                 <select
                   required
                   value={subMenuParentId}
                   onChange={(e) => setSubMenuParentId(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-350 text-xs focus:outline-none focus:border-cyan-400 cursor-pointer"
+                  className="block w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white text-xs focus:outline-none focus:border-teal-500 cursor-pointer"
                 >
-                  <option value="">-- Choisir le menu parent --</option>
+                  <option value="">-- Sélectionner le menu parent --</option>
                   {menus.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.nom}
@@ -304,7 +414,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                   Nom de la sous-rubrique
                 </label>
                 <input
@@ -312,32 +422,32 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                   required
                   value={subMenuNom}
                   onChange={(e) => setSubMenuNom(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400"
-                  placeholder="Ex: Ligue 1, NBA, Europe, France..."
+                  className="block w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white text-xs focus:outline-none focus:border-teal-500"
+                  placeholder="Ex: National, International, Football..."
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-                  Index de tri
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5">
+                  Index d&apos;ordre (tri)
                 </label>
                 <input
                   type="number"
                   required
                   value={subMenuOrder}
                   onChange={(e) => setSubMenuOrder(parseInt(e.target.value) || 0)}
-                  className="block w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-200 text-xs focus:outline-none focus:border-cyan-400"
+                  className="block w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white text-xs focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 pt-1">
                 <button
                   type="submit"
                   disabled={subMenuLoading}
-                  className="flex-grow flex justify-center items-center gap-1.5 py-2.5 px-4 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-500 transition-colors disabled:opacity-50 cursor-pointer"
+                  className="flex-grow flex justify-center items-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white transition disabled:opacity-50 cursor-pointer shadow-sm"
                 >
-                  {subMenuLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-950" /> : <Plus className="w-3.5 h-3.5 text-slate-950" />}
-                  {subMenuId ? 'Sauvegarder' : 'Ajouter'}
+                  {subMenuLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                  {subMenuId ? 'Mettre à jour' : 'Ajouter la Rubrique'}
                 </button>
                 {subMenuId && (
                   <button
@@ -348,7 +458,7 @@ export default function AdminMenusClient({ menus }: AdminMenusProps) {
                       setSubMenuOrder(0);
                       setSubMenuParentId('');
                     }}
-                    className="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-350 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                    className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl transition cursor-pointer"
                   >
                     Annuler
                   </button>

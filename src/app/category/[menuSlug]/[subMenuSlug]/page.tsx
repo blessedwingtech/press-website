@@ -24,15 +24,18 @@ interface SubMenuPageProps {
 export async function generateMetadata({ params }: SubMenuPageProps): Promise<Metadata> {
   const menu = await db.menu.findUnique({
     where: { slug: params.menuSlug },
-    select: { nom: true, slug: true },
+    select: { id: true, nom: true, slug: true },
   });
 
   if (!menu) {
     return { title: 'Rubrique introuvable' };
   }
 
-  const submenu = await db.subMenu.findUnique({
-    where: { slug: params.subMenuSlug },
+  const submenu = await db.subMenu.findFirst({
+    where: {
+      slug: params.subMenuSlug,
+      menuId: menu.id,
+    },
     select: { nom: true, slug: true },
   });
 
@@ -74,11 +77,14 @@ export default async function SubMenuCategoryPage({ params, searchParams }: SubM
     notFound();
   }
 
-  const submenu = await db.subMenu.findUnique({
-    where: { slug: params.subMenuSlug },
+  const submenu = await db.subMenu.findFirst({
+    where: {
+      slug: params.subMenuSlug,
+      menuId: menu.id,
+    },
   });
 
-  if (!submenu || submenu.menuId !== menu.id) {
+  if (!submenu) {
     notFound();
   }
 

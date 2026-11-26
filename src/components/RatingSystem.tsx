@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Star, CheckCircle2, AlertCircle, Sparkles, UserCheck } from 'lucide-react';
+import { Star, CheckCircle2, AlertCircle, Sparkles, LogIn, Lock, Info } from 'lucide-react';
+import Link from 'next/link';
 import { rateArticle } from '@/app/articles/actions';
 
 interface RatingSystemProps {
@@ -13,6 +14,9 @@ interface RatingSystemProps {
   authorAverage?: number;
   authorTotalCount?: number;
   hasUserRatedAuthor?: boolean; // L'utilisateur a-t-il déjà évalué au moins un écrit de ce journaliste ?
+  isLoggedIn?: boolean;
+  isAuthor?: boolean;
+  articleSlug?: string;
 }
 
 export default function RatingSystem({
@@ -24,15 +28,35 @@ export default function RatingSystem({
   authorAverage = 0,
   authorTotalCount = 0,
   hasUserRatedAuthor = false,
+  isLoggedIn = false,
+  isAuthor = false,
+  articleSlug = '',
 }: RatingSystemProps) {
   const [isPending, startTransition] = useTransition();
   const [average, setAverage] = useState(initialAverage);
   const [count, setCount] = useState(initialTotalCount);
   const [myVote, setMyVote] = useState<number | null>(initialUserVote);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showAuthNotice, setShowAuthNotice] = useState(false);
 
   const handleVote = (stars: number) => {
     if (isPending) return;
+
+    // Si l'utilisateur est l'auteur, bloquer
+    if (isAuthor) {
+      setErrorMessage("Vous êtes l'auteur de cet article : vous ne pouvez pas vous auto-évaluer.");
+      return;
+    }
+
+    // Si non connecté, afficher le message d'invitation à se connecter
+    if (!isLoggedIn) {
+      setShowAuthNotice(true);
+      return;
+    }
+
+    setErrorMessage(null);
+    setShowAuthNotice(false);
 
     // Optimistic UI : Mettre à jour l'affichage immédiatement
     const previousVote = myVote;
@@ -63,12 +87,17 @@ export default function RatingSystem({
         setMyVote(previousVote);
         setAverage(initialAverage);
         setCount(initialTotalCount);
-        alert(res.error || 'Erreur lors de l’enregistrement de votre vote.');
+        if (res.requireAuth) {
+          setShowAuthNotice(true);
+        } else {
+          setErrorMessage(res.error || 'Erreur lors de l’enregistrement de votre note.');
+        }
       }
     });
   };
 
   const isUserEvaluated = myVote !== null;
+  const loginUrl = `/login?callbackUrl=/articles/${articleSlug || articleId}`;
 
   return (
     <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-sm dark:shadow-lg">
@@ -77,8 +106,12 @@ export default function RatingSystem({
           <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
             Évaluation & Réputation Journalistique
           </span>
-          {isUserEvaluated ? (
-            <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/15 border border-amber-300 dark:border-amber-500/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+          {isAuthor ? (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <Info className="w-3 h-3 text-slate-400" /> Votre Article
+            </span>
+          ) : isUserEvaluated ? (
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-300 bg-amber-50 dark:bg-amber-500/15 border border-amber-300 dark:border-amber-500/30 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
               <CheckCircle2 className="w-3 h-3 text-amber-500 dark:text-amber-400" />
               Déjà Évalué
             </span>
@@ -93,20 +126,44 @@ export default function RatingSystem({
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
             <span className="text-amber-500 dark:text-amber-400">★</span>
-            <span>{average > 0 ? average.toFixed(1) : '—'}</span>
+            <span>{count > 0 && average > 0 ? average.toFixed(1) : '—'}</span>
             <span className="text-slate-500 dark:text-slate-400 font-normal text-[11px]">
-              ({count} avis sur cet article)
+              ({count} avis authentifié{count > 1 ? 's' : ''})
             </span>
           </div>
 
           {authorAverage > 0 && (
             <div className="hidden md:flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 border-l border-slate-200 dark:border-slate-800 pl-3">
-              <span>Plume de l'auteur :</span>
+              <span>Moyenne auteur :</span>
               <strong className="text-emerald-600 dark:text-emerald-400 font-bold">{authorAverage.toFixed(1)} ★</strong>
             </div>
           )}
         </div>
       </div>
+
+      {/* Alerte si tentative d'évaluation non connecté */}
+      {showAuthNotice && !isLoggedIn && (
+        <div className="p-3 bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30 rounded-xl text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-medium">
+            <Lock className="w-4 h-4 shrink-0 text-amber-500" />
+            <span>Connectez-vous avec votre compte PressTonik pour attribuer votre note.</span>
+          </div>
+          <Link
+            href={loginUrl}
+            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs uppercase tracking-wider transition shrink-0 flex items-center justify-center gap-1"
+          >
+            <LogIn className="w-3.5 h-3.5" /> Se connecter
+          </Link>
+        </div>
+      )}
+
+      {/* Message d'erreur */}
+      {errorMessage && (
+        <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-600 dark:text-rose-400 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* Rangée interactive des étoiles & informations de vote */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
@@ -125,12 +182,16 @@ export default function RatingSystem({
                   key={star}
                   type="button"
                   onClick={() => handleVote(star)}
-                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseEnter={() => !isAuthor && setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(null)}
-                  disabled={isPending}
+                  disabled={isPending || isAuthor}
                   aria-label={`Attribuer ${star} étoile${star > 1 ? 's' : ''}`}
-                  className={`p-1 rounded-lg transition-all duration-150 focus:outline-none cursor-pointer ${
-                    isPending ? 'opacity-50 cursor-not-allowed' : 'hover:scale-120 active:scale-95'
+                  className={`p-1 rounded-lg transition-all duration-150 focus:outline-none ${
+                    isAuthor
+                      ? 'opacity-40 cursor-not-allowed'
+                      : isPending
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'cursor-pointer hover:scale-120 active:scale-95'
                   }`}
                 >
                   <Star
@@ -148,7 +209,11 @@ export default function RatingSystem({
           </div>
 
           {/* Statut ou note attribuée */}
-          {hoverRating !== null ? (
+          {isAuthor ? (
+            <span className="text-xs text-slate-500 italic">
+              Auto-évaluation non autorisée
+            </span>
+          ) : hoverRating !== null ? (
             <span className="text-xs font-bold text-amber-600 dark:text-amber-300 animate-in fade-in duration-150 whitespace-nowrap">
               Attribuer {hoverRating} ★
             </span>
@@ -159,14 +224,18 @@ export default function RatingSystem({
             </div>
           ) : (
             <span className="text-xs text-slate-500 dark:text-slate-400 italic">
-              Cliquez pour évaluer
+              {isLoggedIn ? 'Cliquez sur une étoile pour voter' : 'Connectez-vous pour évaluer'}
             </span>
           )}
         </div>
 
         {/* Message de confirmation ou d'incitation */}
         <div className="flex items-center text-xs sm:text-right">
-          {isUserEvaluated ? (
+          {isAuthor ? (
+            <span className="text-xs text-slate-400">
+              Note attribuée par vos lecteurs vérifiés
+            </span>
+          ) : isUserEvaluated ? (
             <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               Merci pour votre évaluation !
@@ -174,11 +243,11 @@ export default function RatingSystem({
           ) : count === 0 ? (
             <span className="text-xs text-amber-800 dark:text-amber-300 font-bold bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
-              Soyez le premier à évaluer cet écrit !
+              Soyez le premier lecteur à évaluer cet article !
             </span>
           ) : !hasUserRatedAuthor ? (
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Notez le travail journalistique de cet auteur
+              Notez le travail journalistique de {authorName}
             </span>
           ) : (
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">

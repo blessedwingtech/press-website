@@ -4,6 +4,8 @@ import { db } from '@/lib/db';
 import { logAction } from '@/lib/audit';
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 // Helper pour récupérer ou initialiser un ID de session anonyme unique
 function getOrCreateSessionId(): string {
@@ -24,20 +26,52 @@ function getOrCreateSessionId(): string {
 // Action : Ajouter/Modifier une évaluation (Étoiles)
 export async function rateArticle(articleId: string, stars: number) {
   try {
-    if (stars < 0 || stars > 5) {
-      throw new Error('La note doit être comprise entre 0 et 5.');
+    if (stars < 1 || stars > 5) {
+      throw new Error('La note doit être comprise entre 1 et 5 étoiles.');
     }
 
-    const sessionIdentifier = getOrCreateSessionId();
+    // 1. Authentification obligatoire : seules les personnes connectées peuvent voter
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || !session.user.email) {
+      return {
+        success: false,
+        requireAuth: true,
+        error: 'Vous devez être connecté avec votre compte pour évaluer un article.'
+      };
+    }
+
+    const user = await db.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, name: true, email: true }
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        requireAuth: true,
+        error: 'Compte utilisateur introuvable.'
+      };
+    }
 
     const article = await db.article.findUnique({
       where: { id: articleId },
-      select: { titre: true, auteurId: true },
+      select: { titre: true, auteurId: true, slug: true },
     });
 
     if (!article) throw new Error('Article introuvable.');
 
-    // Upsert la note pour cette session et cet article (évite les doublons)
+    // 2. Interdiction formelle d'auto-évaluation
+    if (article.auteurId === user.id) {
+      return {
+        success: false,
+        error: 'Vous ne pouvez pas évaluer vos propres articles.'
+      };
+    }
+
+    // 3. sessionIdentifier = user.id (garantit 1 seul vote par utilisateur par article)
+    const sessionIdentifier = user.id;
+
+    // Upsert la note pour cet utilisateur et cet article
     const rating = await db.rating.upsert({
       where: {
         articleId_sessionIdentifier: {
@@ -55,9 +89,12 @@ export async function rateArticle(articleId: string, stars: number) {
       },
     });
 
-    await logAction('RATING_ADD', `Évaluation de ${stars} étoiles sur l'article : "${article.titre}"`);
+    await logAction('RATING_ADD', `Évaluation de ${stars} étoiles par ${user.name} (${user.email}) sur l'article : "${article.titre}"`);
 
     // Revalider les chemins pour rafraîchir l'affichage
+    if (article.slug) {
+      revalidatePath(`/articles/${article.slug}`);
+    }
     revalidatePath(`/articles/${articleId}`);
     revalidatePath('/');
     

@@ -177,18 +177,25 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
   const articleTotalCount = articleRatings.length;
   const articleAverage = articleTotalCount > 0 ? articleRatings.reduce((acc, r) => acc + r.stars, 0) / articleTotalCount : 0;
 
-  // 3. Vérifier si l'utilisateur actuel a déjà évalué cet écrit ou cet auteur
-  const cookieStore = cookies();
-  const sessionIdentifier = cookieStore.get('presstonik-session-id')?.value;
-  let userVote = null;
+  // 3. Vérifier si l'utilisateur actuel a déjà évalué cet écrit ou cet auteur (uniquement utilisateurs connectés)
+  let userVote: number | null = null;
   let hasUserRatedAuthor = false;
+  let currentUserId: string | null = (session?.user as any)?.id || null;
 
-  if (sessionIdentifier) {
+  if (session?.user?.email && !currentUserId) {
+    const dbUser = await db.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+    if (dbUser) currentUserId = dbUser.id;
+  }
+
+  if (currentUserId) {
     const existingRating = await db.rating.findUnique({
       where: {
         articleId_sessionIdentifier: {
           articleId: article.id,
-          sessionIdentifier,
+          sessionIdentifier: currentUserId,
         },
       },
     });
@@ -200,7 +207,7 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
       const authorRatingsCount = await db.rating.count({
         where: {
           articleId: { in: authorArticleIds },
-          sessionIdentifier,
+          sessionIdentifier: currentUserId,
         },
       });
       hasUserRatedAuthor = authorRatingsCount > 0;
@@ -382,6 +389,9 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
                 authorAverage={authorAverage}
                 authorTotalCount={authorTotalCount}
                 hasUserRatedAuthor={hasUserRatedAuthor}
+                isLoggedIn={Boolean(currentUserId)}
+                isAuthor={Boolean(currentUserId && currentUserId === article.auteurId)}
+                articleSlug={article.slug}
               />
             </div>
           </div>

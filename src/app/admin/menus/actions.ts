@@ -30,18 +30,25 @@ const subMenuSchema = z.object({
 export async function saveMenu(
   id: string | undefined,
   data: { nom: string; order: number }
-): Promise<{ error?: string }> {
+): Promise<{ success?: boolean; error?: string }> {
   try {
     await checkAdmin();
-    const slug = slugify(data.nom);
-    const validated = menuSchema.parse({ ...data, slug });
+    const baseSlug = slugify(data.nom);
+    if (!baseSlug) {
+      return { error: 'Le nom du menu doit comporter des caractères valides.' };
+    }
+
+    // Détermination d'un slug unique automatique (non-bloquant)
+    let finalSlug = baseSlug;
+    let counter = 2;
+    while (await db.menu.findFirst({ where: { slug: finalSlug, NOT: id ? { id } : undefined } })) {
+      finalSlug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
+    const validated = menuSchema.parse({ ...data, slug: finalSlug });
 
     if (id) {
-      const existing = await db.menu.findFirst({
-        where: { slug: validated.slug, NOT: { id } }
-      });
-      if (existing) return { error: `Un menu avec le slug "${validated.slug}" existe déjà.` };
-
       await db.menu.update({
         where: { id },
         data: { nom: validated.nom, slug: validated.slug, order: validated.order }
@@ -54,43 +61,72 @@ export async function saveMenu(
 
     revalidatePath('/admin/menus');
     revalidatePath('/');
-    return {};
+    return { success: true };
   } catch (error: any) {
-    if (error?.code === 'P2002') {
-      return { error: `Un menu avec ce slug existe déjà.` };
-    }
+    console.error('Error saving menu:', error);
     return { error: error?.message || "Erreur lors de l'enregistrement du menu." };
   }
 }
 
-export async function deleteMenu(id: string): Promise<{ error?: string }> {
+export async function deleteMenu(id: string): Promise<{ success?: boolean; error?: string }> {
   try {
     await checkAdmin();
+
+    // Les articles liés sont supprimés en cascade (onDelete: Cascade dans le schéma).
+    // Supprimer les sous-menus enfants explicitement pour propreté.
+    await db.subMenu.deleteMany({
+      where: { menuId: id }
+    });
+
     await db.menu.delete({ where: { id } });
+
     revalidatePath('/admin/menus');
     revalidatePath('/');
-    return {};
+    return { success: true };
   } catch (error: any) {
-    return { error: error?.message || 'Erreur lors de la suppression.' };
+    console.error('Error deleting menu:', error);
+    return { error: error?.message || 'Erreur lors de la suppression du menu.' };
   }
 }
 
 export async function saveSubMenu(
   id: string | undefined,
   data: { nom: string; order: number; menuId: string }
-): Promise<{ error?: string }> {
+): Promise<{ success?: boolean; error?: string }> {
   try {
     await checkAdmin();
-    const slug = slugify(data.nom);
-    const validated = subMenuSchema.parse({ ...data, slug });
+
+    const parentMenu = await db.menu.findUnique({
+      where: { id: data.menuId }
+    });
+
+    if (!parentMenu) {
+      return { error: 'Menu parent introuvable.' };
+    }
+
+    const baseSlug = slugify(data.nom);
+    if (!baseSlug) {
+      return { error: 'Le nom de la sous-rubrique doit comporter des caractères valides.' };
+    }
+
+    // Détermination d'un slug unique automatique (non-bloquant)
+    let candidateSlug = baseSlug;
+    const existingGlobal = await db.subMenu.findFirst({
+      where: { slug: candidateSlug, NOT: id ? { id } : undefined }
+    });
+
+    if (existingGlobal) {
+      candidateSlug = `${parentMenu.slug}-${baseSlug}`;
+      let counter = 2;
+      while (await db.subMenu.findFirst({ where: { slug: candidateSlug, NOT: id ? { id } : undefined } })) {
+        candidateSlug = `${parentMenu.slug}-${baseSlug}-${counter}`;
+        counter++;
+      }
+    }
+
+    const validated = subMenuSchema.parse({ ...data, slug: candidateSlug });
 
     if (id) {
-      const existing = await db.subMenu.findFirst({
-        where: { slug: validated.slug, NOT: { id } }
-      });
-      if (existing) {
-        return { error: `Un sous-menu avec le slug "${validated.slug}" existe déjà.` };
-      }
       await db.subMenu.update({
         where: { id },
         data: {
@@ -112,24 +148,33 @@ export async function saveSubMenu(
     }
 
     revalidatePath('/admin/menus');
+    revalidatePath(`/category/${parentMenu.slug}`);
     revalidatePath('/');
-    return {};
+    return { success: true };
   } catch (error: any) {
-    if (error?.code === 'P2002') {
-      return { error: `Un sous-menu avec ce slug existe déjà.` };
-    }
+    console.error('Error saving subMenu:', error);
     return { error: error?.message || "Erreur lors de l'enregistrement de la rubrique." };
   }
 }
 
-export async function deleteSubMenu(id: string): Promise<{ error?: string }> {
+export async function deleteSubMenu(id: string): Promise<{ success?: boolean; error?: string }> {
   try {
     await checkAdmin();
+
+    // 1. Détacher les articles associés à cette sous-rubrique
+    await db.article.updateMany({
+      where: { submenuId: id },
+      data: { submenuId: null }
+    });
+
+    // 2. Supprimer la sous-rubrique
     await db.subMenu.delete({ where: { id } });
+
     revalidatePath('/admin/menus');
     revalidatePath('/');
-    return {};
+    return { success: true };
   } catch (error: any) {
-    return { error: error?.message || 'Erreur lors de la suppression.' };
+    console.error('Error deleting subMenu:', error);
+    return { error: error?.message || 'Erreur lors de la suppression de la rubrique.' };
   }
 }
