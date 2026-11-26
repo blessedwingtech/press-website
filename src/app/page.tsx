@@ -91,7 +91,7 @@ export default async function Home({ searchParams }: HomeProps) {
     });
   }
 
-  // 3. Calculer la réputation globale de chaque journaliste (auteur)
+  // 3. Calculer la réputation globale de chaque journaliste (auteur) et de chaque article
   const sortedArticles = feedArticles.map((article) => {
     const authorRatings = article.auteur.articles.flatMap((art) =>
       art.ratings.map((r) => r.stars)
@@ -99,9 +99,16 @@ export default async function Home({ searchParams }: HomeProps) {
     const totalStarsSum = authorRatings.reduce((acc, val) => acc + val, 0);
     const authorAverageRating = authorRatings.length > 0 ? totalStarsSum / authorRatings.length : 0;
 
+    // Calcul de la note spécifique de cet article individuel
+    const articleRatingSum = article.ratings.reduce((acc, r) => acc + r.stars, 0);
+    const articleAverageRating = article.ratings.length > 0 ? articleRatingSum / article.ratings.length : 0;
+    const articleRatingsCount = article.ratings.length;
+
     return {
       ...article,
       authorAverageRating,
+      articleAverageRating,
+      articleRatingsCount,
     };
   });
 
@@ -191,6 +198,17 @@ export default async function Home({ searchParams }: HomeProps) {
                                   {hero.submenu.nom}
                                 </span>
                               )}
+                              {hero.genre && hero.genre !== 'ACTUALITE' && (
+                                <span className="bg-slate-900/90 text-amber-400 border border-amber-500/40 font-black text-[8px] sm:text-[9px] uppercase px-1.5 sm:px-2 py-0.5 rounded-md shadow-lg tracking-wider">
+                                  {hero.genre === 'OPINION' ? '✍️ Opinion'
+                                    : hero.genre === 'COMMUNIQUE' ? '📢 Communiqué'
+                                    : hero.genre === 'ENQUETE' ? '🔍 Enquête'
+                                    : hero.genre === 'REPORTAGE' ? '🎙️ Reportage'
+                                    : hero.genre === 'ANALYSE' ? '📊 Analyse'
+                                    : hero.genre === 'PARTENAIRE' ? '🤝 Partenaire'
+                                    : hero.genre}
+                                </span>
+                              )}
                               <span className="bg-amber-500 text-slate-950 font-black text-[8px] sm:text-[9px] uppercase px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md shadow-lg tracking-wider flex items-center gap-1">
                                 ★ À LA UNE
                               </span>
@@ -229,9 +247,9 @@ export default async function Home({ searchParams }: HomeProps) {
                               <span className="text-slate-700 dark:text-slate-300 flex items-center gap-2 font-medium truncate pr-1">
                                 <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                                 <span className="truncate font-semibold text-xs">{hero.auteur.name}</span>
-                                {hero.authorAverageRating > 0 && (
-                                  <span className="text-amber-500 dark:text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-500/20 shrink-0 text-[10px]">
-                                    ★ {hero.authorAverageRating.toFixed(1)}
+                                {hero.articleRatingsCount > 0 && (
+                                  <span className="text-amber-500 dark:text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-500/20 shrink-0 text-[10px]" title={`Note de l'article : ${hero.articleAverageRating.toFixed(1)} / 5 (${hero.articleRatingsCount} avis)`}>
+                                    ★ {hero.articleAverageRating.toFixed(1)} <span className="text-[9px] font-normal text-slate-500 dark:text-slate-400">({hero.articleRatingsCount})</span>
                                   </span>
                                 )}
                               </span>
@@ -277,6 +295,17 @@ export default async function Home({ searchParams }: HomeProps) {
                       >
                         <ArticleMedia src={article.imagePrincipale} alt={article.titre} mode="preview" />
                         <div className="absolute top-1.5 left-1.5 sm:top-2.5 sm:left-2.5 flex flex-wrap gap-1 z-20">
+                          {article.genre && article.genre !== 'ACTUALITE' && (
+                            <span className="bg-slate-900/90 text-amber-400 border border-amber-500/40 font-black text-[8px] sm:text-[9px] uppercase px-1.5 py-0.5 rounded shadow-md tracking-wider">
+                              {article.genre === 'OPINION' ? '✍️ Opinion'
+                                : article.genre === 'COMMUNIQUE' ? '📢 Communiqué'
+                                : article.genre === 'ENQUETE' ? '🔍 Enquête'
+                                : article.genre === 'REPORTAGE' ? '🎙️ Reportage'
+                                : article.genre === 'ANALYSE' ? '📊 Analyse'
+                                : article.genre === 'PARTENAIRE' ? '🤝 Partenaire'
+                                : article.genre}
+                            </span>
+                          )}
                           <span className="bg-emerald-500 text-white font-black text-[8px] sm:text-[9px] uppercase px-1.5 sm:px-2 py-0.5 rounded shadow-md tracking-wider">
                             {article.menu.nom}
                           </span>
@@ -317,9 +346,9 @@ export default async function Home({ searchParams }: HomeProps) {
                           <span className="text-slate-700 dark:text-slate-400 flex items-center gap-1 font-medium truncate pr-1">
                             <User className="w-3 h-3 text-slate-500 shrink-0" />
                             <span className="truncate">{article.auteur.name}</span>
-                            {article.authorAverageRating > 0 && (
-                              <span className="text-amber-500 dark:text-amber-400 font-extrabold flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/25 px-1 py-0.5 rounded border border-amber-300 dark:border-amber-500/10 shrink-0">
-                                ★ {article.authorAverageRating.toFixed(1)}
+                            {article.articleRatingsCount > 0 && (
+                              <span className="text-amber-500 dark:text-amber-400 font-bold flex items-center gap-0.5 bg-amber-50 dark:bg-amber-950/25 px-1 py-0.5 rounded border border-amber-300 dark:border-amber-500/10 shrink-0" title={`Note de l'article : ${article.articleAverageRating.toFixed(1)} / 5 (${article.articleRatingsCount} avis)`}>
+                                ★ {article.articleAverageRating.toFixed(1)} <span className="text-[9px] font-normal text-slate-500 dark:text-slate-400">({article.articleRatingsCount})</span>
                               </span>
                             )}
                           </span>

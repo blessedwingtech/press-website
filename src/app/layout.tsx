@@ -198,9 +198,13 @@ export default function RootLayout({
               <p className="font-semibold text-slate-500 dark:text-slate-400">Presse Rédactionnelle © {new Date().getFullYear()}</p>
               <p>Powered by <a href="https://bwt.bittonik.com" target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 font-medium transition-colors">Blessed Wing Technology</a></p>
               <div className="pt-1 flex flex-wrap justify-center items-center gap-x-3 gap-y-2 text-[10px] uppercase font-bold tracking-wider">
+                <Link href="/a-propos" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">À propos</Link>
+                <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+                <Link href="/charte" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Charte éditoriale</Link>
+                <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
                 <Link href="/request-account" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Demander un compte</Link>
                 <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
-                <Link href="/terms" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Conditions d'utilisation</Link>
+                <Link href="/terms" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Conditions d&apos;utilisation</Link>
                 <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
                 <Link href="/privacy" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors whitespace-nowrap">Politique de confidentialité</Link>
                 <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>

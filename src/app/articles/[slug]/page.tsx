@@ -284,6 +284,33 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
             
             {/* Badge de catégorie et Badge VIP */}
             <div className="flex flex-wrap items-center gap-2">
+              {/* Badge Genre éditorial */}
+              {article.genre && article.genre !== 'ACTUALITE' && (
+                <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-sm ${
+                  article.genre === 'OPINION'
+                    ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30'
+                    : article.genre === 'COMMUNIQUE'
+                    ? 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-500/30'
+                    : article.genre === 'ENQUETE'
+                    ? 'bg-teal-500/15 text-teal-700 dark:text-teal-300 border-teal-500/30'
+                    : article.genre === 'REPORTAGE'
+                    ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                    : article.genre === 'ANALYSE'
+                    ? 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/30'
+                    : article.genre === 'PARTENAIRE'
+                    ? 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30'
+                    : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700'
+                }`}>
+                  {article.genre === 'OPINION' ? '✍️ Opinion / Tribune'
+                    : article.genre === 'COMMUNIQUE' ? '📢 Communiqué officiel'
+                    : article.genre === 'ENQUETE' ? '🔍 Enquête'
+                    : article.genre === 'REPORTAGE' ? '🎙️ Reportage'
+                    : article.genre === 'ANALYSE' ? '📊 Analyse'
+                    : article.genre === 'PARTENAIRE' ? '🤝 Partenaire / Sponsorisé'
+                    : article.genre}
+                </span>
+              )}
+
               <span className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full">
                 {article.menu.nom}
               </span>
@@ -326,6 +353,11 @@ export default async function ArticleDetail({ params }: ArticlePageProps) {
                 <span className="flex items-center gap-1.5 font-medium">
                   <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Le {formatArticleDate(article.datePublication, { includeTime: true })}</span>
+                  {article.updatedAt && (new Date(article.updatedAt).getTime() - new Date(article.datePublication).getTime() > 2 * 60 * 1000) && (
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 italic">
+                      (mis à jour le {formatArticleDate(article.updatedAt, { includeTime: true })})
+                    </span>
+                  )}
                 </span>
                 <span className="flex items-center gap-1.5 font-medium">
                   <Eye className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />

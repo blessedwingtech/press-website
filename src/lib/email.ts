@@ -175,6 +175,22 @@ export async function sendPromotionApprovalEmail(to: string, name: string, login
   return sendMailWithFailover({ to, subject: 'Félicitations ! Votre compte a été promu Rédacteur - PressTonik ✍️', html });
 }
 
+export async function sendVerificationApprovedEmail(to: string, name: string) {
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; background: #0f172a; color: #e2e8f0; border-radius: 12px; max-width: 560px; margin: 0 auto;">
+      <h2 style="color: #ffffff; margin-bottom: 12px;">Félicitations, ${name} ! 🏅</h2>
+      <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1;">Votre dossier d'accréditation et de déontologie a été examiné et <strong>approuvé avec succès</strong> par PressTonik.</p>
+      <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1;">Votre profil et l'ensemble de vos publications bénéficient désormais du macaron officiel <strong>« Journaliste Vérifié »</strong>, gage de sérieux, de rigueur et de confiance auprès de notre lectorat.</p>
+      <p style="margin: 24px 0;">
+        <a href="/journalist" style="background-color: #10b981; color: #020617; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Accéder à ma Console Rédaction</a>
+      </p>
+      <hr style="border: 0; border-top: 1px solid #1e293b; margin-top: 30px;" />
+      <p style="font-size: 11px; color: #475569;">L'équipe d'administration PressTonik.</p>
+    </div>
+  `;
+  return sendMailWithFailover({ to, subject: 'Votre compte a obtenu le badge Journaliste Vérifié ! 🏅 - PressTonik', html });
+}
+
 export async function sendRejectionEmail(to: string, name: string) {
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; background: #0f172a; color: #e2e8f0; border-radius: 12px; max-width: 560px; margin: 0 auto;">

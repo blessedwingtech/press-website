@@ -19,6 +19,7 @@ const articleSchema = z.object({
   actualitesSubmenuId: z.string().nullable().optional(),
   published: z.boolean().default(true),
   isVip: z.boolean().default(false),
+  genre: z.string().default('ACTUALITE'),
 });
 
 export async function saveArticle(
@@ -33,6 +34,7 @@ export async function saveArticle(
     actualitesSubmenuId?: string | null;
     published?: boolean;
     isVip?: boolean;
+    genre?: string;
   }
 ) {
   const session = await getServerSession(authOptions);
@@ -79,10 +81,11 @@ export async function saveArticle(
         actualitesSubmenuId: validatedData.actualitesSubmenuId || null,
         published: validatedData.published,
         isVip: validatedData.isVip,
+        genre: validatedData.genre,
       },
     });
 
-    await logAction('ARTICLE_UPDATE', `Article mis à jour : "${validatedData.titre}" (slug: ${finalSlug}, VIP: ${validatedData.isVip})`);
+    await logAction('ARTICLE_UPDATE', `Article mis à jour : "${validatedData.titre}" (slug: ${finalSlug}, VIP: ${validatedData.isVip}, Genre: ${validatedData.genre})`);
   } else {
     isNewlyPublished = Boolean(validatedData.published);
 
@@ -100,10 +103,11 @@ export async function saveArticle(
         auteurId: (session.user as any).id,
         published: validatedData.published,
         isVip: validatedData.isVip,
+        genre: validatedData.genre,
       },
     });
 
-    await logAction('ARTICLE_CREATE', `Nouvel article rédigé : "${validatedData.titre}" (slug: ${finalSlug}, VIP: ${validatedData.isVip})`);
+    await logAction('ARTICLE_CREATE', `Nouvel article rédigé : "${validatedData.titre}" (slug: ${finalSlug}, VIP: ${validatedData.isVip}, Genre: ${validatedData.genre})`);
   }
 
   // Déclencher les alertes d'abonnés instantanés si l'article est nouvellement publié

@@ -52,6 +52,7 @@ interface ArticleFormProps {
     alsoInActualites?: boolean;
     actualitesSubmenuId?: string | null;
     isVip?: boolean;
+    genre?: string;
   };
   isPro?: boolean;
 }
@@ -66,6 +67,7 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
   const [imagePrincipale, setImagePrincipale] = useState(initialData?.imagePrincipale || '');
   const [menuId, setMenuId] = useState(initialData?.menuId || '');
   const [submenuId, setSubmenuId] = useState(initialData?.submenuId || '');
+  const [genre, setGenre] = useState((initialData as any)?.genre || 'ACTUALITE');
   
   // Cross-publishing sous le menu Actualités
   const [alsoInActualites, setAlsoInActualites] = useState(initialData?.alsoInActualites || false);
@@ -407,6 +409,7 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
             setImagePrincipale(draft.imagePrincipale || '');
             setMenuId(draft.menuId || '');
             setSubmenuId(draft.submenuId || '');
+            setGenre(draft.genre || 'ACTUALITE');
             setAlsoInActualites(draft.alsoInActualites || false);
             setActualitesSubmenuId(draft.actualitesSubmenuId || '');
           } else {
@@ -431,6 +434,7 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
           imagePrincipale,
           menuId,
           submenuId,
+          genre,
           alsoInActualites,
           actualitesSubmenuId,
         };
@@ -597,6 +601,7 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
         actualitesSubmenuId: alsoInActualites ? actualitesSubmenuId || null : null,
         published,
         isVip,
+        genre,
       });
 
       if (res.success) {
@@ -705,6 +710,29 @@ export default function ArticleForm({ menus, initialData, isPro = false }: Artic
             
             {/* Chained Categories Selectors */}
             <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-2 flex items-center justify-between">
+                  <span>Genre éditorial</span>
+                  <span className="text-[10px] text-amber-500 font-bold lowercase">transparence lecteur</span>
+                </label>
+                <select
+                  value={genre}
+                  onChange={(e) => setGenre(e.target.value)}
+                  className="block w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-slate-200 text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+                >
+                  <option value="ACTUALITE">📰 Actualité générale (Fait / Dépêche)</option>
+                  <option value="REPORTAGE">🎙️ Reportage de terrain</option>
+                  <option value="ENQUETE">🔍 Enquête &amp; Investigation</option>
+                  <option value="ANALYSE">📊 Analyse &amp; Décryptage</option>
+                  <option value="OPINION">✍️ Opinion / Tribune libre / Billet</option>
+                  <option value="COMMUNIQUE">📢 Communiqué officiel</option>
+                  <option value="PARTENAIRE">🤝 Contenu partenaire / Sponsorisé</option>
+                </select>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+                  Permet d&apos;identifier clairement la nature de cet écrit (fait journalistique, opinion personnelle ou communiqué).
+                </p>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-widest mb-2">
                   Catégorie (Menu)

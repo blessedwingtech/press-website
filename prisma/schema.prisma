@@ -35,6 +35,7 @@ model User {
   promoUsages      PromoCodeUsage[]
   newsletterSubscribers NewsletterSubscription[] @relation("JournalistNewsletters")
   pushSubscriptions     PushSubscription[]       @relation("JournalistPushSubscriptions")
+  verificationRequests  VerificationRequest[]
 }
 
 model Menu {
@@ -77,6 +78,8 @@ model Article {
   published            Boolean  @default(true)
   isDemo               Boolean  @default(false)
   isVip                Boolean  @default(false) // 🔒 Enquête Exclusive réservée aux membres VIP
+  genre                String   @default("ACTUALITE") // ACTUALITE, REPORTAGE, ENQUETE, ANALYSE, OPINION, COMMUNIQUE, PARTENAIRE
+  updatedAt            DateTime @default(now()) @updatedAt
   views                Int      @default(0)
   ratings              Rating[]
   donations            Donation[]
@@ -254,6 +257,24 @@ model PushSubscription {
 
   @@index([authorId])
   @@index([endpoint])
+}
+
+model VerificationRequest {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialties      String?  // Ex: "Politique, Enquêtes de terrain, Économie"
+  publicProfileUrl String?  // Lien Twitter/X, Facebook, WhatsApp, portfolio
+  portfolioLinks   String?  // Liens vers travaux ou articles publiés
+  bio              String?  // Démarche et motivation
+  ethicsAccepted   Boolean  @default(true)
+  status           String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  adminNotes       String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }
 
 
